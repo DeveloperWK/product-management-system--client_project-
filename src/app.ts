@@ -3,12 +3,15 @@ import { configDotenv } from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import authRoutes from './routes/Auth.route';
-import categoriesRoute from './routes/Categories.route';
-import productsRoute from './routes/Products.route';
+import attributesRoute from './routes/Attribute.routes';
+import authRoutes from './routes/Auth.routes';
+import brandsRoutes from './routes/Brand.routes';
+import categoriesRoute from './routes/Categories.routes';
+import productImagesRoute from './routes/Image.routes';
+import productsRoute from './routes/Products.routes';
 import storesRoutes from './routes/Store.routes';
-import userRoutes from './routes/Users.route';
-import warehouseRoutes from './routes/Warehouse.route';
+import userRoutes from './routes/Users.routes';
+import warehouseRoutes from './routes/Warehouse.routes';
 
 configDotenv();
 
@@ -28,6 +31,9 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/stores', storesRoutes);
 app.use('/api/v1/warehouses', warehouseRoutes);
 app.use('/api/v1/categories', categoriesRoute);
+app.use('/api/v1/attributes', attributesRoute);
+app.use('/api/v1/brands', brandsRoutes);
 app.use('/api/v1/products', productsRoute);
+app.use('/api/v1/product-images', productImagesRoute);
 
 export default app;

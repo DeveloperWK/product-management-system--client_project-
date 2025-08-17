@@ -108,7 +108,7 @@ const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await productOperations.delete(id);
-    res.status(204).json({
+    res.status(200).json({
       message: 'Delete Successful',
     });
   } catch (error: any) {
@@ -124,6 +124,5 @@ export {
   getAllProducts,
   getProductById,
   getProductBySku,
-  searchProducts,
   updateProduct,
 };

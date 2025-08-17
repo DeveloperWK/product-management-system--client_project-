@@ -49,12 +49,18 @@ const createProductImage = async (
   try {
     const { productId } = req.body;
     const file = req.file;
-    const fileUrl = await imageUploadService(file);
-    if (!fileUrl) {
-      return res.status(400).json({ error: 'URL is required' });
+    if (file) {
+      const fileUrl = await imageUploadService(file);
+      if (!fileUrl) {
+        return res.status(400).json({ error: 'URL is required' });
+      }
+      const image = await productImageOperations.create(fileUrl, productId);
+      res.status(201).json({ image });
+    } else {
+      res.status(500).json({
+        message: 'Something went wrong on image upload',
+      });
     }
-    const image = await productImageOperations.create(fileUrl, productId);
-    res.status(201).json({ image });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Product not found' });
@@ -70,13 +76,19 @@ const updateProductImage = async (
   try {
     const { id } = req.params;
     const file = req.file;
-    const fileUrl = await imageUploadService(file);
-    if (!fileUrl) {
-      return res.status(400).json({ error: 'URL is required' });
-    }
+    if (file) {
+      const fileUrl = await imageUploadService(file);
+      if (!fileUrl) {
+        return res.status(400).json({ error: 'URL is required' });
+      }
 
-    const image = await productImageOperations.update(id, fileUrl);
-    res.status(200).json({ image });
+      const image = await productImageOperations.update(id, fileUrl);
+      res.status(200).json({ image });
+    } else {
+      res.status(500).json({
+        message: 'Something went wrong on image upload',
+      });
+    }
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Product image not found' });

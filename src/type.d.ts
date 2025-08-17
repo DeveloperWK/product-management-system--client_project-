@@ -72,7 +72,7 @@ interface UpdateAttributeRequest {
 
 interface CreateAttributeValueRequest {
   value: string;
-  attributeId: number;
+  attributeId: string;
 }
 
 interface UpdateAttributeValueRequest {

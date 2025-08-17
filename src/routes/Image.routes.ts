@@ -12,7 +12,7 @@ import {
   replaceProductImages,
   updateProductImage,
   upsertProductImages,
-} from '../controllers/Products/image.controller';
+} from '../controllers/Products/Image.controller';
 
 const router = Router();
 
