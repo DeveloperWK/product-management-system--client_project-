@@ -5,7 +5,7 @@ interface IUser {
   password: string;
 }
 interface refreshToken {
-  user_id?: number;
+  user_id?: string;
   token: string;
   expires_at: Date;
 }

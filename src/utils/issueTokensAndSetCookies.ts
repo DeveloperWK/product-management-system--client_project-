@@ -8,7 +8,7 @@ import {
 } from '../service/refreshToken.service';
 import { storeRefreshToken } from '../service/token.service';
 
-async function issueTokensAndSetCookies(userId: number, res: Response) {
+async function issueTokensAndSetCookies(userId: string, res: Response) {
   const accessToken = generateAccessToken({ userId });
   const refreshToken = generateRefreshToken();
   await storeRefreshToken(userId, hashRefreshToken(refreshToken));
@@ -18,7 +18,7 @@ const setCookies = async (
   res: Response,
   accessToken: string,
   refreshToken: string,
-  userId?: number,
+  userId?: string,
 ) => {
   const cookieOptions = [
     serialize('access_token', accessToken, {
@@ -73,5 +73,6 @@ export {
   issueTokensAndSetCookies,
   sendUpdatedAccessToken,
   sendUpdatedRefreshToken,
-  setCookies,
+  setCookies
 };
+

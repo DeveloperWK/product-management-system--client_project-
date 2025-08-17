@@ -24,7 +24,7 @@ const createUser = async ({
   }
 };
 const updateUser = async (
-  id: number,
+  id: string,
   name?: string,
   phone?: string,
   password?: string,
@@ -47,7 +47,7 @@ const updateUser = async (
     throw err;
   }
 };
-const deleteUserDb = async (id: number) => {
+const deleteUserDb = async (id: string) => {
   try {
     const deletedUser = await prisma.user.delete({
       where: {
@@ -59,7 +59,7 @@ const deleteUserDb = async (id: number) => {
     throw err;
   }
 };
-type UserIdentifier = { id: number } | { email: string };
+type UserIdentifier = { id: string } | { email: string };
 
 const getUserByIdDB = async (identifier: UserIdentifier) => {
   try {

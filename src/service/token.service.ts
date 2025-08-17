@@ -1,6 +1,6 @@
 import { prisma } from '../config/db.config';
 
-async function storeRefreshToken(userId: number, token: string) {
+async function storeRefreshToken(userId: string, token: string) {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 15);
   await prisma.refreshToken.upsert({
@@ -17,7 +17,7 @@ async function storeRefreshToken(userId: number, token: string) {
   });
 }
 
-async function updateRefreshToken(userId: number, token: string) {
+async function updateRefreshToken(userId: string, token: string) {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 15);
   await prisma.refreshToken.update({
