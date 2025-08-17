@@ -35,3 +35,48 @@ model RefreshToken {
   expires_at DateTime
   createdAt  DateTime @default(now())
 }
+
+model Store{
+  id Int @unique @default(autoincrement())
+  name String @unique 
+  
+}
+model Warehouse{
+    id Int @unique @default(autoincrement())
+  name String @unique 
+  
+}
+
+
+model Category {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  subCategories SubCategory[]
+}
+
+model SubCategory {
+  id             Int             @id @default(autoincrement())
+  name           String
+  categoryId     Int
+  category       Category        @relation(fields: [categoryId], references: [id])
+  subSubCategories SubSubCategory[]
+}
+
+model SubSubCategory {
+  id            Int           @id @default(autoincrement())
+  name          String
+  subCategoryId Int
+  subCategory   SubCategory   @relation(fields: [subCategoryId], references: [id])
+}
+model Attributes {
+  id Int @unique @default(autoincrement())
+  name String
+  value AttributeValue[]
+  
+}
+model AttributeValue{
+  id Int @unique @default(autoincrement())
+  value String
+  attributeId Int
+  attribute Attributes @relation(fields: [attributeId] , references: [id])
+}

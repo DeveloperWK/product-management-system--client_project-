@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import prisma from '../config/db.config';
+import { prisma } from '../config/db.config';
 import { refreshToken } from '../type';
 
 const generateRefreshToken = (): string => {
