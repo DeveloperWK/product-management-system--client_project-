@@ -19,7 +19,7 @@ const createUsers = async (req: Request, res: Response): Promise<void> => {
     const hashedPass = await hashPassword(password);
     const user = await createUser({ name, email, phone, password: hashedPass });
     if (user) {
-      res.status(200).json({
+      res.status(201).json({
         message: 'User Created',
       });
     }
@@ -53,7 +53,6 @@ const deleteUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-
     await deleteUserDb(id);
 
     res.status(200).json({
@@ -79,8 +78,6 @@ const getAllUsers = async (req: Request, res: Response) => {
 const getUserById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
-
 
     const user = await getUserByIdDB({ id: id });
     const { password, ...userWithoutPassword } = user;

@@ -86,8 +86,8 @@ interface CreateProductRequest {
   sku?: string;
   itemCode?: string;
   quantityAlert?: number;
-  manufacturedDate?: string;
-  expiryDate?: string;
+  manufacturedDate?: Date;
+  expiryDate?: Date;
   description?: string;
   storeId: number;
   warehouseId: number;
@@ -101,11 +101,10 @@ interface CreateProductRequest {
 interface UpdateProductRequest {
   name?: string;
   slug?: string;
-  sku?: string;
   itemCode?: string;
   quantityAlert?: number;
-  manufacturedDate?: string;
-  expiryDate?: string;
+  manufacturedDate?: Date;
+  expiryDate?: Date;
   description?: string;
   storeId?: number;
   warehouseId?: number;
@@ -118,7 +117,7 @@ interface UpdateProductRequest {
 
 interface CreateProductImageRequest {
   url: string;
-  productId: number;
+  productId: string;
 }
 
 interface UpdateProductImageRequest {
