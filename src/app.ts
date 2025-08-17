@@ -4,6 +4,7 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import authRoute from './routes/Auth.route';
+import storesRoute from './routes/Store.routes';
 import userRoute from './routes/Users.route';
 configDotenv();
 
@@ -20,5 +21,6 @@ app.get('/health', (req, res) => {
 
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/stores', storesRoute);
 
 export default app;
