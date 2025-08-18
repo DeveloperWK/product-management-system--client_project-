@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { prisma } from '../config/db.config';
-import { refreshToken } from '../type';
+import { RefreshToken } from '../type';
 
 const generateRefreshToken = (): string => {
   const token = crypto.randomBytes(64).toString('hex');
@@ -24,7 +24,7 @@ const verifyRefreshToken = async (
   const refresh_token = await prisma.refreshToken.findUnique({
     where: { token: hashed },
   });
-  const refreshToken = refresh_token as refreshToken | null;
+  const refreshToken = refresh_token as RefreshToken | null;
   if (!receivedToken) {
     console.error('Database error verifying refresh token');
 

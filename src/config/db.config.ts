@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+
 const testConnection = async (maxRetries = 5, initialDelay = 1000) => {
   let attempts = 0;
   let delay = initialDelay;

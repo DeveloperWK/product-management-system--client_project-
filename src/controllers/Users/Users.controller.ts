@@ -91,7 +91,7 @@ const getUserById = async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(404).json({ error: err.message });
   }
 };
 export { createUsers, deleteUser, getAllUsers, getUserById, updateUsers };

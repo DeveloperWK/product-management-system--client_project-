@@ -57,7 +57,7 @@ const updateStore = async (
     const data = req.body;
 
     const store = await storeOperations.update(id, data);
-    res.status(200).json({ store });
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Store not found' });

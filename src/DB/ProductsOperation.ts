@@ -1,5 +1,4 @@
 import { prisma } from '../config/db.config';
-
 const productOperations = {
   create: async (data: {
     name: string;
@@ -10,13 +9,13 @@ const productOperations = {
     manufacturedDate?: Date;
     expiryDate?: Date;
     description?: string;
-    storeId: number;
-    warehouseId: number;
-    categoryId?: number;
-    subCategoryId?: number;
-    subSubCategoryId?: number;
-    brandId?: number;
-    attributeValueIds?: number[];
+    storeId: string;
+    warehouseId: string;
+    categoryId?: string;
+    subCategoryId?: string;
+    subSubCategoryId?: string;
+    brandId?: string;
+    attributeValueIds?: string[];
   }) => {
     const createData: any = {
       name: data.name,
@@ -51,16 +50,6 @@ const productOperations = {
 
     return await prisma.product.create({
       data: createData,
-      include: {
-        store: true,
-        warehouse: true,
-        category: true,
-        subCategory: true,
-        subSubCategory: true,
-        brand: true,
-        attributes: true,
-        images: true,
-      },
     });
   },
 
@@ -124,13 +113,13 @@ const productOperations = {
       manufacturedDate?: Date;
       expiryDate?: Date;
       description?: string;
-      storeId?: number;
-      warehouseId?: number;
-      categoryId?: number;
-      subCategoryId?: number;
-      subSubCategoryId?: number;
-      brandId?: number;
-      attributeValueIds?: number[];
+      storeId?: string;
+      warehouseId?: string;
+      categoryId?: string;
+      subCategoryId?: string;
+      subSubCategoryId?: string;
+      brandId?: string;
+      attributeValueIds?: string[];
     },
   ) => {
     const updateData: any = {};
@@ -232,7 +221,7 @@ const productImageOperations = {
     }
     const id = productId.toString();
     return await prisma.productImage.findMany({
-      where: { id },
+      where: { productId: id },
     });
   },
 

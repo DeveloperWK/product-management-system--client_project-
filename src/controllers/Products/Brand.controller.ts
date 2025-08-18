@@ -53,7 +53,8 @@ const updateBrand = async (
     const data = req.body;
 
     const brand = await brandOperations.update(id, data);
-    res.status(200).json({ brand });
+    // res.status(200).json({ brand });
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Brand not found' });

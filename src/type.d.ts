@@ -4,7 +4,7 @@ interface IUser {
   phone: string;
   password: string;
 }
-interface refreshToken {
+interface RefreshToken {
   user_id?: string;
   token: string;
   expires_at: Date;
@@ -59,7 +59,7 @@ interface CreateSubSubCategoryRequest {
 
 interface UpdateSubSubCategoryRequest {
   name?: string;
-  subCategoryId?: number;
+  subCategoryId?: string;
 }
 
 interface CreateAttributeRequest {
@@ -71,13 +71,13 @@ interface UpdateAttributeRequest {
 }
 
 interface CreateAttributeValueRequest {
-  value: string;
+  values: string[];
   attributeId: string;
 }
 
 interface UpdateAttributeValueRequest {
   value?: string;
-  attributeId?: number;
+  attributeId?: string;
 }
 
 interface CreateProductRequest {
@@ -89,13 +89,13 @@ interface CreateProductRequest {
   manufacturedDate?: Date;
   expiryDate?: Date;
   description?: string;
-  storeId: number;
-  warehouseId: number;
-  categoryId?: number;
-  subCategoryId?: number;
-  subSubCategoryId?: number;
-  brandId?: number;
-  attributeValueIds?: number[];
+  storeId: string;
+  warehouseId: string;
+  categoryId?: string;
+  subCategoryId?: string;
+  subSubCategoryId?: string;
+  brandId?: string;
+  attributeValueIds?: string[];
 }
 
 interface UpdateProductRequest {
@@ -106,13 +106,13 @@ interface UpdateProductRequest {
   manufacturedDate?: Date;
   expiryDate?: Date;
   description?: string;
-  storeId?: number;
-  warehouseId?: number;
-  categoryId?: number;
-  subCategoryId?: number;
-  subSubCategoryId?: number;
-  brandId?: number;
-  attributeValueIds?: number[];
+  storeId?: string;
+  warehouseId?: string;
+  categoryId?: string;
+  subCategoryId?: string;
+  subSubCategoryId?: string;
+  brandId?: string;
+  attributeValueIds?: string[];
 }
 
 interface CreateProductImageRequest {
@@ -134,7 +134,7 @@ export {
   CreateSubSubCategoryRequest,
   CreateWarehouseRequest,
   IUser,
-  refreshToken,
+  RefreshToken,
   UpdateAttributeRequest,
   UpdateAttributeValueRequest,
   UpdateBrandRequest,

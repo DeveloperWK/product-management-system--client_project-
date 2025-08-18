@@ -12,7 +12,7 @@ const router = Router();
 router.post('', createBrand);
 router.get('', getAllBrands);
 router.get('/:id', getBrandById);
-router.patch('/:id', updateBrand);
+router.put('/:id', updateBrand);
 router.delete('/:id', deleteBrand);
 
 export default router;

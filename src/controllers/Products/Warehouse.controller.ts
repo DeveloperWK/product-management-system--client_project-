@@ -53,7 +53,7 @@ const updateWarehouse = async (
     const data = req.body;
 
     const warehouse = await warehouseOperations.update(id, data);
-    res.status(200).json({ warehouse });
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Warehouse not found' });
@@ -66,7 +66,7 @@ const deleteWarehouse = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await warehouseOperations.delete(id);
-    res.status(20).json({
+    res.status(200).json({
       message: 'Delete Successful',
     });
   } catch (error: any) {

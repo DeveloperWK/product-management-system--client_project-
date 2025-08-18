@@ -10,7 +10,7 @@ import {
   UpdateAttributeValueRequest,
 } from '../../type';
 
-export const getAllAttributes = async (req: Request, res: Response) => {
+const getAllAttributes = async (req: Request, res: Response) => {
   try {
     const attributes = await attributeOperations.getAll();
     res.status(200).json({ attributes });
@@ -19,7 +19,7 @@ export const getAllAttributes = async (req: Request, res: Response) => {
   }
 };
 
-export const getAttributeById = async (req: Request, res: Response) => {
+const getAttributeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const attribute = await attributeOperations.getById(id);
@@ -34,7 +34,7 @@ export const getAttributeById = async (req: Request, res: Response) => {
   }
 };
 
-export const getAttributeByName = async (req: Request, res: Response) => {
+const getAttributeByName = async (req: Request, res: Response) => {
   try {
     const { name } = req.params;
     const attribute = await attributeOperations.getByName(name);
@@ -49,7 +49,7 @@ export const getAttributeByName = async (req: Request, res: Response) => {
   }
 };
 
-export const createAttribute = async (
+const createAttribute = async (
   req: Request<{}, {}, CreateAttributeRequest>,
   res: Response,
 ) => {
@@ -67,7 +67,7 @@ export const createAttribute = async (
   }
 };
 
-export const updateAttribute = async (
+const updateAttribute = async (
   req: Request<{ id: string }, {}, UpdateAttributeRequest>,
   res: Response,
 ) => {
@@ -76,7 +76,8 @@ export const updateAttribute = async (
     const data = req.body;
 
     const attribute = await attributeOperations.update(id, data);
-    res.status(200).json({ attribute });
+    // res.status(200).json({ attribute });
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Attribute not found' });
@@ -85,11 +86,11 @@ export const updateAttribute = async (
   }
 };
 
-export const deleteAttribute = async (req: Request, res: Response) => {
+const deleteAttribute = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await attributeOperations.delete(id);
-    res.status(204).json({
+    res.status(200).json({
       message: 'Delete successful',
     });
   } catch (error: any) {
@@ -100,7 +101,7 @@ export const deleteAttribute = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllAttributeValues = async (req: Request, res: Response) => {
+const getAllAttributeValues = async (req: Request, res: Response) => {
   try {
     const attributeValues = await attributeValueOperations.getAll();
     res.status(200).json({ attributeValues });
@@ -109,7 +110,7 @@ export const getAllAttributeValues = async (req: Request, res: Response) => {
   }
 };
 
-export const getAttributeValueById = async (req: Request, res: Response) => {
+const getAttributeValueById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const attributeValue = await attributeValueOperations.getById(id);
@@ -124,22 +125,32 @@ export const getAttributeValueById = async (req: Request, res: Response) => {
   }
 };
 
-export const createAttributeValue = async (
+const createAttributeValue = async (
   req: Request<{}, {}, CreateAttributeValueRequest>,
   res: Response,
 ) => {
   try {
-    const { value, attributeId } = req.body;
-
-    if (!value || !attributeId) {
+    const { values, attributeId } = req.body;
+    console.log(values);
+    if (!Array.isArray(values)) {
+      return res.status(400).json({ error: 'Values must be an array' });
+    }
+    if (!values || !attributeId) {
       return res
         .status(400)
-        .json({ error: 'Value and attributeId are required' });
+        .json({ error: 'Values and attributeId are required' });
+    }
+    const invalidValue = values.filter((value) => typeof value !== 'string');
+    if (invalidValue.length > 0) {
+      return res
+        .status(400)
+        .json({ error: 'All Value must be non-empty strings' });
     }
 
-    const attributeValue = await attributeValueOperations.create(
-      value,
-      attributeId,
+    const attributeValue = await Promise.all(
+      values.map((value) =>
+        attributeValueOperations.create(value, attributeId),
+      ),
     );
     res.status(201).json({ attributeValue });
   } catch (error) {
@@ -147,7 +158,7 @@ export const createAttributeValue = async (
   }
 };
 
-export const updateAttributeValue = async (
+const updateAttributeValue = async (
   req: Request<{ id: string }, {}, UpdateAttributeValueRequest>,
   res: Response,
 ) => {
@@ -165,11 +176,11 @@ export const updateAttributeValue = async (
   }
 };
 
-export const deleteAttributeValue = async (req: Request, res: Response) => {
+const deleteAttributeValue = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await attributeValueOperations.delete(id);
-    res.status(204).json({
+    res.status(200).json({
       message: 'Delete successful',
     });
   } catch (error: any) {
@@ -178,4 +189,17 @@ export const deleteAttributeValue = async (req: Request, res: Response) => {
     }
     res.status(500).json({ error: 'Failed to delete attribute value' });
   }
+};
+export {
+  createAttribute,
+  createAttributeValue,
+  deleteAttribute,
+  deleteAttributeValue,
+  getAllAttributes,
+  getAllAttributeValues,
+  getAttributeById,
+  getAttributeByName,
+  getAttributeValueById,
+  updateAttribute,
+  updateAttributeValue,
 };

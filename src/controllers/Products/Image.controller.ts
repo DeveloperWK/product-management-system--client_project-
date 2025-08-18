@@ -18,7 +18,7 @@ const getAllProductImages = async (req: Request, res: Response) => {
 const getProductImagesByProductId = async (req: Request, res: Response) => {
   try {
     const { productId } = req.params;
-
+    console.log(productId);
     const images = await productImageOperations.getByProductId(productId);
     res.status(200).json({ images });
   } catch (error) {
@@ -83,7 +83,7 @@ const updateProductImage = async (
       }
 
       const image = await productImageOperations.update(id, fileUrl);
-      res.status(200).json({ image });
+      res.status(200).json({ msg: 'Update Successful' });
     } else {
       res.status(500).json({
         message: 'Something went wrong on image upload',
@@ -102,7 +102,9 @@ const deleteProductImage = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     await productImageOperations.delete(id);
-    res.status(204).send();
+    res.status(200).json({
+      msg: 'Delete Successful',
+    });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Product image not found' });
@@ -122,6 +124,7 @@ const replaceProductImages = async (
   try {
     const { productId } = req.params;
     const files = req.files;
+    console.log(files);
 
     if (!Array.isArray(files)) {
       return res.status(400).json({ error: 'URLs must be an array' });
@@ -134,23 +137,23 @@ const replaceProductImages = async (
         message: 'Delete Successful',
       });
     }
-
+    const uploadResults = await Promise.all(
+      files.map((file) => imageUploadService(file)),
+    );
     // Validate URLs
-    const invalidUrls = files.filter((url) => typeof url !== 'string');
+    const invalidUrls = uploadResults.filter((url) => typeof url !== 'string');
     if (invalidUrls.length > 0) {
       return res
         .status(400)
         .json({ error: 'All URLs must be non-empty strings' });
     }
-    const uploadResults = await Promise.all(
-      files.map((file) => imageUploadService(file)),
-    );
+
     // Replace all images for this product
     const newImages = await productImageOperations.replaceForProduct(
       productId,
       uploadResults,
     );
-    res.status(200).json({ newImages });
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Product not found' });
@@ -172,17 +175,17 @@ const addProductImages = async (
         .status(400)
         .json({ error: 'URLs array is required and cannot be empty' });
     }
-
+    const uploadResults = await Promise.all(
+      files.map((file) => imageUploadService(file)),
+    );
     // Validate URLs
-    const invalidUrls = files.filter((url) => typeof url !== 'string');
+    const invalidUrls = uploadResults.filter((url) => typeof url !== 'string');
     if (invalidUrls.length > 0) {
       return res
         .status(400)
         .json({ error: 'All URLs must be non-empty strings' });
     }
-    const uploadResults = await Promise.all(
-      files.map((file) => imageUploadService(file)),
-    );
+
     // Add new images to this product
     const newImages = await productImageOperations.addForProduct(
       productId,
@@ -214,23 +217,23 @@ const upsertProductImages = async (
       await productImageOperations.deleteAllForProduct(productId);
       return res.status(204).send();
     }
-
+    const uploadResults = await Promise.all(
+      files.map((file) => imageUploadService(file)),
+    );
     // Validate URLs
-    const invalidUrls = files.filter((url) => typeof url !== 'string');
+    const invalidUrls = uploadResults.filter((url) => typeof url !== 'string');
     if (invalidUrls.length > 0) {
       return res
         .status(400)
         .json({ error: 'All URLs must be non-empty strings' });
     }
-    const uploadResults = await Promise.all(
-      files.map((file) => imageUploadService(file)),
-    );
+
     // Upsert images for this product
     const updatedImages = await productImageOperations.upsertForProduct(
       productId,
       uploadResults,
     );
-    res.status(200).json(updatedImages);
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Product not found' });
@@ -258,7 +261,9 @@ const deleteProductImagesBatch = async (
 
     // Delete multiple images
     await productImageOperations.deleteBatch(ids);
-    res.status(204).send();
+    res.status(200).json({
+      msg: 'Batch Delete Successful',
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete product images' });
   }
@@ -274,7 +279,7 @@ const getProductImagesByProductIds = async (req: Request, res: Response) => {
     }
 
     // Validate product IDs
-    const invalidIds = productIds.filter((id) => isNaN(id) || id <= 0);
+    const invalidIds = productIds.filter((id) => typeof id !== 'string');
     if (invalidIds.length > 0) {
       return res
         .status(400)

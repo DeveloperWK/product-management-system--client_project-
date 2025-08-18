@@ -1,3 +1,8 @@
+# DB Model
+
+## Products Model
+
+```
 model Store {
   id       String    @id @default(cuid())
   name     String    @unique
@@ -98,3 +103,38 @@ model ProductImage {
   product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
 }
+
+```
+
+## Users Model 
+
+```
+enum RoleType {
+  ADMIN
+  USER
+  ADMINISTRATOR
+  MODERATOR
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  phone        String
+  refreshToken RefreshToken?
+  password     String
+  isActive     Boolean       @default(false)
+  roles        RoleType[]    @default([USER])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model RefreshToken {
+  userId     String   @unique
+  token      String   @unique
+  user       User     @relation(fields: [userId], references: [id])
+  expires_at DateTime
+  createdAt  DateTime @default(now())
+}
+
+```

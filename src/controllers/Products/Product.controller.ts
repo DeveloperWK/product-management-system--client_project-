@@ -8,6 +8,7 @@ const getAllProducts = async (req: Request, res: Response) => {
     const products = await productOperations.getAll(includeRelations);
     res.status(200).json({ products });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Failed to fetch products' });
   }
 };
@@ -90,7 +91,7 @@ const updateProduct = async (
     const { id } = req.params;
     const data = req.body;
     const product = await productOperations.update(id, data);
-    res.status(200).json({ product });
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Product not found' });

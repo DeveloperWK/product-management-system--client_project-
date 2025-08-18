@@ -79,7 +79,7 @@ const updateCategory = async (
     const data = req.body;
 
     const category = await categoryOperations.update(id, data);
-    res.status(200).json({ category });
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Category not found' });
@@ -92,7 +92,7 @@ const deleteCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await categoryOperations.delete(id);
-    res.status(204).json({
+    res.status(200).json({
       message: 'Delete Successful',
     });
   } catch (error: any) {
@@ -156,7 +156,7 @@ const updateSubCategory = async (
     const data = req.body;
 
     const subCategory = await subCategoryOperations.update(id, data);
-    res.status(200).json({ subCategory });
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Subcategory not found' });
@@ -169,7 +169,7 @@ const deleteSubCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await subCategoryOperations.delete(id);
-    res.status(204).json({
+    res.status(200).json({
       message: 'Delete Successful',
     });
   } catch (error: any) {
@@ -236,7 +236,7 @@ const updateSubSubCategory = async (
     const data = req.body;
 
     const subSubCategory = await subSubCategoryOperations.update(id, data);
-    res.status(200).json({ subSubCategory });
+    res.status(200).json({ msg: 'Update Successful' });
   } catch (error: any) {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Subsubcategory not found' });
@@ -249,7 +249,7 @@ const deleteSubSubCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await subSubCategoryOperations.delete(id);
-    res.status(204).json({
+    res.status(200).json({
       message: 'Delete Successful',
     });
   } catch (error: any) {

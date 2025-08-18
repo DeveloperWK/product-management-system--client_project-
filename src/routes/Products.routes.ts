@@ -12,8 +12,8 @@ const router = Router();
 
 router.post('', createProduct);
 router.get('', getAllProducts);
+router.get('/sku/:sku', getProductBySku);
 router.get('/:id', getProductById);
-router.get('/:sku', getProductBySku);
 router.patch('/:id', updateProduct);
 router.delete('/:id', deleteProduct);
 

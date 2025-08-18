@@ -17,10 +17,10 @@ import {
 const router = Router();
 
 // Single image operations
-router.get('/', getAllProductImages);
+router.get('', getAllProductImages);
 router.get('/:id', getProductImageById);
 router.get('/product/:productId', getProductImagesByProductId);
-router.post('/', upload.single('image'), createProductImage);
+router.post('', upload.single('image'), createProductImage);
 router.put('/:id', upload.single('image'), updateProductImage);
 router.delete('/:id', deleteProductImage);
 
@@ -42,7 +42,7 @@ router.patch(
 ); // Upsert
 
 // Batch operations
-router.post('/batch/delete', deleteProductImagesBatch); // Delete multiple
-router.post('/batch/product', getProductImagesByProductIds); // Get by multiple product IDs
+router.delete('/batch/delete', deleteProductImagesBatch); // Delete multiple
+router.get('/batch/product', getProductImagesByProductIds); // Get by multiple product IDs
 
 export default router;
