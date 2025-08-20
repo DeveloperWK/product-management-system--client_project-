@@ -79,6 +79,7 @@ const createProduct = async (
         .status(409)
         .json({ error: 'Product with this SKU/Slug/ItemCode already exists' });
     }
+    console.log(error);
     res.status(500).json({ error: 'Failed to create product' });
   }
 };

@@ -123,6 +123,19 @@ interface CreateProductImageRequest {
 interface UpdateProductImageRequest {
   url?: string;
 }
+
+interface PurchaseType {
+  storeId: string;
+  warehouseId: string;
+  productId: string;
+  attributeValueIds: string[];
+  status: StatusType;
+  amount: number;
+  amountKey: string;
+  quantity: number;
+  payment: number;
+  commission: number;
+}
 export {
   CreateAttributeRequest,
   CreateAttributeValueRequest,
@@ -134,6 +147,7 @@ export {
   CreateSubSubCategoryRequest,
   CreateWarehouseRequest,
   IUser,
+  PurchaseType,
   RefreshToken,
   UpdateAttributeRequest,
   UpdateAttributeValueRequest,

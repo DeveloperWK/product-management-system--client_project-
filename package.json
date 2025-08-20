@@ -4,14 +4,14 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
     "build": "tsc",
     "start": "NODE_ENV=production node dist/server.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
     "lint": "eslint src/**/*.ts",
     "db:migrate": "pnpm prisma migrate dev",
     "db:generate": "pnpm prisma generate",
-    "db:studio": "pnpm prisma studio"
+    "db:studio": "pnpm prisma studio",
+    "db:push": "pnpm prisma db push"
   },
   "keywords": [],
   "author": "",

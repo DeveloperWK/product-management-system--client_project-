@@ -9,6 +9,7 @@ import brandsRoutes from './routes/Brand.routes';
 import categoriesRoute from './routes/Categories.routes';
 import productImagesRoute from './routes/Image.routes';
 import productsRoute from './routes/Products.routes';
+import purchasesRoute from './routes/Purchase.routes';
 import storesRoutes from './routes/Store.routes';
 import userRoutes from './routes/Users.routes';
 import warehouseRoutes from './routes/Warehouse.routes';
@@ -35,5 +36,6 @@ app.use('/api/v1/attributes', attributesRoute);
 app.use('/api/v1/brands', brandsRoutes);
 app.use('/api/v1/products', productsRoute);
 app.use('/api/v1/product-images', productImagesRoute);
+app.use('/api/v1/purchases', purchasesRoute);
 
 export default app;
