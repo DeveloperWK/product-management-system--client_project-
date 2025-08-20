@@ -3,7 +3,4 @@ dist
 .env
 *.log
 coverage
-
-/src/generated/prisma
-
-/src/generated/prisma
+.idea

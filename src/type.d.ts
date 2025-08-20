@@ -136,6 +136,23 @@ interface PurchaseType {
   payment: number;
   commission: number;
 }
+interface ICustomer {
+  firstName: string;
+  lastName?: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  zip?: string;
+  country?: string;
+
+}
+interface  IcustomerUpdate {
+  firstName: string;
+  lastName: string;
+  password: string;
+}
 export {
   CreateAttributeRequest,
   CreateAttributeValueRequest,
@@ -146,6 +163,7 @@ export {
   CreateStoreRequest,
   CreateSubSubCategoryRequest,
   CreateWarehouseRequest,
+  ICustomer,
   IUser,
   PurchaseType,
   RefreshToken,

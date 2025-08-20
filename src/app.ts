@@ -13,6 +13,7 @@ import purchasesRoute from './routes/Purchase.routes';
 import storesRoutes from './routes/Store.routes';
 import userRoutes from './routes/Users.routes';
 import warehouseRoutes from './routes/Warehouse.routes';
+import customerRoutes from './routes/Customer.routes';
 
 configDotenv();
 
@@ -37,5 +38,6 @@ app.use('/api/v1/brands', brandsRoutes);
 app.use('/api/v1/products', productsRoute);
 app.use('/api/v1/product-images', productImagesRoute);
 app.use('/api/v1/purchases', purchasesRoute);
+app.use('/api/v1/customers', customerRoutes);
 
 export default app;

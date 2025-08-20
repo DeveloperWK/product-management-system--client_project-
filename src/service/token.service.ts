@@ -1,31 +1,103 @@
 import { prisma } from '../config/db.config';
 
-async function storeRefreshToken(userId: string, token: string) {
+
+async function storeRefreshToken(
+  userId?: string ,
+  customerId?: string,
+  // @ts-ignore
+  token: string
+) {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 15);
+
+
+  if (!userId && !customerId) {
+    throw new Error('Either userId or customerId must be provided');
+  }
+
+
+  const whereClause = userId
+    ? { userId: userId }
+    : { customerId: customerId };
+
+  const createData = {
+    token: token,
+    expires_at: expiresAt,
+    ...(userId && { userId: userId }),
+    ...(customerId && { customerId: customerId }),
+  };
+
+  const updateData = {
+    token: token,
+    expires_at: expiresAt,
+  };
+
   await prisma.refreshToken.upsert({
-    where: { userId: userId },
-    create: {
-      token: token,
-      expires_at: expiresAt,
-      userId: userId,
-    },
-    update: {
-      token: token,
-      expires_at: expiresAt,
-    },
+    where: whereClause,
+    create: createData,
+    update: updateData,
   });
 }
 
-async function updateRefreshToken(userId: string, token: string) {
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + 15);
+// Update existing refresh token
+
+async function updateRefreshToken(
+  userId?: string ,
+  customerId?: string ,
+  // @ts-ignore
+  token: string
+) {
+  // Validate that either userId or customerId is provided
+  if (!userId && !customerId) {
+    throw new Error('Either userId or customerId must be provided');
+  }
+
+  const whereClause = userId
+    ? { userId: userId }
+    : { customerId: customerId };
+
   await prisma.refreshToken.update({
-    where: { userId: userId },
+    where: whereClause,
     data: {
       token: token,
     },
   });
 }
 
-export { storeRefreshToken, updateRefreshToken };
+// Get refresh token
+// async function getRefreshToken(userId: string | null, customerId: string | null) {
+//   if (!userId && !customerId) {
+//     throw new Error('Either userId or customerId must be provided');
+//   }
+//
+//   const whereClause = userId
+//     ? { userId: userId }
+//     : { customerId: customerId };
+//
+//   return await prisma.refreshToken.findUnique({
+//     where: whereClause,
+//   });
+// }
+
+// Delete refresh token
+async function deleteRefreshToken(userId?: string, customerId?: string) {
+  if (!userId && !customerId) {
+    throw new Error('Either userId or customerId must be provided');
+  }
+
+  const whereClause = userId
+    ? { userId: userId }
+    : { customerId: customerId };
+
+  await prisma.refreshToken.delete({
+    where: whereClause,
+  });
+}
+
+
+
+export {
+  storeRefreshToken,
+  updateRefreshToken,
+  deleteRefreshToken
+};

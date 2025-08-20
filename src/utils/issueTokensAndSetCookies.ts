@@ -2,16 +2,13 @@ import { serialize } from 'cookie';
 import { Response } from 'express';
 
 import generateAccessToken from '../service/jwt.service';
-import {
-  generateRefreshToken,
-  hashRefreshToken,
-} from '../service/refreshToken.service';
+import { generateRefreshToken, hashRefreshToken } from '../service/refreshToken.service';
 import { storeRefreshToken } from '../service/token.service';
 
 async function issueTokensAndSetCookies(userId: string, res: Response) {
   const accessToken = generateAccessToken({ userId });
   const refreshToken = generateRefreshToken();
-  await storeRefreshToken(userId, hashRefreshToken(refreshToken));
+  await storeRefreshToken(userId,undefined,hashRefreshToken(refreshToken));
   await setCookies(res, accessToken, refreshToken, userId);
 }
 const setCookies = async (
