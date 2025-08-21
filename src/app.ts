@@ -14,6 +14,7 @@ import storesRoutes from './routes/Store.routes';
 import userRoutes from './routes/Users.routes';
 import warehouseRoutes from './routes/Warehouse.routes';
 import customerRoutes from './routes/Customer.routes';
+import couponRoutes from './routes/Coupon.routes';
 
 configDotenv();
 
@@ -39,5 +40,6 @@ app.use('/api/v1/products', productsRoute);
 app.use('/api/v1/product-images', productImagesRoute);
 app.use('/api/v1/purchases', purchasesRoute);
 app.use('/api/v1/customers', customerRoutes);
+app.use('/api/v1/coupons', couponRoutes);
 
 export default app;

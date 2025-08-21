@@ -12,12 +12,13 @@ model Coupon {
 }
 
 model CouponsOnProducts {
-  product    Product  @relation(fields: [productId], references: [id])
-  productId  String
-  coupon     Coupon   @relation(fields: [couponId], references: [id])
-  couponId   String
-  assignedAt DateTime @default(now())
-  assignedBy String
+  product      Product  @relation(fields: [productId], references: [id])
+  productId    String
+  coupon       Coupon   @relation(fields: [couponId], references: [id])
+  couponId     String
+  assignedAt   DateTime @default(now())
+  assignedById String?
+  assignedBy   User?    @relation("AssignedBy", fields: [assignedById], references: [id])
 
   @@id([productId, couponId])
 }

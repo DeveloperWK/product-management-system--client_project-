@@ -1,10 +1,34 @@
-import { Prisma } from '@prisma/client';
 import { prisma } from '../config/db.config';
 
 const Coupon = {
-  create: async (data: Prisma.CouponCreateInput) => {
+  create: async (data:{
+    code: string;
+    discount: number;
+    discountType: "PERCENTAGE" | "FIXED";
+    expiresAt: Date;
+    isActive?: boolean;
+    minimumPurchaseAmount?: number;
+    productIds?: string[];
+    assignedById?: string; // needed for pivot
+  }) => {
     try {
-      return await prisma.coupon.create({ data });
+      const {productIds,assignedById,...couponData}= data
+      const coupon = await prisma.coupon.create({ data:couponData });
+      if (productIds && productIds.length > 0) {
+        await prisma.couponsOnProducts.createMany({
+          data:productIds.map(productId => ({
+            couponId: coupon.id,
+            productId,
+            assignedById,
+          })),
+          skipDuplicates: true,
+        })
+        return await  prisma.coupon.findUnique({
+          where: { id: coupon.id },
+          include: { products: { include: { product: true } } },
+          
+        })
+      }
     } catch (error) {
       console.error("Error creating coupon:", error);
       throw new Error("Failed to create coupon");
@@ -21,11 +45,41 @@ const Coupon = {
       throw new Error("Failed to fetch coupon by ID");
     }
   },
-  updateCoupon:async(id: string, data: Prisma.CouponUpdateInput)=>{
+  updateCoupon:async(id: string, data:{
+    code?: string;
+    discount?: number;
+    discountType?: "PERCENTAGE" | "FIXED";
+    expiresAt?: Date;
+    isActive?: boolean;
+    minimumPurchaseAmount?: number;
+    productIds?: string[];
+    assignedById?: string;
+  })=>{
     try {
-      return await prisma.coupon.update({
+      const {productIds,assignedById,...couponData}=data
+      const coupon =  await prisma.coupon.update({
         where: { id },
-        data,
+        data:couponData
+      });
+      if (productIds) {
+        await  prisma.couponsOnProducts.deleteMany({
+          where: { couponId: id },
+        })
+        if(productIds.length>0 && assignedById){
+          prisma.couponsOnProducts.createMany({
+           data: productIds.map(productId => ({
+              couponId: id,
+              productId,
+              assignedById,
+              })
+            )
+          })
+
+        }
+      }
+      return await prisma.coupon.findUnique({
+        where: { id },
+        include: { products: { include: { product: true } } },
       });
     } catch (error) {
       console.error("Error updating coupon:", error);

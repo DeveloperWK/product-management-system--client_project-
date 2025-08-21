@@ -6,17 +6,13 @@ const router = Router();
 
 const createCoupon = async (req: Request, res: Response) => {
   try {
-
-    const newCoupon = {
-      code:req.body.code,
-      discount:req.body.discount,
-      discountType:req.body.discountType,
-      expiresAt:req.body.expiresAt,
-      isActive:req.body.isActive,
-      minimumPurchaseAmount:req.body.minimumPurchaseAmount,
-      products:req.body.products,
-    }
-    const coupon = await Coupon.create(newCoupon);
+const {productIds,assignedBy,...couponData} = req.body;
+console.log(productIds,assignedBy,couponData);
+    const coupon = await Coupon.create({
+      ...couponData,
+      productIds,
+      assignedBy
+    });
     res.status(201).json({ success: true, data: coupon });
   } catch (error: any) {
     res.status(400).json({ success: false, error: error.message });
@@ -35,16 +31,12 @@ const getCouponById = async (req: Request, res: Response) => {
 const updateCoupon = async (req: Request, res: Response) => {
   try {
     const {id}=req.params;
-    const updateData = {
-      ...(req.body.code && {code:req.body.code}),
-      ...(req.body.discount && {discount:req.body.discount})  ,
-      ...(req.body.discountType && {discountType:req.body.discountType}),
-      ...(req.body.expiresAt && {expiresAt:req.body.expiresAt}),
-      ...(req.body.isActive && {isActive:req.body.isActive}),
-      ...(req.body.minimumPurchaseAmount && {minimumPurchaseAmount:req.body.minimumPurchaseAmount}),
-      ...(req.body.products && {products:req.body.products}),
-    };
-    const coupon = await Coupon.updateCoupon(id, updateData);
+    const { productIds, assignedBy, ...couponData } = req.body;
+    const coupon = await Coupon.updateCoupon(id, {
+      ...couponData,
+      productIds,
+      assignedBy
+    });
     res.json({ success: true, data: coupon });
   } catch (error: any) {
     res.status(400).json({ success: false, error: error.message });
