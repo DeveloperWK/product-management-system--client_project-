@@ -90,6 +90,7 @@ model Product {
   attributes       AttributeValue[] @relation("ProductAttributes")
   purchases        Purchase[]
   images           ProductImage[]
+  coupons          CouponsOnProducts[]
   isActive         Boolean?         @default(false)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt

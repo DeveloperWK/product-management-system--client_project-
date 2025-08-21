@@ -1,0 +1,28 @@
+model Coupon {
+  id                    String              @id @default(cuid())
+  code                  String              @unique
+  discount              Float
+  discountType          DiscountType
+  expiresAt             DateTime
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  isActive              Boolean             @default(true)
+  minimumPurchaseAmount Float?
+  products              CouponsOnProducts[]
+}
+
+model CouponsOnProducts {
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+  coupon     Coupon   @relation(fields: [couponId], references: [id])
+  couponId   String
+  assignedAt DateTime @default(now())
+  assignedBy String
+
+  @@id([productId, couponId])
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
