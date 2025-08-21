@@ -28,7 +28,7 @@ router.get('', getAllCategories);
 router.get('/sub-categories', getAllSubCategories);
 router.get('/sub-sub-categories', getAllSubSubCategories);
 router.get('/:id', getCategoryById);
-router.get('/:name', getCategoryByName);
+router.get('/name/:name', getCategoryByName);
 router.get('/sub-categories/:id', getSubCategoryById);
 router.get('/sub-sub-categories/:id', getSubSubCategoryById);
 

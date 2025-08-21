@@ -8,14 +8,15 @@ This document provides documentation for the E-commerce backend API.
 - [Products API](#products-api)
 - [Purchase API](#purchase-api)
 - [Users API](#users-api)
+- [Coupon API](#coupon-api)
 
 ---
 
-## Customer API
+## Customer API (/api/v1/customers)
 
-### Customer Controller (`/api/customer`)
+### Customer Controller (`/api/v1/customers`)
 
-- **POST /api/customer**
+- **POST /api/v1/customers**
   - **Description:** Creates a new customer.
   - **Dummy Data:**
     ```json
@@ -32,16 +33,16 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/customer**
+- **GET /api/v1/customers**
   - **Description:** Retrieves all customers.
 
-- **GET /api/customer/:id**
+- **GET /api/v1/customers/:id**
   - **Description:** Retrieves a customer by their ID.
 
-- **DELETE /api/customer/:id**
+- **DELETE /api/v1/customers/:id**
   - **Description:** Deletes a customer by their ID.
 
-- **PATCH /api/customer/:id**
+- **PATCH /api/v1/customers/:id**
   - **Description:** Updates a customer's information.
   - **Dummy Data:**
     ```json
@@ -55,9 +56,9 @@ This document provides documentation for the E-commerce backend API.
 
 ## Products API
 
-### Attribute Controller (`/api/products/attribute`)
+### Attribute Controller (`/api/v1/attributes`)
 
-- **POST /api/products/attribute**
+- **POST /api/v1/attributes**
   - **Description:** Creates a new attribute.
   - **Dummy Data:**
     ```json
@@ -66,16 +67,16 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/products/attribute**
+- **GET /api/v1/attributes**
   - **Description:** Retrieves all attributes.
 
-- **GET /api/products/attribute/:id**
+- **GET /api/v1/attributes/:id**
   - **Description:** Retrieves an attribute by its ID.
 
-- **GET /api/products/attribute/name/:name**
+- **GET /api/v1/attributes/name/:name**
   - **Description:** Retrieves an attribute by its name.
 
-- **PUT /api/products/attribute/:id**
+- **PUT /api/v1/attributes/:id**
   - **Description:** Updates an attribute's name.
   - **Dummy Data:**
     ```json
@@ -84,10 +85,10 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/products/attribute/:id**
+- **DELETE /api/v1/attributes/:id**
   - **Description:** Deletes an attribute by its ID.
 
-- **POST /api/products/attribute/value**
+- **POST /api/v1/attributes/values**
   - **Description:** Creates a new attribute value.
   - **Dummy Data:**
     ```json
@@ -97,13 +98,13 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/products/attribute/value**
+- **GET /api/v1/attributes/values**
   - **Description:** Retrieves all attribute values.
 
-- **GET /api/products/attribute/value/:id**
+- **GET /api/v1/attributes/values/:id**
   - **Description:** Retrieves an attribute value by its ID.
 
-- **PATCH /api/products/attribute/value/:id**
+- **PATCH /api/v1/attributes/values/:id**
   - **Description:** Updates an attribute value.
   - **Dummy Data:**
     ```json
@@ -112,12 +113,12 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/products/attribute/value/:id**
+- **DELETE /api/v1/attributes/values/:id**
   - **Description:** Deletes an attribute value by its ID.
 
-### Brand Controller (`/api/products/brand`)
+### Brand Controller (`/api/v1/brands`)
 
-- **POST /api/products/brand**
+- **POST /api/v1/brands**
   - **Description:** Creates a new brand.
   - **Dummy Data:**
     ```json
@@ -126,13 +127,13 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/products/brand**
+- **GET /api/v1/brands**
   - **Description:** Retrieves all brands.
 
-- **GET /api/products/brand/:id**
+- **GET /api/v1/brands/:id**
   - **Description:** Retrieves a brand by its ID.
 
-- **PUT /api/products/brand/:id**
+- **PUT /api/v1/brands/:id**
   - **Description:** Updates a brand's name.
   - **Dummy Data:**
     ```json
@@ -141,12 +142,12 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/products/brand/:id**
+- **DELETE /api/v1/brands/:id**
   - **Description:** Deletes a brand by its ID.
 
-### Category Controller (`/api/products/category`)
+### Category Controller (`/api/v1/categories`)
 
-- **POST /api/products/category**
+- **POST /api/v1/categories**
   - **Description:** Creates a new category.
   - **Dummy Data:**
     ```json
@@ -155,16 +156,16 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/products/category**
+- **GET /api/v1/categories**
   - **Description:** Retrieves all categories.
 
-- **GET /api/products/category/:id**
+- **GET /api/v1/categories/:id**
   - **Description:** Retrieves a category by its ID.
 
-- **GET /api/products/category/name/:name**
+- **GET /api/v1/categories/name/:name**
   - **Description:** Retrieves a category by its name.
 
-- **PUT /api/products/category/:id**
+- **PUT /api/v1/categories/:id**
   - **Description:** Updates a category's name.
   - **Dummy Data:**
     ```json
@@ -173,10 +174,10 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/products/category/:id**
+- **DELETE /api/v1/categories/:id**
   - **Description:** Deletes a category by its ID.
 
-- **POST /api/products/subcategory**
+- **POST /api/v1/categories/sub-categories**
   - **Description:** Creates a new sub-category.
   - **Dummy Data:**
     ```json
@@ -186,13 +187,13 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/products/subcategory**
+- **GET /api/v1/categories/sub-categories**
   - **Description:** Retrieves all sub-categories.
 
-- **GET /api/products/subcategory/:id**
+- **GET /api/v1/categories/sub-categories/:id**
   - **Description:** Retrieves a sub-category by its ID.
 
-- **PATCH /api/products/subcategory/:id**
+- **PATCH /api/v1/categories/sub-categories/:id**
   - **Description:** Updates a sub-category.
   - **Dummy Data:**
     ```json
@@ -201,10 +202,10 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/products/subcategory/:id**
+- **DELETE /api/v1/categories/sub-categories/:id**
   - **Description:** Deletes a sub-category by its ID.
 
-- **POST /api/products/subsubcategory**
+- **POST /api/v1/categories/sub-sub-categories**
   - **Description:** Creates a new sub-sub-category.
   - **Dummy Data:**
     ```json
@@ -214,13 +215,13 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/products/subsubcategory**
+- **GET /api/v1/categories/sub-sub-categories**
   - **Description:** Retrieves all sub-sub-categories.
 
-- **GET /api/products/subsubcategory/:id**
+- **GET /api/v1/categories/sub-sub-categories/:id**
   - **Description:** Retrieves a sub-sub-category by its ID.
 
-- **PATCH /api/products/subsubcategory/:id**
+- **PATCH /api/v1/categories/sub-sub-categories/:id**
   - **Description:** Updates a sub-sub-category.
   - **Dummy Data:**
     ```json
@@ -229,50 +230,50 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/products/subsubcategory/:id**
+- **DELETE /api/v1/categories/sub-sub-categories/:id**
   - **Description:** Deletes a sub-sub-category by its ID.
 
-### Image Controller (`/api/products/image`)
+### Image Controller (`/api/v1/product-images`)
 
-- **POST /api/products/image**
+- **POST /api/v1/product-images**
   - **Description:** Uploads a new product image.
   - **Dummy Data (form-data):**
     - `file`: (binary file)
     - `productId`: "clx23sdeo000408l9g1f811c2"
 
-- **GET /api/products/image**
+- **GET /api/v1/product-images**
   - **Description:** Retrieves all product images.
 
-- **GET /api/products/image/product/:productId**
+- **GET /api/v1/product-images/product/:productId**
   - **Description:** Retrieves all images for a specific product.
 
-- **GET /api/products/image/:id**
+- **GET /api/v1/product-images/:id**
   - **Description:** Retrieves a product image by its ID.
 
-- **PUT /api/products/image/:id**
+- **PUT /api/v1/product-images/:id**
   - **Description:** Updates a product image.
   - **Dummy Data (form-data):**
     - `file`: (binary file)
 
-- **DELETE /api/products/image/:id**
+- **DELETE /api/v1/product-images/:id**
   - **Description:** Deletes a product image by its ID.
 
-- **POST /api/products/image/add-images/:productId**
+- **POST /api/v1/product-images/product/:productId/add**
     - **Description:** Adds multiple images to a product.
     - **Dummy Data (form-data):**
         - `files`: [(binary file), (binary file)]
 
-- **POST /api/products/image/replace-images/:productId**
+- **PUT /api/v1/product-images/product/:productId**
     - **Description:** Replaces all images for a product.
     - **Dummy Data (form-data):**
         - `files`: [(binary file), (binary file)]
 
-- **POST /api/products/image/upsert-images/:productId**
+- **PATCH /api/v1/product-images/product/:productId**
     - **Description:** Upserts images for a product.
     - **Dummy Data (form-data):**
         - `files`: [(binary file), (binary file)]
 
-- **POST /api/products/image/delete-batch**
+- **DELETE /api/v1/product-images/batch/delete**
     - **Description:** Deletes multiple product images in a batch.
     - **Dummy Data:**
         ```json
@@ -281,9 +282,18 @@ This document provides documentation for the E-commerce backend API.
         }
         ```
 
-### Product Controller (`/api/products`)
+- **GET /api/v1/product-images/batch/product**
+    - **Description:** Retrieves product images by multiple product IDs.
+    - **Dummy Data:**
+        ```json
+        {
+          "productIds": ["clx23sdeo000408l9g1f811c2", "clx23sdeo000508l9g1f811c3"]
+        }
+        ```
 
-- **POST /api/products**
+### Product Controller (`/api/v1/products`)
+
+- **POST /api/v1/products**
   - **Description:** Creates a new product.
   - **Dummy Data:**
     ```json
@@ -304,18 +314,18 @@ This document provides documentation for the E-commerce backend API.
 	     ]         
     }
     ```
-- **GET /api/products**
+- **GET /api/v1/products**
   - **Description:** Retrieves all products.
   - **Query Parameters:**
     - `includeRelations`: (boolean, optional) - Set to `false` to exclude relations.
 
-- **GET /api/products/:id**
+- **GET /api/v1/products/:id**
   - **Description:** Retrieves a product by its ID.
 
-- **GET /api/products/sku/:sku**
+- **GET /api/v1/products/sku/:sku**
   - **Description:** Retrieves a product by its SKU.
 
-- **PATCH /api/products/:id**
+- **PATCH /api/v1/products/:id**
   - **Description:** Updates a product.
   - **Dummy Data:**
     ```json
@@ -324,12 +334,12 @@ This document provides documentation for the E-commerce backend API.
       "description": "An updated powerful laptop."
     }
     ```
-- **DELETE /api/products/:id**
+- **DELETE /api/v1/products/:id**
   - **Description:** Deletes a product by its ID.
 
-### Store Controller (`/api/products/store`)
+### Store Controller (`/api/v1/stores`)
 
-- **POST /api/products/store**
+- **POST /api/v1/stores**
   - **Description:** Creates a new store.
   - **Dummy Data:**
     ```json
@@ -338,13 +348,13 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/products/store**
+- **GET /api/v1/stores**
   - **Description:** Retrieves all stores.
 
-- **GET /api/products/store/:id**
+- **GET /api/v1/stores/:id**
   - **Description:** Retrieves a store by its ID.
 
-- **PUT /api/products/store/:id**
+- **PUT /api/v1/stores/:id**
   - **Description:** Updates a store's name.
   - **Dummy Data:**
     ```json
@@ -353,12 +363,12 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/products/store/:id**
+- **DELETE /api/v1/stores/:id**
   - **Description:** Deletes a store by its ID.
 
-### Warehouse Controller (`/api/products/warehouse`)
+### Warehouse Controller (`/api/v1/warehouses`)
 
-- **POST /api/products/warehouse**
+- **POST /api/v1/warehouses**
   - **Description:** Creates a new warehouse.
   - **Dummy Data:**
     ```json
@@ -367,13 +377,13 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/products/warehouse**
+- **GET /api/v1/warehouses**
   - **Description:** Retrieves all warehouses.
 
-- **GET /api/products/warehouse/:id**
+- **GET /api/v1/warehouses/:id**
   - **Description:** Retrieves a warehouse by its ID.
 
-- **PUT /api/products/warehouse/:id**
+- **PUT /api/v1/warehouses/:id**
   - **Description:** Updates a warehouse's name.
   - **Dummy Data:**
     ```json
@@ -382,16 +392,16 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/products/warehouse/:id**
+- **DELETE /api/v1/warehouses/:id**
   - **Description:** Deletes a warehouse by its ID.
 
 ---
 
-## Purchase API
+## Purchase API (/api/v1/purchases)
 
-### Purchase Controller (`/api/purchase`)
+### Purchase Controller (`/api/v1/purchases`)
 
-- **POST /api/purchase**
+- **POST /api/v1/purchases**
   - **Description:** Creates a new purchase.
   - **Dummy Data:**
     ```json
@@ -412,7 +422,7 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/purchase**
+- **GET /api/v1/purchases**
   - **Description:** Retrieves all purchases with optional filters.
   - **Query Parameters:**
     - `skip`: (number, optional)
@@ -427,20 +437,19 @@ This document provides documentation for the E-commerce backend API.
     - `startDate`: (date string, optional)
     - `endDate`: (date string, optional)
 
-- **GET /api/purchase/all**
-  - **Description:** Retrieves all purchases without filters.
 
-- **GET /api/purchase/stats**
+
+- **GET /api/v1/purchases/stats/summary**
   - **Description:** Retrieves purchase statistics.
 
-- **GET /api/purchase/search**
+- **GET /api/v1/purchases/search**
   - **Description:** Searches for purchases based on filters.
-  - **Query Parameters:** Same as `GET /api/purchase`
+  - **Query Parameters:** Same as `GET /api/v1/purchases`
 
-- **GET /api/purchase/:id**
+- **GET /api/v1/purchases/:id**
   - **Description:** Retrieves a purchase by its ID.
 
-- **PATCH /api/purchase/:id**
+- **PATCH /api/v1/purchases/:id**
   - **Description:** Updates a purchase.
   - **Dummy Data:**
     ```json
@@ -450,22 +459,22 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/purchase/:id**
+- **DELETE /api/v1/purchases/:id**
   - **Description:** Deletes a purchase by its ID.
 
-- **GET /api/purchase/store/:storeId**
+- **GET /api/v1/purchases/store/:storeId**
   - **Description:** Retrieves all purchases for a specific store.
 
-- **GET /api/purchase/warehouse/:warehouseId**
+- **GET /api/v1/purchases/warehouse/:warehouseId**
   - **Description:** Retrieves all purchases for a specific warehouse.
 
-- **GET /api/purchase/product/:productId**
+- **GET /api/v1/purchases/product/:productId**
   - **Description:** Retrieves all purchases for a specific product.
 
-- **GET /api/purchase/status/:status**
+- **GET /api/v1/purchases/status/:status**
   - **Description:** Retrieves all purchases with a specific status.
 
-- **PATCH /api/purchase/status/:id**
+- **PATCH /api/v1/purchases/:id/status**
   - **Description:** Updates the status of a purchase.
   - **Dummy Data:**
     ```json
@@ -478,9 +487,9 @@ This document provides documentation for the E-commerce backend API.
 
 ## Users API
 
-### Auth Controller (`/api/auth`)
+### Auth Controller (`/api/v1/auth`)
 
-- **POST /api/auth/login**
+- **POST /api/v1/auth/login**
   - **Description:** Logs in a user.
   - **Dummy Data:**
     ```json
@@ -490,9 +499,9 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-### Users Controller (`/api/users`)
+### Users Controller (`/api/v1/users`)
 
-- **POST /api/users/register**
+- **POST /api/v1/users/register**
   - **Description:** Creates a new user.
   - **Dummy Data:**
     ```json
@@ -504,13 +513,13 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **GET /api/users**
+- **GET /api/v1/users**
   - **Description:** Retrieves all users.
 
-- **GET /api/users/:id**
+- **GET /api/v1/users/:id**
   - **Description:** Retrieves a user by their ID.
 
-- **PATCH /api/users/:id**
+- **PATCH /api/v1/users/:id**
   - **Description:** Updates a user's information.
   - **Dummy Data:**
     ```json
@@ -520,5 +529,56 @@ This document provides documentation for the E-commerce backend API.
     }
     ```
 
-- **DELETE /api/users/:id**
+- **DELETE /api/v1/users/:id**
   - **Description:** Deletes a user by their ID.
+
+---
+
+## Coupon API (/api/v1/coupons)
+
+### Coupon Controller (`/api/v1/coupons`)
+
+- **POST /api/v1/coupons**
+  - **Description:** Creates a new coupon.
+  - **Dummy Data:**
+    ```json
+    {
+      "code": "SUMMER2025",
+      "discount": 10,
+      "productId": "clx23sdeo000408l9g1f811c2",
+      "expiresAt": "2025-09-22T23:59:59.000Z"
+    }
+    ```
+
+- **GET /api/v1/coupons**
+  - **Description:** Retrieves all coupons with optional filters.
+  - **Query Parameters:**
+    - `skip`: (number, optional)
+    - `take`: (number, optional)
+    - `search`: (string, optional) - e.g., `name`
+    - `isActive`: (boolean, optional)
+    - `discountType`: (string, optional) - e.g., `PERCENTAGE` or `FIXED`
+    - `minDiscount`: (number, optional)
+    - `maxDiscount`: (number, optional)
+    - `validOnly`: (boolean, optional)
+
+- **GET /api/v1/coupons/:id**
+  - **Description:** Retrieves a coupon by its ID.
+
+- **GET /api/v1/coupons/code/:code**
+  - **Description:** Retrieves a coupon by its code.
+
+- **GET /api/v1/coupons/product/:productId**
+  - **Description:** Retrieves all coupons for a specific product.
+
+- **PATCH /api/v1/coupons/:id**
+  - **Description:** Updates a coupon.
+  - **Dummy Data:**
+    ```json
+    {
+      "discount": 15
+    }
+    ```
+
+- **DELETE /api/v1/coupons/:id**
+  - **Description:** Deletes a coupon by its ID.

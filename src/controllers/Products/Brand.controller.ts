@@ -71,9 +71,9 @@ const deleteBrand = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Store not found' });
+      return res.status(404).json({ error: 'Brand not found' });
     }
-    res.status(500).json({ error: 'Failed to delete store' });
+    res.status(500).json({ error: 'Failed to delete brand' });
   }
 };
 export { createBrand, deleteBrand, getAllBrands, getBrandById, updateBrand };
