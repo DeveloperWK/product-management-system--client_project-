@@ -1,0 +1,99 @@
+import { prisma } from '../config/db.config';
+import { ISupplier } from '../type';
+
+const createSupplier = async ({
+                            name,
+                            email,
+                            phone
+                  
+                          }:Omit<ISupplier, "password">): Promise<Omit<ISupplier, "password"> | undefined> => {
+  try {
+    const supplier = await prisma.supplier.create({
+      data: {
+        name,
+       ...(email && { email }),
+        phone,
+      },
+    });
+    return supplier;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+const updateSupplier = async (
+  id: string,
+  name?: string,
+  phone?: string,
+  email?: string,
+) => {
+  try {
+    const supplier = await prisma.supplier.update({
+      where: {
+        id: id,
+      },
+      data: {
+        ...(name && { name }),
+        ...(phone && { phone }),
+        ...(email && { email }),
+
+      },
+    });
+    return supplier;
+  } catch (err) {
+    throw err;
+  }
+};
+const deleteSupplierDb = async (id: string) => {
+  try {
+    const deletedUser = await prisma.supplier.delete({
+      where: {
+        id: id,
+      },
+    });
+    return { success: true, supplier: deletedUser };
+  } catch (err: any) {
+    throw err;
+  }
+};
+type UserIdentifier = { id: string } | { email: string };
+
+const getSupplierByIdDB = async (identifier: UserIdentifier) => {
+  try {
+    const supplier = await prisma.supplier.findUnique({
+      where: identifier,
+      include: {
+        purchases: {
+          select: {
+            due:true
+          }
+        }
+      },
+    });
+
+    if (!supplier) {
+      throw new Error('supplier not found');
+    }
+
+    return supplier;
+  } catch (err) {
+    throw err;
+  }
+};
+const getAllSuppliersDB = async () => {
+  try {
+    const users = await prisma.supplier.findMany({
+      include: {
+        purchases: {
+          select: {
+            due:true
+          }
+        }
+      },
+    });
+    return users;
+  } catch (err) {
+    throw err;
+  }
+};
+export { createSupplier, deleteSupplierDb, getAllSuppliersDB, getSupplierByIdDB, updateSupplier };

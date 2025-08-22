@@ -15,6 +15,8 @@ import userRoutes from './routes/Users.routes';
 import warehouseRoutes from './routes/Warehouse.routes';
 import customerRoutes from './routes/Customer.routes';
 import couponRoutes from './routes/Coupon.routes';
+import expensesRoutes from './routes/Expenses.routes';
+import suppliersRoutes from './routes/Suppliers.routes';
 
 configDotenv();
 
@@ -25,9 +27,7 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'up' });
-});
+
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
@@ -39,7 +39,9 @@ app.use('/api/v1/brands', brandsRoutes);
 app.use('/api/v1/products', productsRoute);
 app.use('/api/v1/product-images', productImagesRoute);
 app.use('/api/v1/purchases', purchasesRoute);
+app.use('/api/v1/expenses', expensesRoutes);
 app.use('/api/v1/customers', customerRoutes);
 app.use('/api/v1/coupons', couponRoutes);
+app.use('/api/v1/suppliers', suppliersRoutes);
 
 export default app;

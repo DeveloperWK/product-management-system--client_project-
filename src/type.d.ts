@@ -135,6 +135,7 @@ interface PurchaseType {
   quantity: number;
   payment: number;
   commission: number;
+  unitPrice:number
 }
 interface ICustomer {
   firstName: string;
@@ -152,6 +153,9 @@ interface  IcustomerUpdate {
   firstName: string;
   lastName: string;
   password: string;
+}
+interface  ISupplier extends IUser{
+email?:string | null;
 }
 export {
   CreateAttributeRequest,
@@ -177,4 +181,5 @@ export {
   UpdateSubCategoryRequest,
   UpdateSubSubCategoryRequest,
   UpdateWarehouseRequest,
+  ISupplier
 };

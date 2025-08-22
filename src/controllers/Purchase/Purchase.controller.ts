@@ -15,6 +15,7 @@ import {
   updatePurchaseDb,
   updatePurchaseStatusDb,
 } from '../../DB/Purchase';
+
 const createPurchase = async (req: Request, res: Response) => {
   try {
     const data = req.body;
@@ -313,6 +314,7 @@ export {
   getAllPurchase,
   getAllPurchaseWithFilters,
   getPurchaseById,
+
   getPurchaseByProductId,
   getPurchaseByStatus,
   getPurchaseByStoreId,

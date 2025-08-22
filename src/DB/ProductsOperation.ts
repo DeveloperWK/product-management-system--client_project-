@@ -98,7 +98,16 @@ const productOperations = {
       throw error;
     }
   },
-
+  getAllActiveProducts: async () => {
+    try{
+      const products = await prisma.product.findMany({
+        where:{isActive:true},
+      })
+      return products;
+    }catch(error){
+      throw error;
+    }
+  },
   getBySku: async (sku: string) => {
     try {
       return await prisma.product.findUnique({
@@ -366,16 +375,15 @@ const productImageOperations = {
           },
         });
       }
-
       const updatedImages = await Promise.all(
         urls.map(async (url, index) => {
           if (index < existingImages.length) {
-            return await prisma.productImage.update({
+            return  prisma.productImage.update({
               where: { id: existingImages[index].id },
               data: { url },
             });
           } else {
-            return await prisma.productImage.create({
+            return  prisma.productImage.create({
               data: {
                 url,
                 product: { connect: { id: productId } },

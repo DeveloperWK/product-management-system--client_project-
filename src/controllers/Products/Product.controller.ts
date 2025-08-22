@@ -27,6 +27,23 @@ const getProductById = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch product' });
   }
 };
+const getActiveProducts = async (req: Request, res: Response) => {
+  try {
+
+    const product = await productOperations.getAllActiveProducts();
+
+    if (!product) {
+      return res.status(404).json({ error: 'Active Products not found' });
+    }
+
+    res.status(200).json({ product });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch product' });
+  }
+};
+
+
+
 
 const getProductBySku = async (req: Request, res: Response) => {
   try {
@@ -124,7 +141,9 @@ export {
   createProduct,
   deleteProduct,
   getAllProducts,
+  getActiveProducts,
   getProductById,
   getProductBySku,
   updateProduct,
+
 };

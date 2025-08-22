@@ -12,6 +12,7 @@ export async function createPurchaseDb(data: PurchaseType) {
       quantity: data.quantity,
       payment: data.payment,
       commission: data.commission,
+      unitPrice:data.unitPrice,
       store: { connect: { id: data.storeId } },
       warehouse: { connect: { id: data.warehouseId } },
       product: { connect: { id: data.productId } },
@@ -21,17 +22,25 @@ export async function createPurchaseDb(data: PurchaseType) {
         connect: data.attributeValueIds.map((id) => ({ id })),
       };
     }
-
-    const purchase = await prisma.purchase.create({
-      data: createData,
-      include: {
-        store: true,
-        warehouse: true,
-        product: true,
-        attributes: true,
-      },
-    });
-    return purchase;
+const transaction = await  prisma.$transaction(async (tx) => {
+ const purchase = await tx.purchase.create({
+    data: createData,
+    include: {
+      store: true,
+      warehouse: true,
+      product: true,
+      attributes: true,
+    }
+  })
+   await  tx.product.update({
+    where:{id:data.productId},
+    data:{
+      isActive:true,
+    }
+  })
+  return purchase
+})
+    return transaction;
   } catch (error) {
     throw new Error(`Error creating purchase: ${(error as Error).message}`);
   }
@@ -96,6 +105,7 @@ export async function updatePurchaseDb(id: string, data: PurchaseType) {
     if (data.quantity !== undefined) updateData.quantity = data.quantity;
     if (data.payment !== undefined) updateData.payment = data.payment;
     if (data.commission !== undefined) updateData.commission = data.commission;
+    if (data.unitPrice !== undefined) updateData.unitPrice = data.unitPrice;
 
     // relations
     if (data.storeId !== undefined) {

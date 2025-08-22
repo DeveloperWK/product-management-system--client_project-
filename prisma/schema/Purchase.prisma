@@ -12,13 +12,31 @@ model Purchase {
   warehouse   Warehouse        @relation(fields: [warehouseId], references: [id])
   productId   String
   product     Product          @relation(fields: [productId], references: [id])
+  supplierId  String
+  supplier    Supplier         @relation(fields: [supplierId], references: [id])
+  due         Float?
   attributes  AttributeValue[] @relation("PurchaseAttributes")
   status      StatusType       @default(PENDING)
-  amount      Int
+  unitPrice   Float // It's For KG
+  amount      Float // For total KG
   amountKey   String
-  quantity    Int
-  payment     Int
-  commission  Int?
+  quantity    Float // It's KG
+  payment     Float
+  commission  Float?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Supplier {
+  id        String     @id @default(cuid())
+  name      String
+  email     String?    @unique
+  phone     String
+  purchases Purchase[]
 }
