@@ -6,7 +6,7 @@ on:
       - dev
   pull_request:
     branches:
-      - main
+      - dev
 
 jobs:
   build-and-test:
@@ -20,16 +20,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm' # or 'npm' / 'yarn' depending on what you use
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9 # or the version you use
+          run_install: false
 
       - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build TypeScript
         run: pnpm run build
