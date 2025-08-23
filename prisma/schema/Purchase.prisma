@@ -40,3 +40,9 @@ model Supplier {
   phone     String
   purchases Purchase[]
 }
+model Warranty {
+  id       String    @id @default(cuid())
+  name     String
+  days     Int
+  products Product[]
+}

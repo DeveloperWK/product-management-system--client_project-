@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createCoupon,
   deleteCoupon,
@@ -7,16 +7,17 @@ import {
   getCouponByProductId,
   getCouponWithFilter,
   updateCoupon,
-} from '../controllers/Coupon/coupon.controller';
+} from "../controllers/Coupon/coupon.controller";
 
 const router = Router();
 
-router.post('', createCoupon);
-router.get('', getCouponWithFilter);
-router.get('/:id', getCouponById);
-router.get('/code/:code', getCouponByCode);
-router.get('/product/:productId', getCouponByProductId);
-router.patch('/:id', updateCoupon);
-router.delete('/:id', deleteCoupon);
+router
+  .post("", createCoupon)
+  .get("", getCouponWithFilter)
+  .get("/:id", getCouponById)
+  .get("/code/:code", getCouponByCode)
+  .get("/product/:productId", getCouponByProductId)
+  .patch("/:id", updateCoupon)
+  .delete("/:id", deleteCoupon);
 
 export default router;

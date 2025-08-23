@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createCategory,
   createSubCategory,
@@ -16,28 +16,32 @@ import {
   updateCategory,
   updateSubCategory,
   updateSubSubCategory,
-} from '../controllers/Products/Category.controller';
+} from "../controllers/Products/Category.controller";
 
 const router = Router();
 
-router.post('', createCategory);
-router.post('/sub-categories', createSubCategory);
-router.post('/sub-sub-categories', createSubSubCategory);
+router
+  .post("", createCategory)
+  .post("/sub-categories", createSubCategory)
+  .post("/sub-sub-categories", createSubSubCategory);
 
-router.get('', getAllCategories);
-router.get('/sub-categories', getAllSubCategories);
-router.get('/sub-sub-categories', getAllSubSubCategories);
-router.get('/:id', getCategoryById);
-router.get('/name/:name', getCategoryByName);
-router.get('/sub-categories/:id', getSubCategoryById);
-router.get('/sub-sub-categories/:id', getSubSubCategoryById);
+router
+  .get("", getAllCategories)
+  .get("/sub-categories", getAllSubCategories)
+  .get("/sub-sub-categories", getAllSubSubCategories)
+  .get("/:id", getCategoryById)
+  .get("/name/:name", getCategoryByName)
+  .get("/sub-categories/:id", getSubCategoryById)
+  .get("/sub-sub-categories/:id", getSubSubCategoryById);
 
-router.put('/:id', updateCategory);
-router.patch('/sub-categories/:id', updateSubCategory);
-router.patch('/sub-sub-categories/:id', updateSubSubCategory);
+router
+  .put("/:id", updateCategory)
+  .patch("/sub-categories/:id", updateSubCategory)
+  .patch("/sub-sub-categories/:id", updateSubSubCategory);
 
-router.delete('/:id', deleteCategory);
-router.delete('/sub-categories/:id', deleteSubCategory);
-router.delete('/sub-sub-categories/:id', deleteSubSubCategory);
+router
+  .delete("/:id", deleteCategory)
+  .delete("/sub-categories/:id", deleteSubCategory)
+  .delete("/sub-sub-categories/:id", deleteSubSubCategory);
 
 export default router;

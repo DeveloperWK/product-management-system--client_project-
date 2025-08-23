@@ -66,34 +66,36 @@ model AttributeValue {
 }
 
 model Product {
-  id               String           @id @default(cuid())
+  id               String              @id @default(cuid())
   name             String
-  slug             String?          @unique
-  sku              String?          @unique
-  itemCode         String?          @unique
+  slug             String?             @unique
+  sku              String?             @unique
+  itemCode         String?             @unique
   quantityAlert    Int?
   manufacturedDate DateTime?
   expiryDate       DateTime?
   description      String?
   storeId          String
-  store            Store            @relation(fields: [storeId], references: [id])
+  warrantyId       String
+  warranty         Warranty            @relation(fields: [warrantyId], references: [id])
+  store            Store               @relation(fields: [storeId], references: [id])
   warehouseId      String
-  warehouse        Warehouse        @relation(fields: [warehouseId], references: [id])
+  warehouse        Warehouse           @relation(fields: [warehouseId], references: [id])
   categoryId       String?
-  category         Category?        @relation(fields: [categoryId], references: [id])
+  category         Category?           @relation(fields: [categoryId], references: [id])
   subCategoryId    String?
-  subCategory      SubCategory?     @relation(fields: [subCategoryId], references: [id])
+  subCategory      SubCategory?        @relation(fields: [subCategoryId], references: [id])
   subSubCategoryId String?
-  subSubCategory   SubSubCategory?  @relation(fields: [subSubCategoryId], references: [id])
+  subSubCategory   SubSubCategory?     @relation(fields: [subSubCategoryId], references: [id])
   brandId          String?
-  brand            Brand?           @relation(fields: [brandId], references: [id])
-  attributes       AttributeValue[] @relation("ProductAttributes")
+  brand            Brand?              @relation(fields: [brandId], references: [id])
+  attributes       AttributeValue[]    @relation("ProductAttributes")
   purchases        Purchase[]
   images           ProductImage[]
   coupons          CouponsOnProducts[]
-  isActive         Boolean?         @default(false)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  isActive         Boolean?            @default(false)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
 }
 
 model ProductImage {

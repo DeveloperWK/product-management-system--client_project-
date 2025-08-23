@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createProduct,
   deleteProduct,
@@ -7,16 +7,17 @@ import {
   getProductById,
   getProductBySku,
   updateProduct,
-} from '../controllers/Products/Product.controller';
+} from "../controllers/Products/Product.controller";
 
 const router = Router();
 
-router.post('', createProduct);
-router.get('', getAllProducts);
-router.get('/sku/:sku', getProductBySku);
-router.get('/active', getActiveProducts);
-router.get('/:id', getProductById);
-router.patch('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
+router
+  .post("", createProduct)
+  .get("", getAllProducts)
+  .get("/sku/:sku", getProductBySku)
+  .get("/active", getActiveProducts)
+  .get("/:id", getProductById)
+  .patch("/:id", updateProduct)
+  .delete("/:id", deleteProduct);
 
 export default router;

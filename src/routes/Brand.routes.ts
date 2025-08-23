@@ -1,18 +1,19 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createBrand,
   deleteBrand,
   getAllBrands,
   getBrandById,
   updateBrand,
-} from '../controllers/Products/Brand.controller';
+} from "../controllers/Products/Brand.controller";
 
 const router = Router();
 
-router.post('', createBrand);
-router.get('', getAllBrands);
-router.get('/:id', getBrandById);
-router.put('/:id', updateBrand);
-router.delete('/:id', deleteBrand);
+router
+  .post("", createBrand)
+  .get("", getAllBrands)
+  .get("/:id", getBrandById)
+  .put("/:id", updateBrand)
+  .delete("/:id", deleteBrand);
 
 export default router;

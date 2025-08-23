@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createPurchase,
   deletePurchase,
@@ -12,21 +12,22 @@ import {
   searchPurchase,
   updatePurchase,
   updatePurchaseStatus,
-} from '../controllers/Purchase/Purchase.controller';
+} from "../controllers/Purchase/Purchase.controller";
 
 const router = Router();
 
-router.post('', createPurchase);
-router.get('', getAllPurchaseWithFilters);
-router.get('/search', searchPurchase);
-router.get('/stats/summary', getPurchaseStats);
-router.get('/:id', getPurchaseById);
-router.get('/store/:storeId', getPurchaseByStoreId);
-router.get('/warehouse/:warehouseId', getPurchaseByWarehouseId);
-router.get('/product/:productId', getPurchaseByProductId);
-router.get('/status/:status', getPurchaseByStatus);
-router.patch('/:id', updatePurchase);
-router.patch('/:id/status', updatePurchaseStatus);
-router.delete('/:id', deletePurchase);
+router
+  .post("", createPurchase)
+  .get("", getAllPurchaseWithFilters)
+  .get("/search", searchPurchase)
+  .get("/stats/summary", getPurchaseStats)
+  .get("/:id", getPurchaseById)
+  .get("/store/:storeId", getPurchaseByStoreId)
+  .get("/warehouse/:warehouseId", getPurchaseByWarehouseId)
+  .get("/product/:productId", getPurchaseByProductId)
+  .get("/status/:status", getPurchaseByStatus)
+  .patch("/:id", updatePurchase)
+  .patch("/:id/status", updatePurchaseStatus)
+  .delete("/:id", deletePurchase);
 
 export default router;
