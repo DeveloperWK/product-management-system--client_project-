@@ -1,3 +1,18 @@
+declare  global{
+  namespace Express{
+    interface Request {
+      access_token: string;
+      user:{
+        id: string;
+        name: string;
+        email: string;
+      }
+    }
+  }
+}
+
+
+
 interface IUser {
   name: string;
   email: string;
@@ -128,14 +143,16 @@ interface PurchaseType {
   storeId: string;
   warehouseId: string;
   productId: string;
-  attributeValueIds: string[];
+  attributeValueId:string;
   status: StatusType;
   amount: number;
   amountKey: string;
   quantity: number;
   payment: number;
   commission: number;
-  unitPrice:number
+  due:number
+  warrantyId:string
+  supplierId:string
 }
 interface ICustomer {
   firstName: string;
@@ -157,6 +174,32 @@ interface  IcustomerUpdate {
 interface  ISupplier extends IUser{
 email?:string | null;
 }
+type SalesCreateInput = {
+  customerId: string;
+  purchaseId: string;
+  variantValueId: string;
+  exchangeCal: number;
+  quantity: number;
+  discountType: 'PERCENTAGE' | 'FIXED';
+  discount: number;
+  unitPrice: number;
+  salesPrice: number;
+  taxType: 'PERCENTAGE' | 'FIXED';
+  tax: number;
+  price: number;
+};
+
+type SalesUpdateInput = Partial<Omit<SalesCreateInput, 'customerId' | 'purchaseId' | 'variantValueId'>> & {
+  id: string;
+};
+type SalesFilter = {
+  customerId?: string;
+  purchaseId?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
+  minAmount?: number;
+  maxAmount?: number;
+};
 export {
   CreateAttributeRequest,
   CreateAttributeValueRequest,
@@ -181,5 +224,8 @@ export {
   UpdateSubCategoryRequest,
   UpdateSubSubCategoryRequest,
   UpdateWarehouseRequest,
-  ISupplier
+  ISupplier,
+  SalesCreateInput,
+  SalesUpdateInput,
+  SalesFilter
 };

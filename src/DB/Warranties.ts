@@ -17,7 +17,7 @@ const warrantiesOperations = {
   getAll: async () => {
     try {
       return await prisma.warranty.findMany({
-        include: { products: true }
+        include: { purchase: true }
       });
     } catch (error) {
       throw error;
@@ -28,7 +28,7 @@ const warrantiesOperations = {
     try {
       return await prisma.warranty.findUnique({
         where: { id },
-        include: { products: true }
+        include: { purchase: true }
       });
     } catch (error) {
       throw error;

@@ -59,6 +59,7 @@ model AttributeValue {
   id          String     @id @default(cuid())
   value       String
   attributeId String
+  sales       Sales[]    @relation("SalesVariant")
   attribute   Attribute  @relation(fields: [attributeId], references: [id])
   products    Product[]  @relation("ProductAttributes")
   purchases   Purchase[] @relation("PurchaseAttributes")
@@ -76,8 +77,6 @@ model Product {
   expiryDate       DateTime?
   description      String?
   storeId          String
-  warrantyId       String
-  warranty         Warranty            @relation(fields: [warrantyId], references: [id])
   store            Store               @relation(fields: [storeId], references: [id])
   warehouseId      String
   warehouse        Warehouse           @relation(fields: [warehouseId], references: [id])

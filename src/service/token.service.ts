@@ -40,14 +40,12 @@ async function storeRefreshToken(
 }
 
 // Update existing refresh token
-
-async function updateRefreshToken(
+type  updateRefreshTokenParameter={
   userId?: string ,
   customerId?: string ,
-  // @ts-ignore
   token: string
-) {
-  // Validate that either userId or customerId is provided
+}
+async function updateRefreshToken({userId=undefined,customerId=undefined,token}:updateRefreshTokenParameter) {
   if (!userId && !customerId) {
     throw new Error('Either userId or customerId must be provided');
   }

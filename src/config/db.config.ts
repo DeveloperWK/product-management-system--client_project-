@@ -1,7 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log:[
+    { level: 'query', emit: 'event' },
+    { level: 'error', emit: 'stdout' },
+    { level: 'info', emit: 'stdout' },
+    { level: 'warn', emit: 'stdout' }
+  ]
 
+});
+prisma.$on('query', (e) => {
+  console.log('Query: ' + e.query)
+  console.log('Duration: ' + e.duration + 'ms')
+})
 const testConnection = async (maxRetries = 5, initialDelay = 1000) => {
   let attempts = 0;
   let delay = initialDelay;

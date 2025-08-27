@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { getUserByIdDB } from '../../DB/Users';
 import { verifyPassword } from '../../service/password.service';
 import { issueTokensAndSetCookies } from '../../utils/issueTokensAndSetCookies';
+
 const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -16,8 +17,8 @@ const login = async (req: Request, res: Response) => {
 
     const passwordMatch = await verifyPassword(password, user.password);
     if (!passwordMatch) return res.status(401).send('Invalid credentials');
-
-    await issueTokensAndSetCookies(user.id, res);
+const tokenType="user"
+    await issueTokensAndSetCookies(user.id, res,tokenType);
 
     res.status(200).json({
       message: 'Login successful',

@@ -5,16 +5,17 @@ import generateAccessToken from '../service/jwt.service';
 import { generateRefreshToken, hashRefreshToken } from '../service/refreshToken.service';
 import { storeRefreshToken } from '../service/token.service';
 
-async function issueTokensAndSetCookies(userId: string, res: Response) {
+async function issueTokensAndSetCookies(userId: string, res: Response,tokenType:string) {
   const accessToken = generateAccessToken({ userId });
   const refreshToken = generateRefreshToken();
   await storeRefreshToken(userId,undefined,hashRefreshToken(refreshToken));
-  await setCookies(res, accessToken, refreshToken, userId);
+  await setCookies(res, accessToken, refreshToken,tokenType, userId);
 }
 const setCookies = async (
   res: Response,
   accessToken: string,
   refreshToken: string,
+  tokenType:string,
   userId?: string,
 ) => {
   const cookieOptions = [
@@ -26,6 +27,12 @@ const setCookies = async (
       //   secure: process.env.NODE_ENV === "production",
     }),
     serialize('refresh_token', refreshToken, {
+      //   httpOnly: true,
+      path: '/',
+      sameSite: 'lax',
+      //   secure: process.env.NODE_ENV === "production",
+    }),
+    serialize('token_type', tokenType, {
       //   httpOnly: true,
       path: '/',
       sameSite: 'lax',

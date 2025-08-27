@@ -38,11 +38,9 @@ COPY --from=build /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=build /usr/src/app/prisma.config.ts ./prisma.config.ts
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/prisma ./prisma
-COPY --from=build /usr/src/app/docker-entrypoint.sh ./docker-entrypoint.sh
 
-# Make entrypoint executable
-RUN chmod +x docker-entrypoint.sh
+
 # Expose port
 EXPOSE 8000
 EXPOSE 5555
-ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["node","dist/server.js"]

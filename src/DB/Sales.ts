@@ -1,0 +1,405 @@
+import { Prisma } from '@prisma/client';
+import { prisma } from '../config/db.config';
+import { SalesCreateInput, SalesFilter, SalesUpdateInput } from '../type';
+
+
+class SalesService {
+  // Create a new sale
+  async createSale(data: SalesCreateInput) {
+    try {
+      const  createData: any = {
+        customer: { connect: { id: data.customerId }},
+        purchase: { connect: { id: data.purchaseId }},
+        variant: { connect: { id: data.variantValueId }},
+        exchangeCal: data.exchangeCal,
+        quantity: data.quantity,
+        discountType: data.discountType,
+        discount: data.discount,
+        unitPrice: data.unitPrice,
+        salesPrice: data.salesPrice,
+        price:data.price,
+        taxType:data.taxType,
+        tax: data.tax
+      }
+      return await prisma.sales.create({
+
+        data: createData,
+        include: {
+          customer: true,
+          purchase: true,
+          variant: true,
+        },
+      });
+    } catch (error) {
+      throw new Error(`Failed to create sale: ${error}`);
+    }
+  }
+
+  // Get sale by ID with relations
+  async getSaleById(id: string) {
+    try {
+      return await prisma.sales.findUnique({
+        where: { id },
+        include: {
+          customer: true,
+          purchase: true,
+          variant: {
+            include: {
+              attribute: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      throw new Error(`Failed to fetch sale: ${error}`);
+    }
+  }
+
+  // Get multiple sales with filtering and pagination
+  async getSales(
+    filter: SalesFilter = {},
+    page: number = 1,
+    limit: number = 20,
+    orderBy: Prisma.SalesOrderByWithRelationInput = { id: 'desc' }
+  ) {
+    try {
+      const skip = (page - 1) * limit;
+
+      const where: Prisma.SalesWhereInput = {
+        ...(filter.customerId && { customerId: filter.customerId }),
+        ...(filter.dateFrom && filter.dateTo && {
+          createdAt: {
+            gte: filter.dateFrom,
+            lte: filter.dateTo,
+          },
+        }),
+        ...(filter.minAmount && {
+          salesPrice: {
+            gte: filter.minAmount,
+          },
+        }),
+        ...(filter.maxAmount && {
+          salesPrice: {
+            lte: filter.maxAmount,
+          },
+        }),
+      };
+
+      const [sales, total] = await Promise.all([
+        prisma.sales.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy,
+          include: {
+            customer: {
+              select: {
+                id: true,
+                firstName: true,
+                email: true,
+              },
+            },
+
+
+            variant: {
+              select: {
+                id: true,
+                value: true,
+              },
+            },
+          },
+        }),
+        prisma.sales.count({ where }),
+      ]);
+
+      return {
+        data: sales,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch sales: ${error}`);
+    }
+  }
+
+  // Update sale
+  async updateSale(data: SalesUpdateInput) {
+    try {
+      const { id } = data;
+      const updateData: any = {
+        ...data
+      }
+
+  if(data.discountType){
+    updateData.discountType=data.discountType
+  }
+  if(data.taxType){
+    updateData.taxType=data.taxType
+  }
+  if(data.exchangeCal){
+    updateData.exchangeCal=data.exchangeCal
+  }
+  if(data.quantity){
+    updateData.quantity=data.quantity
+  }
+
+      return await prisma.sales.update({
+        where: { id },
+        data: updateData,
+        include: {
+          customer: true,
+          purchase: true,
+          variant: true,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new Error('Sale not found');
+        }
+      }
+      throw new Error(`Failed to update sale: ${error}`);
+    }
+  }
+
+  // Delete sale
+  async deleteSale(id: string) {
+    try {
+      return await prisma.sales.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new Error('Sale not found');
+        }
+      }
+      throw new Error(`Failed to delete sale: ${error}`);
+    }
+  }
+
+  // Bulk create sales
+  async createBulkSales(salesData: SalesCreateInput[]) {
+    try {
+
+      return await prisma.sales.createMany({
+        // @ts-ignore
+        data: salesData.map(sale => ({
+          customer: { connect: { id: sale.customerId } },
+          product: { connect: { id: sale.purchaseId } },
+          variantValueId: { connect: { id: sale.variantValueId } },
+          exchangeCal: sale.exchangeCal,
+          quantity: sale.quantity,
+          discountType: sale.discountType,
+          discount: sale.discount,
+          unitPrice: sale.unitPrice,
+          salesPrice: sale.salesPrice,
+          taxType: sale.taxType,
+          tax: sale.tax,
+        })),
+        skipDuplicates: true,
+      });
+    } catch (error) {
+      throw new Error(`Failed to create bulk sales: ${error}`);
+    }
+  }
+
+  // Get sales summary statistics
+  async getSalesSummary(
+    startDate?: Date,
+    endDate?: Date,
+    customerId?: string
+  ) {
+    try {
+      const where: Prisma.SalesWhereInput = {};
+
+      if (startDate && endDate) {
+        where.createdAt = {
+          gte: startDate,
+          lte: endDate,
+        };
+      }
+
+      if (customerId) {
+        where.customerId = customerId;
+      }
+
+      const [summary, topPurchase] = await Promise.all([
+        prisma.sales.aggregate({
+          where,
+          _sum: {
+            salesPrice: true,
+            quantity: true,
+            tax: true,
+            discount: true,
+          },
+          _avg: {
+            salesPrice: true,
+            quantity: true,
+          },
+          _count: { _all: true }, // ✅ replaces separate count()
+        }),
+
+        prisma.sales.groupBy({
+          by: ['purchaseId'],
+          where,
+          _sum: {
+            quantity: true,
+            salesPrice: true,
+          },
+          orderBy: {
+            _sum: {
+              salesPrice: 'desc',
+            },
+          },
+          take: 10,
+        }),
+      ]);
+
+      return {
+        summary: {
+          totalSales: summary._sum.salesPrice || 0,
+          totalQuantity: summary._sum.quantity || 0,
+          totalTax: summary._sum.tax || 0,
+          totalDiscount: summary._sum.discount || 0,
+          averageSale: summary._avg.salesPrice || 0,
+          totalTransactions: summary._count._all || 0, // ✅ already included
+        },
+        topPurchase,
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch sales summary: ${error}`);
+    }
+  }
+
+  // Get sales by customer
+  async getSalesByCustomer(customerId: string, limit: number = 10) {
+    try {
+      return await prisma.sales.findMany({
+        where: { customerId: customerId },
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          purchase: true,
+
+          variant: {
+            select: {
+              value: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      throw new Error(`Failed to fetch customer sales: ${error}`);
+    }
+  }
+
+  // Get sales by product
+  async getSalesByProduct( purchaseId: string, limit: number = 10) {
+    try {
+      return await prisma.sales.findMany({
+        where: { purchaseId },
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          customer: {
+            select: {
+              firstName: true,
+              email: true,
+            },
+          },
+          variant: {
+            select: {
+              value: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      throw new Error(`Failed to fetch product sales: ${error}`);
+    }
+  }
+
+  // Search sales with text search
+  async searchSales(
+    searchTerm: string,
+    page: number = 1,
+    limit: number = 20
+  ) {
+    try {
+      const skip = (page - 1) * limit;
+
+      const [sales, total] = await Promise.all([
+        prisma.sales.findMany({
+          where: {
+            OR: [
+              {
+                customer: {
+                  firstName: {
+                    contains: searchTerm,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            ],
+          },
+          skip,
+          take: limit,
+          include: {
+            customer: {
+              select: {
+                firstName: true,
+                email: true,
+              },
+            },
+
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        }),
+        prisma.sales.count({
+          where: {
+            OR: [
+              {
+                customer: {
+                  firstName: {
+                    contains: searchTerm,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+              
+            ],
+          },
+        }),
+      ]);
+
+      return {
+        data: sales,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    } catch (error) {
+      throw new Error(`Failed to search sales: ${error}`);
+    }
+  }
+}
+
+// Export singleton instance
+export const salesService = new SalesService();
+
+// Export types for external use
+export type {
+  SalesCreateInput,
+  SalesUpdateInput,
+  SalesFilter,
+};

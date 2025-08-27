@@ -1,23 +1,24 @@
-import cors from "cors";
-import { configDotenv } from "dotenv";
-import express from "express";
-import helmet from "helmet";
-import morgan from "morgan";
-import attributesRoute from "./routes/Attribute.routes";
-import authRoutes from "./routes/Auth.routes";
-import brandsRoutes from "./routes/Brand.routes";
-import categoriesRoute from "./routes/Categories.routes";
-import couponRoutes from "./routes/Coupon.routes";
-import customerRoutes from "./routes/Customer.routes";
-import expensesRoutes from "./routes/Expenses.routes";
-import productImagesRoute from "./routes/Image.routes";
-import productsRoute from "./routes/Products.routes";
-import purchasesRoute from "./routes/Purchase.routes";
-import storesRoutes from "./routes/Store.routes";
-import suppliersRoutes from "./routes/Suppliers.routes";
-import userRoutes from "./routes/Users.routes";
-import warehouseRoutes from "./routes/Warehouse.routes";
-import warrantyRoutes from "./routes/Warranty.routes";
+import cors from 'cors';
+import { configDotenv } from 'dotenv';
+import express from 'express';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import attributesRoute from './routes/Attribute.routes';
+import authRoutes from './routes/Auth.routes';
+import brandsRoutes from './routes/Brand.routes';
+import categoriesRoute from './routes/Categories.routes';
+import couponRoutes from './routes/Coupon.routes';
+import customerRoutes from './routes/Customer.routes';
+import expensesRoutes from './routes/Expenses.routes';
+import productImagesRoute from './routes/Image.routes';
+import productsRoute from './routes/Products.routes';
+import purchasesRoute from './routes/Purchase.routes';
+import storesRoutes from './routes/Store.routes';
+import suppliersRoutes from './routes/Suppliers.routes';
+import userRoutes from './routes/Users.routes';
+import warehouseRoutes from './routes/Warehouse.routes';
+import warrantyRoutes from './routes/Warranty.routes';
+import salesRoutes from './routes/Sales.routes';
 
 configDotenv();
 
@@ -43,6 +44,11 @@ app
   .use("/api/v1/customers", customerRoutes)
   .use("/api/v1/coupons", couponRoutes)
   .use("/api/v1/suppliers", suppliersRoutes)
-  .use("/api/v1/warranties", warrantyRoutes);
+  .use("/api/v1/warranties", warrantyRoutes)
+  .use('/api/v1/sales', salesRoutes);
+
+
+
+
 
 export default app;

@@ -31,7 +31,7 @@ const updateUser = async (
   role?: string,
 ) => {
   try {
-    const user = await prisma.user.update({
+    return await prisma.user.update({
       where: {
         id: id,
       },
@@ -42,7 +42,6 @@ const updateUser = async (
         ...(role && { role }),
       },
     });
-    return user;
   } catch (err) {
     throw err;
   }
