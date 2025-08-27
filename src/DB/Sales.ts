@@ -13,13 +13,24 @@ class SalesService {
         variant: { connect: { id: data.variantValueId }},
         exchangeCal: data.exchangeCal,
         quantity: data.quantity,
-        discountType: data.discountType,
-        discount: data.discount,
         unitPrice: data.unitPrice,
         salesPrice: data.salesPrice,
         price:data.price,
-        taxType:data.taxType,
-        tax: data.tax
+      }
+      if(data.discountType){
+        createData.discountType = data.discountType;
+      }
+      if(data.discount){
+        createData.discount = data.discount;
+      }
+      if(data.taxType){
+        createData.taxType = data.taxType;
+      }
+      if(data.tax){
+        createData.tax = data.tax;
+      }
+      if(data.due){
+        createData.due = data.due
       }
       return await prisma.sales.create({
 
@@ -390,6 +401,19 @@ class SalesService {
       };
     } catch (error) {
       throw new Error(`Failed to search sales: ${error}`);
+    }
+  }
+ async getAllDuesByCustomer(customerId: string) {
+    try {
+      const result = await prisma.sales.aggregate({
+        where: {customerId: customerId},
+        _sum:{
+          due:true
+        }
+      })
+      return result._sum.due ?? 0;
+    }catch(error) {
+      throw new Error(`Failed to fetch customer sales: ${error}`);
     }
   }
 }

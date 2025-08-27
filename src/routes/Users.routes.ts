@@ -1,19 +1,15 @@
-import { Router } from "express";
-import {
-  createUsers,
-  deleteUser,
-  getAllUsers,
-  getUserById,
-  updateUsers,
-} from "../controllers/Users/Users.controller";
+import { Router } from 'express';
+import { createUsers, deleteUser, getAllUsers, getUserById, updateUsers } from '../controllers/Users/Users.controller';
+import checkUserAuthToken from '../middleware/checkUserAuthToken';
+import verifyUserAccessToken from '../middleware/verifyUserAccessToken';
 
 const router = Router();
 
 router
   .post("/register", createUsers)
-  .get("", getAllUsers)
+  .get("",checkUserAuthToken,verifyUserAccessToken, getAllUsers)
   .get("/:id", getUserById)
-  .patch("/:id", updateUsers)
-  .delete("/:id", deleteUser);
+  .patch("/:id",checkUserAuthToken,verifyUserAccessToken, updateUsers)
+  .delete("/:id", checkUserAuthToken,verifyUserAccessToken,deleteUser);
 
 export default router;

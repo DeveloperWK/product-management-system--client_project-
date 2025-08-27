@@ -4,22 +4,23 @@ enum discountAndTaxType {
 }
 
 model Sales {
-  id             String             @id @default(cuid())
+  id             String              @id @default(cuid())
   customerId     String
   purchaseId     String
   variantValueId String
   exchangeCal    Float
   quantity       Float
-  discountType   discountAndTaxType
-  discount       Float
+  discountType   discountAndTaxType?
+  discount       Float?
   price          Float
   unitPrice      Float
   salesPrice     Float
-  taxType        discountAndTaxType
-  tax            Float
-  variant        AttributeValue     @relation("SalesVariant", fields: [variantValueId], references: [id])
-  customer       Customer           @relation(fields: [customerId], references: [id])
-  purchase       Purchase           @relation("SalesPurchase", fields: [purchaseId], references: [id])
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  taxType        discountAndTaxType?
+  due            Float?
+  tax            Float?
+  variant        AttributeValue      @relation("SalesVariant", fields: [variantValueId], references: [id])
+  customer       Customer            @relation(fields: [customerId], references: [id])
+  purchase       Purchase            @relation("SalesPurchase", fields: [purchaseId], references: [id])
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 }

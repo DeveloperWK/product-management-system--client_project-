@@ -1,44 +1,48 @@
 import { NextFunction, Request, Response } from 'express';
-import { getUserByIdDB } from '../DB/Users';
 import { generateRefreshToken, hashRefreshToken, verifyRefreshToken } from '../service/refreshToken.service';
 import generateAccessToken from '../service/jwt.service';
 import { sendUpdatedAccessToken, sendUpdatedRefreshToken, setCookies } from '../utils/issueTokensAndSetCookies';
 import { updateRefreshToken } from '../service/token.service';
+import { prisma } from '../config/db.config';
 
-
-const checkUserAuthToken = async (req:Request, res:Response, next:NextFunction)=>{
-  const user_id = req.cookies.user_id;
-  const access_token = req.cookies.access_token;
-  const refresh_token = req.cookies.refresh_token;
+const checkAuthToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const accessToken = req.cookies.access_token;
+  const refreshToken = req.cookies.refresh_token;
+  const userId = req.cookies.user_id;
+  const isUserExists = await prisma.user.findUnique({
+    where: {id:userId}
+  })
   try {
-    const isUserExist = await  getUserByIdDB(user_id)
-    if(!isUserExist){
-      res.status(401).json({
-        success: false,
-        message: "User does not exist"
-      })
+    const isVerifiedRefreshToken = await verifyRefreshToken(refreshToken);
+    if (isVerifiedRefreshToken && !accessToken && isUserExists) {
+      const newAccessToken = generateAccessToken({ userId });
+      console.log("New Token Generate", newAccessToken);
+      await sendUpdatedAccessToken(res, newAccessToken);
+      req.access_token = newAccessToken;
     }
-    const isVerifiedRefreshToken = await  verifyRefreshToken(refresh_token)
-    if(isVerifiedRefreshToken && isUserExist && !access_token){
-      const newAccessToken = generateAccessToken(user_id)
-      await sendUpdatedAccessToken(res,newAccessToken)
-      req.access_token = newAccessToken
-    }
-  }catch (e) {
-    if(e instanceof Error && e.message.includes("Token expired")){
-      const newRefreshToken = generateRefreshToken()
-      await updateRefreshToken({userId:user_id,token:hashRefreshToken(newRefreshToken)})
-      if(!access_token&& user_id){
-        const newAccessToken = generateAccessToken(user_id );
-       await setCookies(res, newAccessToken, newRefreshToken);
-       req.access_token = newAccessToken;
+  } catch (error) {
+    console.error({
+      error: error,
 
-      }else {
-        await sendUpdatedRefreshToken(res,newRefreshToken)
+    });
+    // @ts-ignore
+    if (error instanceof Error && error.code.includes('ERR_INVALID_ARG_TYPE')) {
+      const newRefreshToken = generateRefreshToken();
+      await updateRefreshToken({userId:userId,token:hashRefreshToken(newRefreshToken) });
+      if (!accessToken && userId) {
+        const newAccessToken = generateAccessToken({ userId });
+        await setCookies(res, newAccessToken, newRefreshToken);
+        req.access_token = newAccessToken;
+      } else {
+        await sendUpdatedRefreshToken(res, newRefreshToken);
       }
     }
-  }finally {
-    next()
+  } finally {
+    next();
   }
-}
-export default checkUserAuthToken;
+};
+export default checkAuthToken;

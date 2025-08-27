@@ -37,7 +37,7 @@ const createWarranty = async (
       return res.status(400).json({ error: 'All field is required' });
     }
 
-    const warranty = await warrantiesOperations.create(name);
+    const warranty = await warrantiesOperations.create({name,days});
     res.status(201).json({ warranty });
   } catch (error) {
     res.status(500).json({ error: 'Failed to create warranty' });

@@ -9,6 +9,7 @@ const router = Router();
 router.post('/', salesController.createSale);
 router.get('/', salesController.getSales);
 router.get('/:id', salesController.getSaleById);
+router.get('/dues/:customerId', salesController.getDues);
 router.get("/get-price",salesController.getPrice)
 router.patch('/:id', salesController.updateSale);
 router.delete('/:id', salesController.deleteSale);

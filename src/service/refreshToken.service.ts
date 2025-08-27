@@ -3,8 +3,7 @@ import { prisma } from '../config/db.config';
 import { RefreshToken } from '../type';
 
 const generateRefreshToken = (): string => {
-  const token = crypto.randomBytes(64).toString('hex');
-  return token;
+  return crypto.randomBytes(64).toString('hex');
 };
 
 const hashRefreshToken = (token: string): string => {

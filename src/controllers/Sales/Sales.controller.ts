@@ -44,7 +44,21 @@ export const createSale = async (req: Request, res: Response) => {
     });
   }
 };
-
+export  const getDues = async (req: Request, res: Response) => {
+  try{
+    const {customerId} = req.params
+    const dues = await salesService.getAllDuesByCustomer(customerId);
+    return res.status(200).json({
+      success: true,
+      dues,
+    })
+  }catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to getDues'
+    })
+  }
+}
 // Get sale by ID
 export const getSaleById = async (req: Request, res: Response) => {
   try {

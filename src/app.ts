@@ -19,6 +19,9 @@ import userRoutes from './routes/Users.routes';
 import warehouseRoutes from './routes/Warehouse.routes';
 import warrantyRoutes from './routes/Warranty.routes';
 import salesRoutes from './routes/Sales.routes';
+import checkUserAuthToken from './middleware/checkUserAuthToken';
+import verifyUserAccessToken from './middleware/verifyUserAccessToken';
+import cookieParser from 'cookie-parser';
 
 configDotenv();
 
@@ -26,26 +29,31 @@ const app = express();
 
 app
   .use(express.json())
-  .use(cors())
+  .use(cors({
+    origin:process.env._CLIENT_URI,
+    methods:["GET","POST","PATCH","PUT","DELETE"],
+    credentials: true,
+  }))
   .use(helmet())
-  .use(morgan("dev"))
+  .use(morgan(process.env.NODE_ENV==="production" ? "combined" :'dev'))
+  .use(cookieParser())
 
   .use("/api/v1/users", userRoutes)
   .use("/api/v1/auth", authRoutes)
-  .use("/api/v1/stores", storesRoutes)
-  .use("/api/v1/warehouses", warehouseRoutes)
-  .use("/api/v1/categories", categoriesRoute)
-  .use("/api/v1/attributes", attributesRoute)
-  .use("/api/v1/brands", brandsRoutes)
-  .use("/api/v1/products", productsRoute)
-  .use("/api/v1/product-images", productImagesRoute)
-  .use("/api/v1/purchases", purchasesRoute)
-  .use("/api/v1/expenses", expensesRoutes)
-  .use("/api/v1/customers", customerRoutes)
-  .use("/api/v1/coupons", couponRoutes)
-  .use("/api/v1/suppliers", suppliersRoutes)
-  .use("/api/v1/warranties", warrantyRoutes)
-  .use('/api/v1/sales', salesRoutes);
+  .use("/api/v1/stores",checkUserAuthToken,verifyUserAccessToken, storesRoutes)
+  .use("/api/v1/warehouses",checkUserAuthToken,verifyUserAccessToken, warehouseRoutes)
+  .use("/api/v1/categories",checkUserAuthToken,verifyUserAccessToken, categoriesRoute)
+  .use("/api/v1/attributes",checkUserAuthToken,verifyUserAccessToken, attributesRoute)
+  .use("/api/v1/brands",checkUserAuthToken,verifyUserAccessToken, brandsRoutes)
+  .use("/api/v1/products",checkUserAuthToken,verifyUserAccessToken, productsRoute)
+  .use("/api/v1/product-images",checkUserAuthToken,verifyUserAccessToken, productImagesRoute)
+  .use("/api/v1/purchases",checkUserAuthToken,verifyUserAccessToken, purchasesRoute)
+  .use("/api/v1/expenses",checkUserAuthToken,verifyUserAccessToken, expensesRoutes)
+  .use("/api/v1/customers",checkUserAuthToken,verifyUserAccessToken, customerRoutes)
+  .use("/api/v1/coupons",checkUserAuthToken,verifyUserAccessToken, couponRoutes)
+  .use("/api/v1/suppliers",checkUserAuthToken,verifyUserAccessToken, suppliersRoutes)
+  .use("/api/v1/warranties", checkUserAuthToken,verifyUserAccessToken,warrantyRoutes)
+  .use('/api/v1/sales',checkUserAuthToken,verifyUserAccessToken, salesRoutes);
 
 
 

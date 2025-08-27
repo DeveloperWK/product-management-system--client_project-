@@ -9,10 +9,10 @@ const prisma = new PrismaClient({
   ]
 
 });
-prisma.$on('query', (e) => {
-  console.log('Query: ' + e.query)
-  console.log('Duration: ' + e.duration + 'ms')
-})
+// prisma.$on('query', (e) => {
+//   console.log('Query: ' + e.query)
+//   console.log('Duration: ' + e.duration + 'ms')
+// })
 const testConnection = async (maxRetries = 5, initialDelay = 1000) => {
   let attempts = 0;
   let delay = initialDelay;

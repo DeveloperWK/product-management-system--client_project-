@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   createPurchase,
   deletePurchase,
@@ -10,14 +10,16 @@ import {
   getPurchaseByWarehouseId,
   getPurchaseStats,
   searchPurchase,
+  transferStock,
   updatePurchase,
   updatePurchaseStatus,
-} from "../controllers/Purchase/Purchase.controller";
+} from '../controllers/Purchase/Purchase.controller';
 
 const router = Router();
 
 router
   .post("", createPurchase)
+  .post("/transfer-stock", transferStock)
   .get("", getAllPurchaseWithFilters)
   .get("/search", searchPurchase)
   .get("/stats/summary", getPurchaseStats)

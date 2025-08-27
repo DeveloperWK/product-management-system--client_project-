@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import { getUserByIdDB } from '../../DB/Users';
 import { verifyPassword } from '../../service/password.service';
 import { issueTokensAndSetCookies } from '../../utils/issueTokensAndSetCookies';
+import { prisma } from '../../config/db.config';
 
-const login = async (req: Request, res: Response) => {
+const userLogin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
@@ -33,5 +34,43 @@ const tokenType="user"
     res.status(500).json({ message: 'Failed to login user' });
   }
 };
+const customerLogin = async (req: Request, res: Response) => {
+  try {
+    const { email, password,phone } = req.body;
 
-export { login };
+    if ((!email || !phone)&&(!password))
+      return res.status(400).json({ message: 'Email Or Phone & password required' });
+let identifier={}
+    if(email){
+      identifier = {email:email};
+    }else {
+      identifier={phone:phone};
+    }
+
+    const user = await prisma.customer.findUnique({
+      // @ts-ignore
+      where: identifier,
+    })
+
+    if (!user || !user.password)
+      return res.status(401).json({ message: 'Invalid credentials' });
+
+    const passwordMatch = await verifyPassword(password, user.password);
+    if (!passwordMatch) return res.status(401).send('Invalid credentials');
+    const tokenType="customer"
+    await issueTokensAndSetCookies(user.id, res,tokenType);
+
+    res.status(200).json({
+      message: 'Login successful',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.firstName,
+      },
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Failed to login user' });
+  }
+};
+export { userLogin,customerLogin };

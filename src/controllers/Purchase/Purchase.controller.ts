@@ -15,6 +15,7 @@ import {
   updatePurchaseDb,
   updatePurchaseStatusDb,
 } from '../../DB/Purchase';
+import transferStockDb from '../../DB/transferStock';
 
 const createPurchase = async (req: Request, res: Response) => {
   try {
@@ -32,6 +33,21 @@ const createPurchase = async (req: Request, res: Response) => {
     });
   }
 };
+  const transferStock = async (req:Request,res:Response) => {
+  try{
+    const { fromWarehouseId, toWarehouseId,   productId, transferQty,attributeValueId }= req.body;
+    const stockTransfer = await transferStockDb({ fromWarehouseId, toWarehouseId,   productId, transferQty,attributeValueId })
+    res.status(200).json({
+      success: true,
+      data: stockTransfer,
+    })
+  }catch (e) {
+    res.status(400).json({
+      success: false,
+      error: e
+    })
+  }
+}
 const getPurchaseById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -314,7 +330,7 @@ export {
   getAllPurchase,
   getAllPurchaseWithFilters,
   getPurchaseById,
-
+  transferStock,
   getPurchaseByProductId,
   getPurchaseByStatus,
   getPurchaseByStoreId,

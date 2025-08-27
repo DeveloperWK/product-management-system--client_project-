@@ -15,7 +15,7 @@ const setCookies = async (
   res: Response,
   accessToken: string,
   refreshToken: string,
-  tokenType:string,
+  tokenType?:string,
   userId?: string,
 ) => {
   const cookieOptions = [
@@ -32,13 +32,16 @@ const setCookies = async (
       sameSite: 'lax',
       //   secure: process.env.NODE_ENV === "production",
     }),
-    serialize('token_type', tokenType, {
+
+  ];
+  if(tokenType){
+    cookieOptions.push( serialize('token_type', tokenType, {
       //   httpOnly: true,
       path: '/',
       sameSite: 'lax',
       //   secure: process.env.NODE_ENV === "production",
-    }),
-  ];
+    }),)
+  }
   if (userId) {
     cookieOptions.push(
       serialize('user_id', userId.toString(), {

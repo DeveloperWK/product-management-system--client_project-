@@ -13,14 +13,16 @@ export async function createPurchaseDb(data: PurchaseType) {
       payment: data.payment,
       commission: data.commission,
       due:data.due,
-      warranty:{connect:{id:data.warrantyId}},
-      supplierId:{connect:{id:data.supplierId}},
+      supplier:{connect:{id:data.supplierId}},
       attribute:{connect:{id:data.attributeValueId}},
       store: { connect: { id: data.storeId } },
       warehouse: { connect: { id: data.warehouseId } },
       product: { connect: { id: data.productId } },
 
     };
+if(data.warrantyId){
+ createData.warranty={connect:{id:data.warrantyId}}
+}
 
     return await prisma.$transaction(async (tx) => {
       const purchase = await tx.purchase.create({

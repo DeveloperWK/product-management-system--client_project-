@@ -180,13 +180,14 @@ type SalesCreateInput = {
   variantValueId: string;
   exchangeCal: number;
   quantity: number;
-  discountType: 'PERCENTAGE' | 'FIXED';
-  discount: number;
+  discountType?: 'PERCENTAGE' | 'FIXED';
+  discount?: number;
   unitPrice: number;
   salesPrice: number;
-  taxType: 'PERCENTAGE' | 'FIXED';
-  tax: number;
+  taxType?: 'PERCENTAGE' | 'FIXED';
+  tax?: number;
   price: number;
+  due?: number;
 };
 
 type SalesUpdateInput = Partial<Omit<SalesCreateInput, 'customerId' | 'purchaseId' | 'variantValueId'>> & {
