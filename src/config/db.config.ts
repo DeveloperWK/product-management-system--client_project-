@@ -19,12 +19,12 @@ const testConnection = async (maxRetries = 5, initialDelay = 1000) => {
   while (attempts < maxRetries) {
     try {
       await prisma.$connect();
-      console.log(' 🐘 Prisma connected to PostgreSQL successfully!');
+      console.log(' 🐘 Prisma connected to PostgresSQL successfully!');
       return true;
     } catch (err) {
       attempts++;
       console.error(
-        `❌ Failed to connect to PostgreSQL. Attempt ${attempts} of ${maxRetries}.`,
+        `❌ Failed to connect to PostgresSQL. Attempt ${attempts} of ${maxRetries}.`,
       );
       if (attempts < maxRetries) {
         console.log(`⏳ Retrying in ${delay}ms...`);

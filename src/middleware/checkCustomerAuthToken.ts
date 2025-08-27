@@ -5,26 +5,22 @@ import { sendUpdatedAccessToken, sendUpdatedRefreshToken, setCookies } from '../
 import { updateRefreshToken } from '../service/token.service';
 import { prisma } from '../config/db.config';
 
-const checkUserAuthToken = async (
+const checkCustomerAuthToken = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   const accessToken = req.cookies.access_token;
   const refreshToken = req.cookies.refresh_token;
-  const userId = req.cookies.user_id;
-  const tokenType = req.cookies.token_type
-  if(tokenType==="customer"){
-    req.token_type = "customer";
-    next()
-  }
-  const isUserExists = await prisma.user.findUnique({
-    where: {id:userId}
+  const customerId = req.cookies.user_id;
+  
+  const isCustomerExists = await prisma.customer.findUnique({
+    where: {id:customerId}
   })
   try {
     const isVerifiedRefreshToken = await verifyRefreshToken(refreshToken);
-    if (isVerifiedRefreshToken && !accessToken && isUserExists) {
-      const newAccessToken = generateAccessToken({ userId });
+    if (isVerifiedRefreshToken && !accessToken && isCustomerExists) {
+      const newAccessToken = generateAccessToken({ userId:customerId });
       console.log("New Token Generate", newAccessToken);
       await sendUpdatedAccessToken(res, newAccessToken);
       req.access_token = newAccessToken;
@@ -37,9 +33,9 @@ const checkUserAuthToken = async (
     // @ts-ignore
     if (error instanceof Error && error.code.includes('ERR_INVALID_ARG_TYPE')) {
       const newRefreshToken = generateRefreshToken();
-      await updateRefreshToken({userId:userId,token:hashRefreshToken(newRefreshToken) });
-      if (!accessToken && userId) {
-        const newAccessToken = generateAccessToken({ userId });
+      await updateRefreshToken({userId:customerId,token:hashRefreshToken(newRefreshToken) });
+      if (!accessToken && customerId) {
+        const newAccessToken = generateAccessToken({ userId:customerId });
         await setCookies(res, newAccessToken, newRefreshToken);
         req.access_token = newAccessToken;
       } else {
@@ -50,4 +46,4 @@ const checkUserAuthToken = async (
     next();
   }
 };
-export default checkUserAuthToken;
+export default checkCustomerAuthToken;

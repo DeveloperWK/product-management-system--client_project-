@@ -1,13 +1,10 @@
-import { Request, Response, Router } from 'express';
+import { Request, Response } from 'express';
 import Coupon from '../../DB/Coupon';
 
 
-const router = Router();
-
 const createCoupon = async (req: Request, res: Response) => {
   try {
-const {productIds,assignedBy,...couponData} = req.body;
-console.log(productIds,assignedBy,couponData);
+    const {productIds,assignedBy,...couponData} = req.body;
     const coupon = await Coupon.create({
       ...couponData,
       productIds,

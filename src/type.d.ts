@@ -2,11 +2,18 @@ declare  global{
   namespace Express{
     interface Request {
       access_token: string;
+      token_type: string;
       user:{
         id: string;
         name: string;
         email: string;
-      }
+      },
+customer:{
+        id: string;
+        firstName: string;
+        email:string
+  phone: string | null;
+}
     }
   }
 }
@@ -166,11 +173,11 @@ interface ICustomer {
   country?: string;
 
 }
-interface  IcustomerUpdate {
-  firstName: string;
-  lastName: string;
-  password: string;
-}
+// interface  IcustomerUpdate {
+//   firstName: string;
+//   lastName: string;
+//   password: string;
+// }
 interface  ISupplier extends IUser{
 email?:string | null;
 }

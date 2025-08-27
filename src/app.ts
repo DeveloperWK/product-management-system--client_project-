@@ -22,6 +22,8 @@ import salesRoutes from './routes/Sales.routes';
 import checkUserAuthToken from './middleware/checkUserAuthToken';
 import verifyUserAccessToken from './middleware/verifyUserAccessToken';
 import cookieParser from 'cookie-parser';
+import checkCustomerAuthToken from './middleware/checkCustomerAuthToken';
+import verifyCustomerAccessToken from './middleware/verifyCustomerAccessToken';
 
 configDotenv();
 
@@ -40,7 +42,7 @@ app
 
   .use("/api/v1/users", userRoutes)
   .use("/api/v1/auth", authRoutes)
-  .use("/api/v1/stores",checkUserAuthToken,verifyUserAccessToken, storesRoutes)
+  .use("/api/v1/stores",checkUserAuthToken,verifyUserAccessToken,checkCustomerAuthToken,verifyCustomerAccessToken, storesRoutes)
   .use("/api/v1/warehouses",checkUserAuthToken,verifyUserAccessToken, warehouseRoutes)
   .use("/api/v1/categories",checkUserAuthToken,verifyUserAccessToken, categoriesRoute)
   .use("/api/v1/attributes",checkUserAuthToken,verifyUserAccessToken, attributesRoute)
