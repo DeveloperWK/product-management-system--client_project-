@@ -1,45 +1,55 @@
-import { Prisma } from '@prisma/client';
-import { prisma } from '../config/db.config';
-import { SalesCreateInput, SalesFilter, SalesUpdateInput } from '../type';
-
+import { Prisma } from "@prisma/client";
+import { prisma } from "../config/db.config";
+import { SalesCreateInput, SalesFilter, SalesUpdateInput } from "../type";
 
 class SalesService {
   // Create a new sale
   async createSale(data: SalesCreateInput) {
     try {
-      const  createData: any = {
-        customer: { connect: { id: data.customerId }},
-        purchase: { connect: { id: data.purchaseId }},
-        variant: { connect: { id: data.variantValueId }},
+      const createData: any = {
+        customer: { connect: { id: data.customerId } },
+        purchase: { connect: { id: data.purchaseId } },
+        variant: { connect: { id: data.variantValueId } },
         exchangeCal: data.exchangeCal,
         quantity: data.quantity,
         unitPrice: data.unitPrice,
         salesPrice: data.salesPrice,
-        price:data.price,
-      }
-      if(data.discountType){
+        price: data.price,
+      };
+      if (data.discountType) {
         createData.discountType = data.discountType;
       }
-      if(data.discount){
+      if (data.discount) {
         createData.discount = data.discount;
       }
-      if(data.taxType){
+      if (data.taxType) {
         createData.taxType = data.taxType;
       }
-      if(data.tax){
+      if (data.tax) {
         createData.tax = data.tax;
       }
-      if(data.due){
-        createData.due = data.due
+      if (data.due) {
+        createData.due = data.due;
       }
-      return await prisma.sales.create({
-
-        data: createData,
-        include: {
-          customer: true,
-          purchase: true,
-          variant: true,
-        },
+      return await prisma.$transaction(async (t) => {
+        await t.sales.create({
+          data: createData,
+          include: {
+            customer: true,
+            purchase: true,
+            variant: true,
+          },
+        });
+        await t.purchase.update({
+          where: {
+            id: data.purchaseId,
+          },
+          data: {
+            quantity: {
+              decrement: data.quantity,
+            },
+          },
+        });
       });
     } catch (error) {
       throw new Error(`Failed to create sale: ${error}`);
@@ -71,19 +81,20 @@ class SalesService {
     filter: SalesFilter = {},
     page: number = 1,
     limit: number = 20,
-    orderBy: Prisma.SalesOrderByWithRelationInput = { id: 'desc' }
+    orderBy: Prisma.SalesOrderByWithRelationInput = { id: "desc" }
   ) {
     try {
       const skip = (page - 1) * limit;
 
       const where: Prisma.SalesWhereInput = {
         ...(filter.customerId && { customerId: filter.customerId }),
-        ...(filter.dateFrom && filter.dateTo && {
-          createdAt: {
-            gte: filter.dateFrom,
-            lte: filter.dateTo,
-          },
-        }),
+        ...(filter.dateFrom &&
+          filter.dateTo && {
+            createdAt: {
+              gte: filter.dateFrom,
+              lte: filter.dateTo,
+            },
+          }),
         ...(filter.minAmount && {
           salesPrice: {
             gte: filter.minAmount,
@@ -110,8 +121,6 @@ class SalesService {
                 email: true,
               },
             },
-
-
             variant: {
               select: {
                 id: true,
@@ -142,21 +151,21 @@ class SalesService {
     try {
       const { id } = data;
       const updateData: any = {
-        ...data
-      }
+        ...data,
+      };
 
-  if(data.discountType){
-    updateData.discountType=data.discountType
-  }
-  if(data.taxType){
-    updateData.taxType=data.taxType
-  }
-  if(data.exchangeCal){
-    updateData.exchangeCal=data.exchangeCal
-  }
-  if(data.quantity){
-    updateData.quantity=data.quantity
-  }
+      if (data.discountType) {
+        updateData.discountType = data.discountType;
+      }
+      if (data.taxType) {
+        updateData.taxType = data.taxType;
+      }
+      if (data.exchangeCal) {
+        updateData.exchangeCal = data.exchangeCal;
+      }
+      if (data.quantity) {
+        updateData.quantity = data.quantity;
+      }
 
       return await prisma.sales.update({
         where: { id },
@@ -169,8 +178,8 @@ class SalesService {
       });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new Error('Sale not found');
+        if (error.code === "P2025") {
+          throw new Error("Sale not found");
         }
       }
       throw new Error(`Failed to update sale: ${error}`);
@@ -185,8 +194,8 @@ class SalesService {
       });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new Error('Sale not found');
+        if (error.code === "P2025") {
+          throw new Error("Sale not found");
         }
       }
       throw new Error(`Failed to delete sale: ${error}`);
@@ -196,10 +205,9 @@ class SalesService {
   // Bulk create sales
   async createBulkSales(salesData: SalesCreateInput[]) {
     try {
-
       return await prisma.sales.createMany({
         // @ts-ignore
-        data: salesData.map(sale => ({
+        data: salesData.map((sale) => ({
           customer: { connect: { id: sale.customerId } },
           product: { connect: { id: sale.purchaseId } },
           variantValueId: { connect: { id: sale.variantValueId } },
@@ -220,11 +228,7 @@ class SalesService {
   }
 
   // Get sales summary statistics
-  async getSalesSummary(
-    startDate?: Date,
-    endDate?: Date,
-    customerId?: string
-  ) {
+  async getSalesSummary(startDate?: Date, endDate?: Date, customerId?: string) {
     try {
       const where: Prisma.SalesWhereInput = {};
 
@@ -256,7 +260,7 @@ class SalesService {
         }),
 
         prisma.sales.groupBy({
-          by: ['purchaseId'],
+          by: ["purchaseId"],
           where,
           _sum: {
             quantity: true,
@@ -264,7 +268,7 @@ class SalesService {
           },
           orderBy: {
             _sum: {
-              salesPrice: 'desc',
+              salesPrice: "desc",
             },
           },
           take: 10,
@@ -293,7 +297,7 @@ class SalesService {
       return await prisma.sales.findMany({
         where: { customerId: customerId },
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         include: {
           purchase: true,
 
@@ -310,12 +314,12 @@ class SalesService {
   }
 
   // Get sales by product
-  async getSalesByProduct( purchaseId: string, limit: number = 10) {
+  async getSalesByProduct(purchaseId: string, limit: number = 10) {
     try {
       return await prisma.sales.findMany({
         where: { purchaseId },
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         include: {
           customer: {
             select: {
@@ -336,11 +340,7 @@ class SalesService {
   }
 
   // Search sales with text search
-  async searchSales(
-    searchTerm: string,
-    page: number = 1,
-    limit: number = 20
-  ) {
+  async searchSales(searchTerm: string, page: number = 1, limit: number = 20) {
     try {
       const skip = (page - 1) * limit;
 
@@ -352,7 +352,7 @@ class SalesService {
                 customer: {
                   firstName: {
                     contains: searchTerm,
-                    mode: 'insensitive',
+                    mode: "insensitive",
                   },
                 },
               },
@@ -367,10 +367,9 @@ class SalesService {
                 email: true,
               },
             },
-
           },
           orderBy: {
-            createdAt: 'desc',
+            createdAt: "desc",
           },
         }),
         prisma.sales.count({
@@ -380,11 +379,10 @@ class SalesService {
                 customer: {
                   firstName: {
                     contains: searchTerm,
-                    mode: 'insensitive',
+                    mode: "insensitive",
                   },
                 },
               },
-              
             ],
           },
         }),
@@ -403,27 +401,108 @@ class SalesService {
       throw new Error(`Failed to search sales: ${error}`);
     }
   }
- async getAllDuesByCustomer(customerId: string) {
+  async getAllDuesByCustomer(customerId: string) {
     try {
       const result = await prisma.sales.aggregate({
-        where: {customerId: customerId},
-        _sum:{
-          due:true
-        }
-      })
+        where: { customerId: customerId },
+        _sum: {
+          due: true,
+        },
+      });
       return result._sum.due ?? 0;
-    }catch(error) {
+    } catch (error) {
       throw new Error(`Failed to fetch customer sales: ${error}`);
     }
   }
+
+  async getMonthlySales() {
+    try {
+      const sales = await prisma.sales.groupBy({
+        by: ["createdAt"], // your purchase date field
+        _sum: {
+          salesPrice: true, // your sales amount field
+        },
+      });
+
+      // Initialize array for 12 months
+      const monthlySales = Array(12).fill(0);
+
+      sales.forEach((sale) => {
+        const month = sale.createdAt.getMonth();
+        monthlySales[month] += sale._sum.salesPrice || 0;
+      });
+
+      return {
+        name: "Sales",
+        data: monthlySales,
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch monthly sales: ${error}`);
+    }
+  }
+  async dueSalesPaymentsDb(data: { salesId: string; amount: number }) {
+    try {
+      return await prisma.$transaction(async (t) => {
+        await prisma.salesDuePayment.create({
+          data: {
+            sales: { connect: { id: data.salesId } },
+            amount: data.amount,
+          },
+        });
+        await t.purchase.update({
+          where: { id: data.salesId },
+          data: {
+            due: {
+              decrement: data.amount,
+            },
+          },
+        });
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  createReturnSalesDb = async (data: {
+    purchaseId: string;
+    salesPrice: number;
+    salesId: string;
+    amount: number;
+    quantity: number;
+  }) => {
+    try {
+      return await prisma.$transaction(async (t) => {
+        await t.purchase.update({
+          where: { id: data.purchaseId },
+          data: {
+            quantity: {
+              increment: data.quantity,
+            },
+            amount: {
+              increment: data.amount,
+            },
+          },
+        });
+        await t.sales.update({
+          where: { id: data.salesId },
+          data: {
+            quantity: {
+              decrement: data.quantity,
+            },
+            salesPrice: {
+              increment: data.salesPrice,
+            },
+          },
+        });
+      });
+    } catch (e) {
+      throw e;
+    }
+  };
 }
 
 // Export singleton instance
 export const salesService = new SalesService();
 
 // Export types for external use
-export type {
-  SalesCreateInput,
-  SalesUpdateInput,
-  SalesFilter,
-};
+export type { SalesCreateInput, SalesFilter, SalesUpdateInput };

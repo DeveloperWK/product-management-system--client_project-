@@ -1,26 +1,26 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 import {
   createUser,
   deleteUserDb,
   getAllUsersDB,
   getUserByIdDB,
   updateUser,
-} from '../../DB/Users';
-import { hashPassword } from '../../service/password.service';
+} from "../../DB/Users";
+import { hashPassword } from "../../service/password.service";
 const createUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, phone, password } = req.body;
     console.log(name, email, phone);
     if (!name || !email || !phone || !password) {
       res.status(400).json({
-        message: 'All Field Required',
+        message: "All Field Required",
       });
     }
     const hashedPass = await hashPassword(password);
     const user = await createUser({ name, email, phone, password: hashedPass });
     if (user) {
       res.status(201).json({
-        message: 'User Created',
+        message: "User Created",
       });
     }
   } catch (err: any) {
@@ -38,7 +38,7 @@ const updateUsers = async (req: Request, res: Response): Promise<void> => {
     const user = await updateUser(id, name, phone);
     if (user) {
       res.status(200).json({
-        message: 'User Updated',
+        message: "User Updated",
       });
     }
   } catch (err: any) {
@@ -56,7 +56,7 @@ const deleteUser = async (req: Request, res: Response) => {
     await deleteUserDb(id);
 
     res.status(200).json({
-      message: 'User deleted successfully',
+      message: "User deleted successfully",
     });
   } catch (err: any) {
     res.status(500).json({ error: err.meta.cause });
@@ -71,8 +71,8 @@ const getAllUsers = async (req: Request, res: Response) => {
       users: users,
     });
   } catch (err) {
-    console.error('Error fetching users:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching users:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 const getUserById = async (req: Request, res: Response) => {
@@ -82,7 +82,7 @@ const getUserById = async (req: Request, res: Response) => {
     const user = await getUserByIdDB({ id: id });
     const { password, ...userWithoutPassword } = user;
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.status(200).json({

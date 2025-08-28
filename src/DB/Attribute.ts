@@ -1,4 +1,4 @@
-import { prisma } from '../config/db.config';
+import { prisma } from "../config/db.config";
 
 const attributeOperations = {
   create: async (name: string) => {
@@ -6,10 +6,9 @@ const attributeOperations = {
       return await prisma.attribute.create({
         data: { name },
       });
-    }catch (e) {
+    } catch (e) {
       throw e;
     }
-
   },
 
   getAll: async () => {
@@ -17,10 +16,9 @@ const attributeOperations = {
       return await prisma.attribute.findMany({
         include: { values: true },
       });
-    }catch (e) {
+    } catch (e) {
       throw e;
     }
-
   },
 
   getById: async (id: string) => {
@@ -30,7 +28,6 @@ const attributeOperations = {
         include: { values: true },
       });
     } catch (error) {
-
       throw error;
     }
   },
@@ -42,7 +39,6 @@ const attributeOperations = {
         include: { values: true },
       });
     } catch (error) {
-
       throw error;
     }
   },
@@ -54,7 +50,6 @@ const attributeOperations = {
         data,
       });
     } catch (error) {
-
       throw error;
     }
   },
@@ -65,7 +60,6 @@ const attributeOperations = {
         where: { id },
       });
     } catch (error) {
-
       throw error;
     }
   },
@@ -81,7 +75,6 @@ const attributeValueOperations = {
         },
       });
     } catch (error) {
-
       throw error;
     }
   },
@@ -95,7 +88,6 @@ const attributeValueOperations = {
         },
       });
     } catch (error) {
-
       throw error;
     }
   },
@@ -110,14 +102,13 @@ const attributeValueOperations = {
         },
       });
     } catch (error) {
-
       throw error;
     }
   },
 
   update: async (
     id: string,
-    data: { value?: string; attributeId?: string },
+    data: { value?: string; attributeId?: string }
   ) => {
     try {
       const updateData: any = {};
@@ -131,7 +122,6 @@ const attributeValueOperations = {
         data: updateData,
       });
     } catch (error) {
-
       throw error;
     }
   },
@@ -142,11 +132,9 @@ const attributeValueOperations = {
         where: { id },
       });
     } catch (error) {
-     
       throw error;
     }
   },
-}
-
+};
 
 export { attributeOperations, attributeValueOperations };

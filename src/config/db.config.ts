@@ -1,13 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({
-  log:[
-    { level: 'query', emit: 'event' },
-    { level: 'error', emit: 'stdout' },
-    { level: 'info', emit: 'stdout' },
-    { level: 'warn', emit: 'stdout' }
-  ]
-
+  log: [
+    { level: "query", emit: "event" },
+    { level: "error", emit: "stdout" },
+    { level: "info", emit: "stdout" },
+    { level: "warn", emit: "stdout" },
+  ],
 });
 // prisma.$on('query', (e) => {
 //   console.log('Query: ' + e.query)
@@ -19,19 +18,19 @@ const testConnection = async (maxRetries = 5, initialDelay = 1000) => {
   while (attempts < maxRetries) {
     try {
       await prisma.$connect();
-      console.log(' 🐘 Prisma connected to PostgresSQL successfully!');
+      console.log(" 🐘 Prisma connected to PostgresSQL successfully!");
       return true;
     } catch (err) {
       attempts++;
       console.error(
-        `❌ Failed to connect to PostgresSQL. Attempt ${attempts} of ${maxRetries}.`,
+        `❌ Failed to connect to PostgresSQL. Attempt ${attempts} of ${maxRetries}.`
       );
       if (attempts < maxRetries) {
         console.log(`⏳ Retrying in ${delay}ms...`);
         await new Promise((resolve) => setTimeout(resolve, delay));
         delay *= 2;
       } else {
-        console.error('🚫 All retry attempts failed. Exiting.');
+        console.error("🚫 All retry attempts failed. Exiting.");
         return false;
       }
     } finally {

@@ -1,4 +1,4 @@
-import imageKit from '../config/imagekit.config';
+import imageKit from "../config/imagekit.config";
 
 const imageUploadService = async (file: Express.Multer.File) => {
   const uploadResponse = await imageKit.upload({

@@ -1,5 +1,4 @@
-import { prisma } from '../config/db.config';
-
+import { prisma } from "../config/db.config";
 
 const ExpenseOperations = {
   create: async (name: string) => {
@@ -34,7 +33,6 @@ const ExpenseOperations = {
     try {
       return await prisma.expense.findUnique({
         where: { name },
-
       });
     } catch (error) {
       throw error;

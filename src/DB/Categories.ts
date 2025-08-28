@@ -1,4 +1,4 @@
-import { prisma } from '../config/db.config';
+import { prisma } from "../config/db.config";
 
 const categoryOperations = {
   create: async (name: string) => {
@@ -196,7 +196,7 @@ const subSubCategoryOperations = {
 
   update: async (
     id: string,
-    data: { name?: string; subCategoryId?: string },
+    data: { name?: string; subCategoryId?: string }
   ) => {
     try {
       const updateData: any = {};

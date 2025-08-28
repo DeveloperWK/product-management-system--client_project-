@@ -1,6 +1,6 @@
-import { Prisma } from '@prisma/client';
-import { prisma } from '../config/db.config';
-import { PurchaseType } from '../type';
+import { Prisma } from "@prisma/client";
+import { prisma } from "../config/db.config";
+import { PurchaseType } from "../type";
 
 // Create a new purchase
 export async function createPurchaseDb(data: PurchaseType) {
@@ -12,17 +12,16 @@ export async function createPurchaseDb(data: PurchaseType) {
       quantity: data.quantity,
       payment: data.payment,
       commission: data.commission,
-      due:data.due,
-      supplier:{connect:{id:data.supplierId}},
-      attribute:{connect:{id:data.attributeValueId}},
+      due: data.due,
+      supplier: { connect: { id: data.supplierId } },
+      attribute: { connect: { id: data.attributeValueId } },
       store: { connect: { id: data.storeId } },
       warehouse: { connect: { id: data.warehouseId } },
       product: { connect: { id: data.productId } },
-
     };
-if(data.warrantyId){
- createData.warranty={connect:{id:data.warrantyId}}
-}
+    if (data.warrantyId) {
+      createData.warranty = { connect: { id: data.warrantyId } };
+    }
 
     return await prisma.$transaction(async (tx) => {
       const purchase = await tx.purchase.create({
@@ -32,15 +31,15 @@ if(data.warrantyId){
           warehouse: true,
           product: true,
           attribute: true,
-        }
-      })
+        },
+      });
       await tx.product.update({
         where: { id: data.productId },
         data: {
           isActive: true,
-        }
-      })
-      return purchase
+        },
+      });
+      return purchase;
     });
   } catch (error) {
     throw new Error(`Error creating purchase: ${(error as Error).message}`);
@@ -116,7 +115,7 @@ export async function updatePurchaseDb(id: string, data: PurchaseType) {
     if (data.productId !== undefined) {
       updateData.product = { connect: { id: data.productId } };
     }
-if (data.attributeValueId !== undefined) {
+    if (data.attributeValueId !== undefined) {
       updateData.attribute = { connect: { id: data.attributeValueId } };
     }
 
@@ -161,7 +160,7 @@ export async function getPurchasesByStore(storeId: string) {
     });
   } catch (error) {
     throw new Error(
-      `Error fetching purchases by store: ${(error as Error).message}`,
+      `Error fetching purchases by store: ${(error as Error).message}`
     );
   }
 }
@@ -180,7 +179,7 @@ export async function getPurchasesByWarehouse(warehouseId: string) {
     });
   } catch (error) {
     throw new Error(
-      `Error fetching purchases by warehouse: ${(error as Error).message}`,
+      `Error fetching purchases by warehouse: ${(error as Error).message}`
     );
   }
 }
@@ -199,14 +198,14 @@ export async function getPurchasesByProduct(productId: string) {
     });
   } catch (error) {
     throw new Error(
-      `Error fetching purchases by product: ${(error as Error).message}`,
+      `Error fetching purchases by product: ${(error as Error).message}`
     );
   }
 }
 
 // Get purchases by status
 export async function getPurchasesByStatusDb(
-  status: Prisma.EnumStatusTypeFilter,
+  status: Prisma.EnumStatusTypeFilter
 ) {
   try {
     return await prisma.purchase.findMany({
@@ -220,7 +219,7 @@ export async function getPurchasesByStatusDb(
     });
   } catch (error) {
     throw new Error(
-      `Error fetching purchases by status: ${(error as Error).message}`,
+      `Error fetching purchases by status: ${(error as Error).message}`
     );
   }
 }
@@ -228,7 +227,7 @@ export async function getPurchasesByStatusDb(
 // Update purchase status
 export async function updatePurchaseStatusDb(
   id: string,
-  status: Prisma.EnumStatusTypeFieldUpdateOperationsInput,
+  status: Prisma.EnumStatusTypeFieldUpdateOperationsInput
 ) {
   try {
     return await prisma.purchase.update({
@@ -243,7 +242,7 @@ export async function updatePurchaseStatusDb(
     });
   } catch (error) {
     throw new Error(
-      `Error updating purchase status: ${(error as Error).message}`,
+      `Error updating purchase status: ${(error as Error).message}`
     );
   }
 }
@@ -259,8 +258,8 @@ export async function getPurchaseStatsDb() {
       quantityStats,
     ] = await Promise.all([
       prisma.purchase.count(),
-      prisma.purchase.count({ where: { status: 'PENDING' } }),
-      prisma.purchase.count({ where: { status: 'DELIVERED' } }),
+      prisma.purchase.count({ where: { status: "PENDING" } }),
+      prisma.purchase.count({ where: { status: "DELIVERED" } }),
       prisma.purchase.aggregate({
         _sum: { amount: true },
       }),
@@ -278,7 +277,7 @@ export async function getPurchaseStatsDb() {
     };
   } catch (error) {
     throw new Error(
-      `Error fetching purchase stats: ${(error as Error).message}`,
+      `Error fetching purchase stats: ${(error as Error).message}`
     );
   }
 }
@@ -324,7 +323,7 @@ export async function searchPurchasesDb(filters: {
         attribute: true,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
   } catch (error) {
@@ -343,5 +342,52 @@ export const getAllPurchasesDb = async () => {
     });
   } catch (err) {
     throw new Error(`Error searching purchases: ${(err as Error).message}`);
+  }
+};
+export const duePurchasePaymentsDb = async (data: {
+  purchaseId: string;
+  amount: number;
+}) => {
+  try {
+    return await prisma.$transaction(async (t) => {
+      await prisma.purchaseDuePayment.create({
+        data: {
+          purchase: { connect: { id: data.purchaseId } },
+          amount: data.amount,
+        },
+      });
+      await t.purchase.update({
+        where: { id: data.purchaseId },
+        data: {
+          due: {
+            decrement: data.amount,
+          },
+        },
+      });
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const createReturnPurchaseDb = async (data: {
+  purchaseId: string;
+  amount: number;
+  quantity: number;
+}) => {
+  try {
+    return await prisma.purchase.update({
+      where: { id: data.purchaseId },
+      data: {
+        quantity: {
+          decrement: data.quantity,
+        },
+        amount: {
+          decrement: data.amount,
+        },
+      },
+    });
+  } catch (e) {
+    throw e;
   }
 };

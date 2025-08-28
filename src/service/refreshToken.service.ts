@@ -1,13 +1,13 @@
-import crypto from 'node:crypto';
-import { prisma } from '../config/db.config';
-import { RefreshToken } from '../type';
+import crypto from "node:crypto";
+import { prisma } from "../config/db.config";
+import { RefreshToken } from "../type";
 
 const generateRefreshToken = (): string => {
-  return crypto.randomBytes(64).toString('hex');
+  return crypto.randomBytes(64).toString("hex");
 };
 
 const hashRefreshToken = (token: string): string => {
-  return crypto.createHash('sha256').update(token).digest('hex');
+  return crypto.createHash("sha256").update(token).digest("hex");
 };
 const safeCompare = (userSendToken: string, tokenFromDB: string): boolean => {
   const userSendTokenBuffer = Buffer.from(userSendToken);
@@ -16,21 +16,21 @@ const safeCompare = (userSendToken: string, tokenFromDB: string): boolean => {
   return crypto.timingSafeEqual(userSendTokenBuffer, tokenFromDBBuffer);
 };
 const verifyRefreshToken = async (
-  receivedToken: string,
+  receivedToken: string
 ): Promise<boolean | null> => {
   const hashed = hashRefreshToken(receivedToken);
-  console.log('hashedToken', hashed);
+  console.log("hashedToken", hashed);
   const refresh_token = await prisma.refreshToken.findUnique({
     where: { token: hashed },
   });
   const refreshToken = refresh_token as RefreshToken | null;
   if (!receivedToken) {
-    console.error('Database error verifying refresh token');
+    console.error("Database error verifying refresh token");
 
     throw new Error(`Failed to verify token due to a database error`);
   }
   if (!safeCompare(hashed, refreshToken?.token!)) {
-    console.error('Token mismatch');
+    console.error("Token mismatch");
     return null;
   }
   if (!refreshToken) {
@@ -38,7 +38,7 @@ const verifyRefreshToken = async (
   }
   const expiryDate = new Date(refreshToken.expires_at);
   if (new Date() > expiryDate) {
-    throw new Error('Token expired');
+    throw new Error("Token expired");
   }
   return true;
 };

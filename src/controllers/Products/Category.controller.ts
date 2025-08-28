@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 import {
   categoryOperations,
   subCategoryOperations,
   subSubCategoryOperations,
-} from '../../DB/Categories';
+} from "../../DB/Categories";
 import {
   CreateCategoryRequest,
   CreateSubCategoryRequest,
@@ -11,14 +11,14 @@ import {
   UpdateCategoryRequest,
   UpdateSubCategoryRequest,
   UpdateSubSubCategoryRequest,
-} from '../../type';
+} from "../../type";
 
 const getAllCategories = async (req: Request, res: Response) => {
   try {
     const categories = await categoryOperations.getAll();
     res.status(200).json({ categories });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch categories' });
+    res.status(500).json({ error: "Failed to fetch categories" });
   }
 };
 
@@ -28,12 +28,12 @@ const getCategoryById = async (req: Request, res: Response) => {
     const category = await categoryOperations.getById(id);
 
     if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: "Category not found" });
     }
 
     res.status(200).json({ category });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch category' });
+    res.status(500).json({ error: "Failed to fetch category" });
   }
 };
 
@@ -43,48 +43,48 @@ const getCategoryByName = async (req: Request, res: Response) => {
     const category = await categoryOperations.getByName(name);
 
     if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: "Category not found" });
     }
 
     res.status(200).json({ category });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch category' });
+    res.status(500).json({ error: "Failed to fetch category" });
   }
 };
 
 const createCategory = async (
   req: Request<{}, {}, CreateCategoryRequest>,
-  res: Response,
+  res: Response
 ) => {
   try {
     const { name } = req.body;
 
     if (!name) {
-      return res.status(400).json({ error: 'Name is required' });
+      return res.status(400).json({ error: "Name is required" });
     }
 
     const category = await categoryOperations.create(name);
     res.status(201).json({ category });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create category' });
+    res.status(500).json({ error: "Failed to create category" });
   }
 };
 
 const updateCategory = async (
   req: Request<{ id: string }, {}, UpdateCategoryRequest>,
-  res: Response,
+  res: Response
 ) => {
   try {
     const { id } = req.params;
     const data = req.body;
 
     const category = await categoryOperations.update(id, data);
-    res.status(200).json({ msg: 'Update Successful' });
+    res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Category not found' });
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Category not found" });
     }
-    res.status(500).json({ error: 'Failed to update category' });
+    res.status(500).json({ error: "Failed to update category" });
   }
 };
 
@@ -93,13 +93,13 @@ const deleteCategory = async (req: Request, res: Response) => {
     const { id } = req.params;
     await categoryOperations.delete(id);
     res.status(200).json({
-      message: 'Delete Successful',
+      message: "Delete Successful",
     });
   } catch (error: any) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Category not found' });
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Category not found" });
     }
-    res.status(500).json({ error: 'Failed to delete category' });
+    res.status(500).json({ error: "Failed to delete category" });
   }
 };
 
@@ -108,7 +108,7 @@ const getAllSubCategories = async (req: Request, res: Response) => {
     const subCategories = await subCategoryOperations.getAll();
     res.status(200).json({ subCategories });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch subcategories' });
+    res.status(500).json({ error: "Failed to fetch subcategories" });
   }
 };
 
@@ -118,18 +118,18 @@ const getSubCategoryById = async (req: Request, res: Response) => {
     const subCategory = await subCategoryOperations.getById(id);
 
     if (!subCategory) {
-      return res.status(404).json({ error: 'Subcategory not found' });
+      return res.status(404).json({ error: "Subcategory not found" });
     }
 
     res.status(200).json({ subCategory });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch subcategory' });
+    res.status(500).json({ error: "Failed to fetch subcategory" });
   }
 };
 
 const createSubCategory = async (
   req: Request<{}, {}, CreateSubCategoryRequest>,
-  res: Response,
+  res: Response
 ) => {
   try {
     const { name, categoryId } = req.body;
@@ -137,31 +137,31 @@ const createSubCategory = async (
     if (!name || !categoryId) {
       return res
         .status(400)
-        .json({ error: 'Name and categoryId are required' });
+        .json({ error: "Name and categoryId are required" });
     }
 
     const subCategory = await subCategoryOperations.create(name, categoryId);
     res.status(201).json({ subCategory });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create subcategory' });
+    res.status(500).json({ error: "Failed to create subcategory" });
   }
 };
 
 const updateSubCategory = async (
   req: Request<{ id: string }, {}, UpdateSubCategoryRequest>,
-  res: Response,
+  res: Response
 ) => {
   try {
     const { id } = req.params;
     const data = req.body;
 
     const subCategory = await subCategoryOperations.update(id, data);
-    res.status(200).json({ msg: 'Update Successful' });
+    res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Subcategory not found' });
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Subcategory not found" });
     }
-    res.status(500).json({ error: 'Failed to update subcategory' });
+    res.status(500).json({ error: "Failed to update subcategory" });
   }
 };
 
@@ -170,13 +170,13 @@ const deleteSubCategory = async (req: Request, res: Response) => {
     const { id } = req.params;
     await subCategoryOperations.delete(id);
     res.status(200).json({
-      message: 'Delete Successful',
+      message: "Delete Successful",
     });
   } catch (error: any) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Subcategory not found' });
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Subcategory not found" });
     }
-    res.status(500).json({ error: 'Failed to delete subcategory' });
+    res.status(500).json({ error: "Failed to delete subcategory" });
   }
 };
 
@@ -185,7 +185,7 @@ const getAllSubSubCategories = async (req: Request, res: Response) => {
     const subSubCategories = await subSubCategoryOperations.getAll();
     res.status(200).json({ subSubCategories });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch subsubcategories' });
+    res.status(500).json({ error: "Failed to fetch subsubcategories" });
   }
 };
 
@@ -195,18 +195,18 @@ const getSubSubCategoryById = async (req: Request, res: Response) => {
     const subSubCategory = await subSubCategoryOperations.getById(id);
 
     if (!subSubCategory) {
-      return res.status(404).json({ error: 'Subsubcategory not found' });
+      return res.status(404).json({ error: "Subsubcategory not found" });
     }
 
     res.status(200).json({ subSubCategory });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch subsubcategory' });
+    res.status(500).json({ error: "Failed to fetch subsubcategory" });
   }
 };
 
 const createSubSubCategory = async (
   req: Request<{}, {}, CreateSubSubCategoryRequest>,
-  res: Response,
+  res: Response
 ) => {
   try {
     const { name, subCategoryId } = req.body;
@@ -214,34 +214,34 @@ const createSubSubCategory = async (
     if (!name || !subCategoryId) {
       return res
         .status(400)
-        .json({ error: 'Name and subCategoryId are required' });
+        .json({ error: "Name and subCategoryId are required" });
     }
 
     const subSubCategory = await subSubCategoryOperations.create(
       name,
-      subCategoryId,
+      subCategoryId
     );
     res.status(201).json({ subSubCategory });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create subsubcategory' });
+    res.status(500).json({ error: "Failed to create subsubcategory" });
   }
 };
 
 const updateSubSubCategory = async (
   req: Request<{ id: string }, {}, UpdateSubSubCategoryRequest>,
-  res: Response,
+  res: Response
 ) => {
   try {
     const { id } = req.params;
     const data = req.body;
 
     const subSubCategory = await subSubCategoryOperations.update(id, data);
-    res.status(200).json({ msg: 'Update Successful' });
+    res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Subsubcategory not found' });
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Subsubcategory not found" });
     }
-    res.status(500).json({ error: 'Failed to update subsubcategory' });
+    res.status(500).json({ error: "Failed to update subsubcategory" });
   }
 };
 
@@ -250,13 +250,13 @@ const deleteSubSubCategory = async (req: Request, res: Response) => {
     const { id } = req.params;
     await subSubCategoryOperations.delete(id);
     res.status(200).json({
-      message: 'Delete Successful',
+      message: "Delete Successful",
     });
   } catch (error: any) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Subsubcategory not found' });
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Subsubcategory not found" });
     }
-    res.status(500).json({ error: 'Failed to delete subsubcategory' });
+    res.status(500).json({ error: "Failed to delete subsubcategory" });
   }
 };
 export {

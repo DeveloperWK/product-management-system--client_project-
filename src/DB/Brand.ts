@@ -1,10 +1,10 @@
-import { prisma } from '../config/db.config';
+import { prisma } from "../config/db.config";
 
 const brandOperations = {
   create: async (name: string) => {
     try {
       return await prisma.brand.create({
-        data: { name }
+        data: { name },
       });
     } catch (error) {
       throw error;
@@ -14,7 +14,7 @@ const brandOperations = {
   getAll: async () => {
     try {
       return await prisma.brand.findMany({
-        include: { products: true }
+        include: { products: true },
       });
     } catch (error) {
       throw error;
@@ -25,7 +25,7 @@ const brandOperations = {
     try {
       return await prisma.brand.findUnique({
         where: { id },
-        include: { products: true }
+        include: { products: true },
       });
     } catch (error) {
       throw error;
@@ -36,7 +36,7 @@ const brandOperations = {
     try {
       return await prisma.brand.findUnique({
         where: { name },
-        include: { products: true }
+        include: { products: true },
       });
     } catch (error) {
       throw error;
@@ -47,7 +47,7 @@ const brandOperations = {
     try {
       return await prisma.brand.update({
         where: { id },
-        data
+        data,
       });
     } catch (error) {
       throw error;
@@ -57,12 +57,12 @@ const brandOperations = {
   delete: async (id: string) => {
     try {
       return await prisma.brand.delete({
-        where: { id }
+        where: { id },
       });
     } catch (error) {
       throw error;
     }
-  }
+  },
 };
 
 export default brandOperations;

@@ -1,4 +1,4 @@
-import { prisma } from '../config/db.config';
+import { prisma } from "../config/db.config";
 
 const productOperations = {
   create: async (data: {
@@ -62,15 +62,15 @@ const productOperations = {
     try {
       const include: any = includeRelations
         ? {
-          store: true,
-          warehouse: true,
-          category: true,
-          subCategory: true,
-          subSubCategory: true,
-          brand: true,
-          attributes: true,
-          images: true,
-        }
+            store: true,
+            warehouse: true,
+            category: true,
+            subCategory: true,
+            subSubCategory: true,
+            brand: true,
+            attributes: true,
+            images: true,
+          }
         : {};
 
       return await prisma.product.findMany({ include });
@@ -99,12 +99,22 @@ const productOperations = {
     }
   },
   getAllActiveProducts: async () => {
-    try{
-      const products = await prisma.product.findMany({
-        where:{isActive:true},
-      })
-      return products;
-    }catch(error){
+    try {
+      return await prisma.product.findMany({
+        where: { isActive: true },
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
+  getProductByCategoryDb: async (categoryId: string) => {
+    try {
+      return await prisma.product.findMany({
+        where: {
+          categoryId: categoryId,
+        },
+      });
+    } catch (error) {
       throw error;
     }
   },
@@ -145,7 +155,7 @@ const productOperations = {
       subSubCategoryId?: string;
       brandId?: string;
       attributeValueIds?: string[];
-    },
+    }
   ) => {
     try {
       const updateData: any = {};
@@ -157,7 +167,8 @@ const productOperations = {
         updateData.quantityAlert = data.quantityAlert;
       if (data.manufacturedDate !== undefined)
         updateData.manufacturedDate = data.manufacturedDate;
-      if (data.expiryDate !== undefined) updateData.expiryDate = data.expiryDate;
+      if (data.expiryDate !== undefined)
+        updateData.expiryDate = data.expiryDate;
       if (data.description !== undefined)
         updateData.description = data.description;
       if (data.storeId) {
@@ -227,7 +238,7 @@ const productOperations = {
         where: {
           name: {
             contains: searchTerm,
-            mode: 'insensitive',
+            mode: "insensitive",
           },
         },
         include: {
@@ -331,8 +342,8 @@ const productImageOperations = {
               url,
               product: { connect: { id: productId } },
             },
-          }),
-        ),
+          })
+        )
       );
 
       return newImages;
@@ -350,8 +361,8 @@ const productImageOperations = {
               url,
               product: { connect: { id: productId } },
             },
-          }),
-        ),
+          })
+        )
       );
 
       return newImages;
@@ -364,7 +375,7 @@ const productImageOperations = {
     try {
       const existingImages = await prisma.productImage.findMany({
         where: { productId },
-        orderBy: { id: 'asc' },
+        orderBy: { id: "asc" },
       });
 
       if (urls.length < existingImages.length) {
@@ -378,19 +389,19 @@ const productImageOperations = {
       const updatedImages = await Promise.all(
         urls.map(async (url, index) => {
           if (index < existingImages.length) {
-            return  prisma.productImage.update({
+            return prisma.productImage.update({
               where: { id: existingImages[index].id },
               data: { url },
             });
           } else {
-            return  prisma.productImage.create({
+            return prisma.productImage.create({
               data: {
                 url,
                 product: { connect: { id: productId } },
               },
             });
           }
-        }),
+        })
       );
 
       return updatedImages;

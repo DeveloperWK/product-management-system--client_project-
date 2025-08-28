@@ -18,9 +18,17 @@ model Sales {
   taxType        discountAndTaxType?
   due            Float?
   tax            Float?
+  duePayment     SalesDuePayment[]
   variant        AttributeValue      @relation("SalesVariant", fields: [variantValueId], references: [id])
   customer       Customer            @relation(fields: [customerId], references: [id])
   purchase       Purchase            @relation("SalesPurchase", fields: [purchaseId], references: [id])
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
+}
+model SalesDuePayment {
+  id        String   @id @default(cuid())
+  salesId   String
+  sales     Sales    @relation(fields: [salesId], references: [id])
+  amount    Float
+  createdAt DateTime @default(now())
 }

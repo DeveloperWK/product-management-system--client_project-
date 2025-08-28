@@ -1,8 +1,10 @@
-import { Prisma } from '@prisma/client';
-import { Request, Response } from 'express';
+import { Prisma } from "@prisma/client";
+import { Request, Response } from "express";
 import {
   createPurchaseDb,
+  createReturnPurchaseDb,
   deletePurchaseDb,
+  duePurchasePaymentsDb,
   getAllPurchases,
   getAllPurchasesDb,
   getPurchaseByIdDb,
@@ -14,8 +16,8 @@ import {
   searchPurchasesDb,
   updatePurchaseDb,
   updatePurchaseStatusDb,
-} from '../../DB/Purchase';
-import transferStockDb from '../../DB/transferStock';
+} from "../../DB/Purchase";
+import transferStockDb from "../../DB/transferStock";
 
 const createPurchase = async (req: Request, res: Response) => {
   try {
@@ -24,7 +26,7 @@ const createPurchase = async (req: Request, res: Response) => {
     res.status(201).json({
       success: true,
       data: purchase,
-      message: 'Purchase created successfully',
+      message: "Purchase created successfully",
     });
   } catch (error) {
     res.status(400).json({
@@ -33,21 +35,33 @@ const createPurchase = async (req: Request, res: Response) => {
     });
   }
 };
-  const transferStock = async (req:Request,res:Response) => {
-  try{
-    const { fromWarehouseId, toWarehouseId,   productId, transferQty,attributeValueId }= req.body;
-    const stockTransfer = await transferStockDb({ fromWarehouseId, toWarehouseId,   productId, transferQty,attributeValueId })
+const transferStock = async (req: Request, res: Response) => {
+  try {
+    const {
+      fromWarehouseId,
+      toWarehouseId,
+      productId,
+      transferQty,
+      attributeValueId,
+    } = req.body;
+    const stockTransfer = await transferStockDb({
+      fromWarehouseId,
+      toWarehouseId,
+      productId,
+      transferQty,
+      attributeValueId,
+    });
     res.status(200).json({
       success: true,
       data: stockTransfer,
-    })
-  }catch (e) {
+    });
+  } catch (e) {
     res.status(400).json({
       success: false,
-      error: e
-    })
+      error: e,
+    });
   }
-}
+};
 const getPurchaseById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -56,7 +70,7 @@ const getPurchaseById = async (req: Request, res: Response) => {
     if (!purchase) {
       return res.status(404).json({
         success: false,
-        message: 'Purchase not found',
+        message: "Purchase not found",
       });
     }
 
@@ -152,7 +166,7 @@ const updatePurchase = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       data: purchase,
-      message: 'Purchase updated successfully',
+      message: "Purchase updated successfully",
     });
   } catch (error) {
     res.status(400).json({
@@ -168,7 +182,7 @@ const deletePurchase = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: 'Purchase deleted successfully',
+      message: "Purchase deleted successfully",
     });
   } catch (error) {
     res.status(400).json({
@@ -253,7 +267,7 @@ const updatePurchaseStatus = async (req: Request, res: Response) => {
     if (!status) {
       return res.status(400).json({
         success: false,
-        message: 'Status is required',
+        message: "Status is required",
       });
     }
 
@@ -262,7 +276,7 @@ const updatePurchaseStatus = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       data: purchase,
-      message: 'Purchase status updated successfully',
+      message: "Purchase status updated successfully",
     });
   } catch (error) {
     res.status(400).json({
@@ -324,19 +338,65 @@ const searchPurchase = async (req: Request, res: Response) => {
     });
   }
 };
+
+const createDuePaymentsPurchase = async (req: Request, res: Response) => {
+  try {
+    const { purchaseId, amount } = req.body;
+    if (!purchaseId) {
+      return res.status(400).json({
+        success: false,
+        message: "Purchase ID is required",
+      });
+    }
+    await duePurchasePaymentsDb({ purchaseId, amount });
+    res.status(200).json({
+      success: true,
+      message: "Due Payments Created",
+    });
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      error: (e as Error).message,
+    });
+  }
+};
+
+const createReturnPurchase = async (req: Request, res: Response) => {
+  try {
+    const { purchaseId, amount, quantity } = req.body;
+    if (!purchaseId || !amount || !quantity) {
+      return res.status(400).json({
+        message: "All field is required",
+      });
+    }
+    await createReturnPurchaseDb({ purchaseId, amount, quantity });
+    res.status(200).json({
+      success: true,
+      message: "Returned Return",
+    });
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      error: (e as Error).message,
+    });
+  }
+};
+
 export {
+  createDuePaymentsPurchase,
   createPurchase,
+  createReturnPurchase,
   deletePurchase,
   getAllPurchase,
   getAllPurchaseWithFilters,
   getPurchaseById,
-  transferStock,
   getPurchaseByProductId,
   getPurchaseByStatus,
   getPurchaseByStoreId,
   getPurchaseByWarehouseId,
   getPurchaseStats,
   searchPurchase,
+  transferStock,
   updatePurchase,
   updatePurchaseStatus,
 };

@@ -5,29 +5,30 @@ enum StatusType {
 }
 
 model Purchase {
-  id               String         @id @default(cuid())
+  id               String               @id @default(cuid())
   storeId          String
-  store            Store          @relation(fields: [storeId], references: [id])
+  store            Store                @relation(fields: [storeId], references: [id])
   warehouseId      String
-  warehouse        Warehouse      @relation(fields: [warehouseId], references: [id])
+  warehouse        Warehouse            @relation(fields: [warehouseId], references: [id])
   productId        String
-  product          Product        @relation(fields: [productId], references: [id])
+  product          Product              @relation(fields: [productId], references: [id])
   supplierId       String
-  supplier         Supplier       @relation(fields: [supplierId], references: [id])
+  supplier         Supplier             @relation(fields: [supplierId], references: [id])
   warrantyId       String?
-  warranty         Warranty?      @relation(fields: [warrantyId], references: [id])
+  warranty         Warranty?            @relation(fields: [warrantyId], references: [id])
   due              Float?
-  salesPurchase    Sales[]        @relation("SalesPurchase")
+  salesPurchase    Sales[]              @relation("SalesPurchase")
   attributeValueId String
-  attribute        AttributeValue @relation("PurchaseAttributes", fields: [attributeValueId], references: [id])
-  status           StatusType     @default(PENDING)
+  duePayment       PurchaseDuePayment[]
+  attribute        AttributeValue       @relation("PurchaseAttributes", fields: [attributeValueId], references: [id])
+  status           StatusType           @default(PENDING)
   amount           Float
   amountKey        String
   quantity         Float
   payment          Float
   commission       Float?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
 }
 
 model Expense {
@@ -42,10 +43,20 @@ model Supplier {
   email     String?    @unique
   phone     String
   purchases Purchase[]
+  createdAt DateTime   @default(now())
 }
 model Warranty {
-  id       String     @id @default(cuid())
-  name     String
-  days     Int
-  purchase Purchase[]
+  id        String     @id @default(cuid())
+  name      String
+  days      Int
+  purchase  Purchase[]
+  createdAt DateTime   @default(now())
+}
+
+model PurchaseDuePayment {
+  id         String   @id @default(cuid())
+  purchaseId String
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  amount     Float
+  createdAt  DateTime @default(now())
 }

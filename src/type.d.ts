@@ -1,24 +1,22 @@
-declare  global{
-  namespace Express{
+declare global {
+  namespace Express {
     interface Request {
       access_token: string;
       token_type: string;
-      user:{
+      user: {
         id: string;
         name: string;
         email: string;
-      },
-customer:{
+      };
+      customer: {
         id: string;
         firstName: string;
-        email:string
-  phone: string | null;
-}
+        email: string;
+        phone: string | null;
+      };
     }
   }
 }
-
-
 
 interface IUser {
   name: string;
@@ -150,16 +148,16 @@ interface PurchaseType {
   storeId: string;
   warehouseId: string;
   productId: string;
-  attributeValueId:string;
+  attributeValueId: string;
   status: StatusType;
   amount: number;
   amountKey: string;
   quantity: number;
   payment: number;
   commission: number;
-  due:number
-  warrantyId:string
-  supplierId:string
+  due: number;
+  warrantyId: string;
+  supplierId: string;
 }
 interface ICustomer {
   firstName: string;
@@ -171,15 +169,14 @@ interface ICustomer {
   city?: string;
   zip?: string;
   country?: string;
-
 }
 // interface  IcustomerUpdate {
 //   firstName: string;
 //   lastName: string;
 //   password: string;
 // }
-interface  ISupplier extends IUser{
-email?:string | null;
+interface ISupplier extends IUser {
+  email?: string | null;
 }
 type SalesCreateInput = {
   customerId: string;
@@ -187,17 +184,19 @@ type SalesCreateInput = {
   variantValueId: string;
   exchangeCal: number;
   quantity: number;
-  discountType?: 'PERCENTAGE' | 'FIXED';
+  discountType?: "PERCENTAGE" | "FIXED";
   discount?: number;
   unitPrice: number;
   salesPrice: number;
-  taxType?: 'PERCENTAGE' | 'FIXED';
+  taxType?: "PERCENTAGE" | "FIXED";
   tax?: number;
   price: number;
   due?: number;
 };
 
-type SalesUpdateInput = Partial<Omit<SalesCreateInput, 'customerId' | 'purchaseId' | 'variantValueId'>> & {
+type SalesUpdateInput = Partial<
+  Omit<SalesCreateInput, "customerId" | "purchaseId" | "variantValueId">
+> & {
   id: string;
 };
 type SalesFilter = {
@@ -219,9 +218,13 @@ export {
   CreateSubSubCategoryRequest,
   CreateWarehouseRequest,
   ICustomer,
+  ISupplier,
   IUser,
   PurchaseType,
   RefreshToken,
+  SalesCreateInput,
+  SalesFilter,
+  SalesUpdateInput,
   UpdateAttributeRequest,
   UpdateAttributeValueRequest,
   UpdateBrandRequest,
@@ -232,8 +235,4 @@ export {
   UpdateSubCategoryRequest,
   UpdateSubSubCategoryRequest,
   UpdateWarehouseRequest,
-  ISupplier,
-  SalesCreateInput,
-  SalesUpdateInput,
-  SalesFilter
 };

@@ -1,6 +1,8 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
+  createDuePaymentsPurchase,
   createPurchase,
+  createReturnPurchase,
   deletePurchase,
   getAllPurchaseWithFilters,
   getPurchaseById,
@@ -13,13 +15,15 @@ import {
   transferStock,
   updatePurchase,
   updatePurchaseStatus,
-} from '../controllers/Purchase/Purchase.controller';
+} from "../controllers/Purchase/Purchase.controller";
 
 const router = Router();
 
 router
   .post("", createPurchase)
   .post("/transfer-stock", transferStock)
+  .post("/due/create-payment", createDuePaymentsPurchase)
+  .post("/return-purchase", createReturnPurchase)
   .get("", getAllPurchaseWithFilters)
   .get("/search", searchPurchase)
   .get("/stats/summary", getPurchaseStats)

@@ -1,17 +1,18 @@
-import { prisma } from '../config/db.config';
-import { ISupplier } from '../type';
+import { prisma } from "../config/db.config";
+import { ISupplier } from "../type";
 
 const createSupplier = async ({
-                            name,
-                            email,
-                            phone
-                  
-                          }:Omit<ISupplier, "password">): Promise<Omit<ISupplier, "password"> | undefined> => {
+  name,
+  email,
+  phone,
+}: Omit<ISupplier, "password">): Promise<
+  Omit<ISupplier, "password"> | undefined
+> => {
   try {
     const supplier = await prisma.supplier.create({
       data: {
         name,
-       ...(email && { email }),
+        ...(email && { email }),
         phone,
       },
     });
@@ -25,7 +26,7 @@ const updateSupplier = async (
   id: string,
   name?: string,
   phone?: string,
-  email?: string,
+  email?: string
 ) => {
   try {
     const supplier = await prisma.supplier.update({
@@ -36,7 +37,6 @@ const updateSupplier = async (
         ...(name && { name }),
         ...(phone && { phone }),
         ...(email && { email }),
-
       },
     });
     return supplier;
@@ -65,14 +65,14 @@ const getSupplierByIdDB = async (identifier: UserIdentifier) => {
       include: {
         purchases: {
           select: {
-            due:true
-          }
-        }
+            due: true,
+          },
+        },
       },
     });
 
     if (!supplier) {
-      throw new Error('supplier not found');
+      throw new Error("supplier not found");
     }
 
     return supplier;
@@ -86,9 +86,9 @@ const getAllSuppliersDB = async () => {
       include: {
         purchases: {
           select: {
-            due:true
-          }
-        }
+            due: true,
+          },
+        },
       },
     });
     return users;
@@ -96,4 +96,10 @@ const getAllSuppliersDB = async () => {
     throw err;
   }
 };
-export { createSupplier, deleteSupplierDb, getAllSuppliersDB, getSupplierByIdDB, updateSupplier };
+export {
+  createSupplier,
+  deleteSupplierDb,
+  getAllSuppliersDB,
+  getSupplierByIdDB,
+  updateSupplier,
+};

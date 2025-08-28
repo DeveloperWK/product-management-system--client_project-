@@ -4,6 +4,7 @@ import {
   deleteProduct,
   getActiveProducts,
   getAllProducts,
+  getProductByCategory,
   getProductById,
   getProductBySku,
   updateProduct,
@@ -15,6 +16,7 @@ router
   .post("", createProduct)
   .get("", getAllProducts)
   .get("/sku/:sku", getProductBySku)
+  .get("/category/:categoryId", getProductByCategory)
   .get("/active", getActiveProducts)
   .get("/:id", getProductById)
   .patch("/:id", updateProduct)

@@ -1,7 +1,7 @@
-import { prisma } from '../config/db.config';
+import { prisma } from "../config/db.config";
 
 const Coupon = {
-  create: async (data:{
+  create: async (data: {
     code: string;
     discount: number;
     discountType: "PERCENTAGE" | "FIXED";
@@ -9,32 +9,31 @@ const Coupon = {
     isActive?: boolean;
     minimumPurchaseAmount?: number;
     productIds?: string[];
-    assignedById?: string; // needed for pivot
+    assignedById?: string;
   }) => {
     try {
-      const {productIds,assignedById,...couponData}= data
-      const coupon = await prisma.coupon.create({ data:couponData });
+      const { productIds, assignedById, ...couponData } = data;
+      const coupon = await prisma.coupon.create({ data: couponData });
       if (productIds && productIds.length > 0) {
         await prisma.couponsOnProducts.createMany({
-          data:productIds.map(productId => ({
+          data: productIds.map((productId) => ({
             couponId: coupon.id,
             productId,
             assignedById,
           })),
           skipDuplicates: true,
-        })
-        return await  prisma.coupon.findUnique({
+        });
+        return await prisma.coupon.findUnique({
           where: { id: coupon.id },
           include: { products: { include: { product: true } } },
-          
-        })
+        });
       }
     } catch (error) {
       console.error("Error creating coupon:", error);
       throw new Error("Failed to create coupon");
     }
   },
-  getCouponById:async(id:string)=>{
+  getCouponById: async (id: string) => {
     try {
       return await prisma.coupon.findUnique({
         where: { id },
@@ -45,36 +44,37 @@ const Coupon = {
       throw new Error("Failed to fetch coupon by ID");
     }
   },
-  updateCoupon:async(id: string, data:{
-    code?: string;
-    discount?: number;
-    discountType?: "PERCENTAGE" | "FIXED";
-    expiresAt?: Date;
-    isActive?: boolean;
-    minimumPurchaseAmount?: number;
-    productIds?: string[];
-    assignedById?: string;
-  })=>{
+  updateCoupon: async (
+    id: string,
+    data: {
+      code?: string;
+      discount?: number;
+      discountType?: "PERCENTAGE" | "FIXED";
+      expiresAt?: Date;
+      isActive?: boolean;
+      minimumPurchaseAmount?: number;
+      productIds?: string[];
+      assignedById?: string;
+    }
+  ) => {
     try {
-      const {productIds,assignedById,...couponData}=data
-      const coupon =  await prisma.coupon.update({
+      const { productIds, assignedById, ...couponData } = data;
+      const coupon = await prisma.coupon.update({
         where: { id },
-        data:couponData
+        data: couponData,
       });
       if (productIds) {
-        await  prisma.couponsOnProducts.deleteMany({
+        await prisma.couponsOnProducts.deleteMany({
           where: { couponId: id },
-        })
-        if(productIds.length>0 && assignedById){
+        });
+        if (productIds.length > 0 && assignedById) {
           prisma.couponsOnProducts.createMany({
-           data: productIds.map(productId => ({
+            data: productIds.map((productId) => ({
               couponId: id,
               productId,
               assignedById,
-              })
-            )
-          })
-
+            })),
+          });
         }
       }
       return await prisma.coupon.findUnique({
@@ -86,7 +86,7 @@ const Coupon = {
       throw new Error("Failed to update coupon");
     }
   },
-  deleteCoupon:async(id:string)=>{
+  deleteCoupon: async (id: string) => {
     try {
       return await prisma.coupon.delete({ where: { id } });
     } catch (error) {
@@ -94,7 +94,7 @@ const Coupon = {
       throw new Error("Failed to delete coupon");
     }
   },
-  getCouponByCode:async(code:string)=>{
+  getCouponByCode: async (code: string) => {
     try {
       return await prisma.coupon.findUnique({
         where: { code },
@@ -105,7 +105,7 @@ const Coupon = {
       throw new Error("Failed to fetch coupon by code");
     }
   },
-  getCouponByProductId:async(productId:string)=>{
+  getCouponByProductId: async (productId: string) => {
     try {
       return await prisma.coupon.findMany({
         where: {
@@ -120,7 +120,7 @@ const Coupon = {
       throw new Error("Failed to fetch coupon by product ID");
     }
   },
-  getCouponWithFilter:async(params: {
+  getCouponWithFilter: async (params: {
     search?: string;
     isActive?: boolean;
     discountType?: "PERCENTAGE" | "FIXED";
@@ -129,7 +129,7 @@ const Coupon = {
     validOnly?: boolean;
     skip?: number;
     take?: number;
-  })=>{
+  }) => {
     try {
       const {
         search,
@@ -162,7 +162,6 @@ const Coupon = {
       console.error("Error filtering coupons:", error);
       throw new Error("Failed to fetch coupons with filter");
     }
-
-  }
-}
+  },
+};
 export default Coupon;

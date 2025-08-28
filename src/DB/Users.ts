@@ -1,5 +1,5 @@
-import { prisma } from '../config/db.config';
-import { IUser } from '../type';
+import { prisma } from "../config/db.config";
+import { IUser } from "../type";
 
 const createUser = async ({
   name,
@@ -28,7 +28,7 @@ const updateUser = async (
   name?: string,
   phone?: string,
   password?: string,
-  role?: string,
+  role?: string
 ) => {
   try {
     return await prisma.user.update({
@@ -67,7 +67,7 @@ const getUserByIdDB = async (identifier: UserIdentifier) => {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     return user;
