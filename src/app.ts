@@ -6,6 +6,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import checkCustomerAuthToken from "./middleware/checkCustomerAuthToken";
 import checkUserAuthToken from "./middleware/checkUserAuthToken";
+import errorHandler from "./middleware/Error";
+import notFound from "./middleware/notFound";
 import verifyCustomerAccessToken from "./middleware/verifyCustomerAccessToken";
 import verifyUserAccessToken from "./middleware/verifyUserAccessToken";
 import attributesRoute from "./routes/Attribute.routes";
@@ -129,6 +131,7 @@ app
     checkCustomerAuthToken,
     verifyCustomerAccessToken,
     salesRoutes
-  );
-
+  )
+  .use(notFound)
+  .use(errorHandler);
 export default app;
