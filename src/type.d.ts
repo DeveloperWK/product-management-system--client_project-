@@ -172,11 +172,7 @@ interface ICustomer {
   zip?: string;
   country?: string;
 }
-// interface  IcustomerUpdate {
-//   firstName: string;
-//   lastName: string;
-//   password: string;
-// }
+
 interface ISupplier extends IUser {
   email?: string | null;
 }
