@@ -1,18 +1,11 @@
-import { NextFunction, Request, Response } from "express";
-import { prisma } from "../config/db.config";
-import generateAccessToken from "../service/jwt.service";
-import {
-  generateRefreshToken,
-  hashRefreshToken,
-  verifyRefreshToken,
-} from "../service/refreshToken.service";
-import { updateRefreshToken } from "../service/token.service";
-import {
-  sendUpdatedAccessToken,
-  sendUpdatedRefreshToken,
-  setCookies,
-} from "../utils/issueTokensAndSetCookies";
+import { NextFunction, Request, Response } from 'express';
+import generateAccessToken from '../service/jwt.service';
+import { generateRefreshToken, hashRefreshToken, verifyRefreshToken } from '../service/refreshToken.service';
+import { updateRefreshToken } from '../service/token.service';
+import { sendUpdatedAccessToken, sendUpdatedRefreshToken, setCookies } from '../utils/issueTokensAndSetCookies';
+import { getPrismaInstance } from '../config/db.config';
 
+const prisma = getPrismaInstance();
 const checkCustomerAuthToken = async (
   req: Request,
   res: Response,
@@ -34,7 +27,7 @@ const checkCustomerAuthToken = async (
     const isVerifiedRefreshToken = await verifyRefreshToken(refreshToken);
     if (isVerifiedRefreshToken && !accessToken && isCustomerExists) {
       const newAccessToken = generateAccessToken({ userId: customerId });
-      console.log("New Token Generate", newAccessToken);
+
       await sendUpdatedAccessToken(res, newAccessToken);
       req.access_token = newAccessToken;
     }

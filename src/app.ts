@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { configDotenv } from "dotenv";
 import express from "express";
+import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import morgan from "morgan";
 import checkCustomerAuthToken from "./middleware/checkCustomerAuthToken";
@@ -16,11 +17,13 @@ import brandsRoutes from "./routes/Brand.routes";
 import categoriesRoute from "./routes/Categories.routes";
 import couponRoutes from "./routes/Coupon.routes";
 import customerRoutes from "./routes/Customer.routes";
+import dashboardRoutes from "./routes/Dashboard.routes";
 import expensesRoutes from "./routes/Expenses.routes";
 import productImagesRoute from "./routes/Image.routes";
 import productsRoute from "./routes/Products.routes";
 import purchasesRoute from "./routes/Purchase.routes";
 import salesRoutes from "./routes/Sales.routes";
+import statementRoutes from "./routes/Statement.routes";
 import storesRoutes from "./routes/Store.routes";
 import suppliersRoutes from "./routes/Suppliers.routes";
 import userRoutes from "./routes/Users.routes";
@@ -30,8 +33,15 @@ import warrantyRoutes from "./routes/Warranty.routes";
 configDotenv();
 
 const app = express();
-
+const LIMITER = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  ipv6Subnet: 56,
+});
 app
+  .use(LIMITER)
   .use(express.json())
   .use(
     cors({
@@ -125,12 +135,24 @@ app
     warrantyRoutes
   )
   .use(
+    "/api/v1/statements",
+    checkUserAuthToken,
+    verifyUserAccessToken,
+    statementRoutes
+  )
+  .use(
     "/api/v1/sales",
     checkUserAuthToken,
     verifyUserAccessToken,
     checkCustomerAuthToken,
     verifyCustomerAccessToken,
     salesRoutes
+  )
+  .use(
+    "/api/v1/dashboard",
+    checkUserAuthToken,
+    verifyUserAccessToken,
+    dashboardRoutes
   )
   .use(notFound)
   .use(errorHandler);

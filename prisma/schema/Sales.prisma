@@ -4,31 +4,56 @@ enum discountAndTaxType {
 }
 
 model Sales {
-  id             String              @id @default(cuid())
+  id             String @id @default(cuid())
   customerId     String
   purchaseId     String
   variantValueId String
-  exchangeCal    Float
+  exchangeCal    Float?
   quantity       Float
-  discountType   discountAndTaxType?
-  discount       Float?
-  price          Float
-  unitPrice      Float
-  salesPrice     Float
-  taxType        discountAndTaxType?
-  due            Float?
-  tax            Float?
-  duePayment     SalesDuePayment[]
-  variant        AttributeValue      @relation("SalesVariant", fields: [variantValueId], references: [id])
-  customer       Customer            @relation(fields: [customerId], references: [id])
-  purchase       Purchase            @relation("SalesPurchase", fields: [purchaseId], references: [id])
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+
+  // Existing discount fields
+  discountType discountAndTaxType?
+  discount     Float?
+
+  // Pricing
+  price      Float?
+  unitPrice  Float?
+  salesPrice Float
+  taxType    discountAndTaxType?
+  tax        Float?
+
+  // 🆕 Coupon fields
+  couponId       String? // reference to Coupon if applied
+  coupon         Coupon? @relation(fields: [couponId], references: [id])
+  discountAmount Float? // actual discount from coupon
+  finalAmount    Float? // after applying coupon + tax etc.
+
+  // Relations
+  duePayment SalesDuePayment[]
+  variant    AttributeValue    @relation("SalesVariant", fields: [variantValueId], references: [id])
+  customer   Customer          @relation(fields: [customerId], references: [id])
+  purchase   Purchase          @relation("SalesPurchase", fields: [purchaseId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([couponId])
 }
+
 model SalesDuePayment {
   id        String   @id @default(cuid())
   salesId   String
   sales     Sales    @relation(fields: [salesId], references: [id])
   amount    Float
   createdAt DateTime @default(now())
+}
+
+model PaymentAndDue {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  amount     Float
+  due        Float?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

@@ -11,6 +11,7 @@ import {
   getPurchaseByStoreId,
   getPurchaseByWarehouseId,
   getPurchaseStats,
+  getSupplierDues,
   searchPurchase,
   transferStock,
   updatePurchase,
@@ -26,6 +27,7 @@ router
   .post("/return-purchase", createReturnPurchase)
   .get("", getAllPurchaseWithFilters)
   .get("/search", searchPurchase)
+  .get("/dues/:supplierId", getSupplierDues)
   .get("/stats/summary", getPurchaseStats)
   .get("/:id", getPurchaseById)
   .get("/store/:storeId", getPurchaseByStoreId)

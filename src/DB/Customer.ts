@@ -1,6 +1,7 @@
-import { prisma } from "../config/db.config";
-import { ICustomer } from "../type";
+import { ICustomer } from '../type';
+import { getPrismaInstance } from '../config/db.config';
 
+const prisma = getPrismaInstance();
 const customer = {
   create: async ({ data }: { data: ICustomer }) => {
     try {

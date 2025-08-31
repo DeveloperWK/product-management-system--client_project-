@@ -131,7 +131,6 @@ const createAttributeValue = async (
 ) => {
   try {
     const { values, attributeId } = req.body;
-    console.log(values);
     if (!Array.isArray(values)) {
       return res.status(400).json({ error: "Values must be an array" });
     }

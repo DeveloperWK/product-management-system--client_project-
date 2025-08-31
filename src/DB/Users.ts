@@ -1,6 +1,7 @@
-import { prisma } from "../config/db.config";
-import { IUser } from "../type";
+import { IUser } from '../type';
+import { getPrismaInstance } from '../config/db.config';
 
+const prisma = getPrismaInstance();
 const createUser = async ({
   name,
   email,
@@ -16,7 +17,6 @@ const createUser = async ({
         password,
       },
     });
-    console.log(user);
     return user;
   } catch (err) {
     console.error(err);

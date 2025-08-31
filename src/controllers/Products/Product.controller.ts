@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
+import { getPrismaInstance } from "../../config/db.config";
 import { productOperations } from "../../DB/ProductsOperation";
 import { CreateProductRequest, UpdateProductRequest } from "../../type";
+
+const prisma = getPrismaInstance();
 
 const getAllProducts = async (req: Request, res: Response) => {
   try {
@@ -148,11 +151,53 @@ const deleteProduct = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to delete product" });
   }
 };
+
+const getLowStockProducts = async (req: Request, res: Response) => {
+  try {
+    // Fetch purchases with related product info
+    const purchases = await prisma.purchase.findMany({
+      include: {
+        product: true, // get quantityAlert
+      },
+    });
+
+    // Filter low stock products
+    const lowStockProducts = purchases.filter((purchase) => {
+      const currentQty = purchase.quantity; // you may want to calculate remaining stock
+      const alertQty = purchase.product.quantityAlert;
+      return currentQty <= alertQty!;
+    });
+
+    // Return useful info
+    const response = lowStockProducts.map((p) => ({
+      purchaseId: p.id,
+      productId: p.productId,
+      productName: p.product.name,
+      warehouseId: p.warehouseId,
+      quantity: p.quantity,
+      quantityAlert: p.product.quantityAlert,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      count: response.length,
+      lowStockProducts: response,
+    });
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch low stock products",
+    });
+  }
+};
+
 export {
   createProduct,
   deleteProduct,
   getActiveProducts,
   getAllProducts,
+  getLowStockProducts,
   getProductByCategory,
   getProductById,
   getProductBySku,

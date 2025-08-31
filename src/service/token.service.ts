@@ -1,4 +1,6 @@
-import { prisma } from "../config/db.config";
+import { getPrismaInstance } from "../config/db.config";
+
+const prisma = getPrismaInstance();
 
 async function storeRefreshToken(
   userId?: string,

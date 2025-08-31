@@ -1,6 +1,7 @@
-import { prisma } from "../config/db.config";
-import { ISupplier } from "../type";
+import { ISupplier } from '../type';
+import { getPrismaInstance } from '../config/db.config';
 
+const prisma = getPrismaInstance();
 const createSupplier = async ({
   name,
   email,
@@ -9,14 +10,13 @@ const createSupplier = async ({
   Omit<ISupplier, "password"> | undefined
 > => {
   try {
-    const supplier = await prisma.supplier.create({
+    return await prisma.supplier.create({
       data: {
         name,
         ...(email && { email }),
         phone,
       },
     });
-    return supplier;
   } catch (err) {
     console.error(err);
     throw err;

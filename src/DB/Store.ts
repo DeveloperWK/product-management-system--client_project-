@@ -1,4 +1,6 @@
-import { prisma } from "../config/db.config";
+import { getPrismaInstance } from '../config/db.config';
+
+const prisma = getPrismaInstance();
 
 const storeOperations = {
   create: async (name: string) => {

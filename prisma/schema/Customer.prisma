@@ -1,18 +1,17 @@
 model Customer {
-  id           String        @id @default(cuid())
-  firstName    String
-  lastName     String?
-  email        String        @unique
-  password     String
-  phone        String?       @unique
-  address      String?
-  city         String?
-  zip          String?
-  sales        Sales[]
-  country      String?       @default("BD")
-  refreshToken RefreshToken?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-
-  // Add Order orders      Order[]
+  id            String          @id @default(cuid())
+  firstName     String
+  lastName      String?
+  email         String          @unique
+  password      String
+  phone         String?         @unique
+  address       String?
+  city          String?
+  zip           String?
+  sales         Sales[]
+  PaymentAndDue PaymentAndDue[]
+  country       String?         @default("BD")
+  refreshToken  RefreshToken?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }

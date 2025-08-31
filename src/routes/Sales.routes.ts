@@ -16,9 +16,6 @@ router.post("/get-price", salesController.getPrice);
 router.patch("/:id", salesController.updateSale);
 router.delete("/:id", salesController.deleteSale);
 
-// Bulk operations
-router.post("/bulk", salesController.createBulkSales);
-
 // Analytics and reports
 router.get("/summary", salesController.getSalesSummary);
 router.get("/customer/:customerId", salesController.getSalesByCustomer);

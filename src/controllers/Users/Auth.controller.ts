@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
-import { prisma } from "../../config/db.config";
+import { getPrismaInstance } from "../../config/db.config";
 import { getUserByIdDB } from "../../DB/Users";
 import { verifyPassword } from "../../service/password.service";
 import { issueTokensAndSetCookies } from "../../utils/issueTokensAndSetCookies";
+
+const prisma = getPrismaInstance();
 
 const userLogin = async (req: Request, res: Response) => {
   try {

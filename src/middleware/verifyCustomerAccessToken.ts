@@ -1,7 +1,8 @@
-import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { prisma } from "../config/db.config";
+import { NextFunction, Request, Response } from 'express';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { getPrismaInstance } from '../config/db.config';
 
+const prisma = getPrismaInstance();
 const verifyCustomerAccessToken = async (
   req: Request,
   res: Response,

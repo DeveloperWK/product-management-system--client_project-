@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import { prisma } from "../../config/db.config";
-import { SalesCreateInput, SalesFilter, salesService } from "../../DB/Sales";
+import { SalesFilter, salesService } from "../../DB/Sales";
+import { getPrismaInstance } from "../../config/db.config";
+
+const prisma = getPrismaInstance();
 
 export const getPrice = async (req: Request, res: Response) => {
   const { weight, to, calQ, purchaseId } = req.body;
@@ -26,23 +28,44 @@ export const getPrice = async (req: Request, res: Response) => {
 };
 
 // Create a new sale
+
 export const createSale = async (req: Request, res: Response) => {
   try {
-    const saleData: SalesCreateInput = req.body;
-    const sale = await salesService.createSale(saleData);
+    const { customerId, products, due, totalPayment } = req.body;
+
+    if (
+      !customerId ||
+      !products ||
+      !Array.isArray(products) ||
+      products.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer and products are required",
+      });
+    }
+
+    const createdSales = await salesService.createBulkSales(
+      customerId,
+      totalPayment,
+      due,
+      products
+    );
 
     return res.status(201).json({
       success: true,
-      message: "Sale created successfully",
-      sale,
+      message: "Sales created successfully",
+      sales: createdSales,
     });
   } catch (error: any) {
+    console.error(error);
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to create sale",
     });
   }
 };
+
 export const getDues = async (req: Request, res: Response) => {
   try {
     const { customerId } = req.params;
@@ -104,8 +127,8 @@ export const getSales = async (req: Request, res: Response) => {
       ...(productId && { productId: productId as string }),
       ...(dateFrom &&
         dateTo && {
-          dateFrom: new Date(dateFrom as string),
-          dateTo: new Date(dateTo as string),
+          dateFrom: new Date(`${dateFrom}T00:00:00.000Z`),
+          dateTo: new Date(`${dateTo}T00:00:00.000Z`),
         }),
       ...(minAmount && { minAmount: parseFloat(minAmount as string) }),
       ...(maxAmount && { maxAmount: parseFloat(maxAmount as string) }),
@@ -185,42 +208,14 @@ export const deleteSale = async (req: Request, res: Response) => {
     });
   }
 };
-
-// Bulk create sales
-export const createBulkSales = async (req: Request, res: Response) => {
-  try {
-    const salesData: SalesCreateInput[] = req.body;
-
-    if (!Array.isArray(salesData)) {
-      return res.status(400).json({
-        success: false,
-        message: "Request body must be an array of sales data",
-      });
-    }
-
-    const result = await salesService.createBulkSales(salesData);
-
-    return res.status(201).json({
-      success: true,
-      message: "Bulk sales created successfully",
-      result,
-    });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || "Failed to create bulk sales",
-    });
-  }
-};
-
 // Get sales summary
 export const getSalesSummary = async (req: Request, res: Response) => {
   try {
     const { startDate, endDate, customerId } = req.query;
 
     const summary = await salesService.getSalesSummary(
-      startDate ? new Date(startDate as string) : undefined,
-      endDate ? new Date(endDate as string) : undefined,
+      startDate ? new Date(`${startDate}T00:00:00.000Z`) : undefined,
+      endDate ? new Date(`${endDate}T00:00:00.000Z`) : undefined,
       customerId as string
     );
 
@@ -351,11 +346,36 @@ export const createDuePaymentsSales = async (req: Request, res: Response) => {
 export const createReturnSales = async (req: Request, res: Response) => {
   try {
     const { purchaseId, amount, quantity, salesId, salesPrice } = req.body;
+
     if (!purchaseId || !amount || !quantity) {
-      return res.status(400).json({
-        message: "All field is required",
-      });
+      return res.status(400).json({ message: "All fields are required" });
     }
+
+    // Find warranty for this purchase
+    const warranty = await prisma.warranty.findFirst({
+      where: {
+        purchase: {
+          some: {
+            id: purchaseId,
+          },
+        },
+      },
+    });
+
+    if (warranty) {
+      const createdAt = new Date(warranty.createdAt);
+      const expiryDate = new Date(createdAt);
+      expiryDate.setDate(expiryDate.getDate() + warranty.days);
+
+      if (new Date() > expiryDate) {
+        return res.status(400).json({
+          success: false,
+          message: "Warranty expired, cannot return",
+        });
+      }
+    }
+
+    // Create return record
     await salesService.createReturnSalesDb({
       purchaseId,
       salesPrice,
@@ -363,9 +383,10 @@ export const createReturnSales = async (req: Request, res: Response) => {
       amount,
       quantity,
     });
+
     res.status(200).json({
       success: true,
-      message: "Returned Return",
+      message: "Return created successfully",
     });
   } catch (e) {
     res.status(500).json({

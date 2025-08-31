@@ -22,6 +22,9 @@ model Purchase {
   duePayment       PurchaseDuePayment[]
   attribute        AttributeValue       @relation("PurchaseAttributes", fields: [attributeValueId], references: [id])
   status           StatusType           @default(PENDING)
+  expenseAmount    Float?
+  expenseId        String?
+  expense          Expense?             @relation(fields: [expenseId], references: [id])
   amount           Float
   amountKey        String
   quantity         Float
@@ -32,9 +35,10 @@ model Purchase {
 }
 
 model Expense {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
+  id        String     @id @default(cuid())
+  name      String     @unique
+  purchases Purchase[]
+  createdAt DateTime   @default(now())
 }
 
 model Supplier {

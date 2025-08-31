@@ -145,6 +145,8 @@ interface UpdateProductImageRequest {
 }
 
 interface PurchaseType {
+  expenseId: string;
+  expenseAmount: number;
   storeId: string;
   warehouseId: string;
   productId: string;
@@ -179,19 +181,25 @@ interface ISupplier extends IUser {
   email?: string | null;
 }
 type SalesCreateInput = {
-  customerId: string;
+  totalPayment?: number;
+  salesId?: string;
+  customerId?: string;
   purchaseId: string;
   variantValueId: string;
-  exchangeCal: number;
+  exchangeCal?: number;
   quantity: number;
-  discountType?: "PERCENTAGE" | "FIXED";
+  discountType?: "PERCENTAGE" | "CASH";
   discount?: number;
-  unitPrice: number;
+  unitPrice?: number | null;
   salesPrice: number;
-  taxType?: "PERCENTAGE" | "FIXED";
+  taxType?: "PERCENTAGE" | "CASH";
   tax?: number;
   price: number;
   due?: number;
+  couponCode?: string;
+  discountAmount?: number;
+  finalAmount?: number;
+  appliedCoupon?: string | null;
 };
 
 type SalesUpdateInput = Partial<

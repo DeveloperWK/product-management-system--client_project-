@@ -7,10 +7,10 @@ import {
   updateUser,
 } from "../../DB/Users";
 import { hashPassword } from "../../service/password.service";
+
 const createUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, phone, password } = req.body;
-    console.log(name, email, phone);
     if (!name || !email || !phone || !password) {
       res.status(400).json({
         message: "All Field Required",

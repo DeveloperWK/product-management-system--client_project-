@@ -17,7 +17,7 @@ const createCustomer = async (req: Request, res: Response) => {
     } = req.body;
 
     if (!firstName || !email || !password || !address || !city || !zip) {
-      res.status(400).json({ message: "All field required" });
+      return res.status(400).json({ message: "All field required" });
     }
 
     const hashedPassword = await hashPassword(password);
@@ -90,7 +90,6 @@ const updateCustomer = async (req: Request, res: Response) => {
       ...(zip && { zip }),
       ...(country && { country }),
     };
-    console.log(data.country);
     await customer.update(id, { data });
     res.status(200).json({ message: "Customer Updated" });
   } catch (e) {

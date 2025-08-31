@@ -1,59 +1,130 @@
 import { Prisma } from "@prisma/client";
-import { prisma } from "../config/db.config";
+import { getPrismaInstance } from "../config/db.config";
 import { SalesCreateInput, SalesFilter, SalesUpdateInput } from "../type";
+
+const prisma = getPrismaInstance();
 
 class SalesService {
   // Create a new sale
-  async createSale(data: SalesCreateInput) {
-    try {
-      const createData: any = {
-        customer: { connect: { id: data.customerId } },
-        purchase: { connect: { id: data.purchaseId } },
-        variant: { connect: { id: data.variantValueId } },
-        exchangeCal: data.exchangeCal,
-        quantity: data.quantity,
-        unitPrice: data.unitPrice,
-        salesPrice: data.salesPrice,
-        price: data.price,
-      };
-      if (data.discountType) {
-        createData.discountType = data.discountType;
-      }
-      if (data.discount) {
-        createData.discount = data.discount;
-      }
-      if (data.taxType) {
-        createData.taxType = data.taxType;
-      }
-      if (data.tax) {
-        createData.tax = data.tax;
-      }
-      if (data.due) {
-        createData.due = data.due;
-      }
-      return await prisma.$transaction(async (t) => {
-        await t.sales.create({
-          data: createData,
-          include: {
-            customer: true,
-            purchase: true,
-            variant: true,
-          },
+
+  async createBulkSales(
+    customerId: string,
+    totalPayment: number,
+    due: number,
+    products: SalesCreateInput[]
+  ) {
+    const createdSales: SalesCreateInput[] = [];
+
+    await prisma.$transaction(async (tx) => {
+      for (const sale of products) {
+        let discountAmount = 0;
+        let appliedCouponId: string | null = null;
+        let appliedCouponCode: string | null = null;
+
+        // Coupon validation
+        if (sale.couponCode) {
+          const coupon = await tx.coupon.findUnique({
+            where: { code: sale.couponCode },
+            include: { products: true },
+          });
+
+          if (!coupon)
+            throw new Error(`Invalid coupon code: ${sale.couponCode}`);
+          if (!coupon.isActive)
+            throw new Error(`Coupon ${sale.couponCode} is not active`);
+          if (new Date() > coupon.expiresAt)
+            throw new Error(`Coupon ${sale.couponCode} has expired`);
+          if (
+            coupon.minimumPurchaseAmount &&
+            sale.salesPrice < coupon.minimumPurchaseAmount
+          )
+            throw new Error(
+              `Coupon ${sale.couponCode} requires minimum purchase of ${coupon.minimumPurchaseAmount}`
+            );
+
+          // Product-specific coupon check
+          if (coupon.products.length > 0) {
+            const couponProductIds = coupon.products.map((cp) => cp.productId);
+            if (!couponProductIds.includes(sale.purchaseId)) {
+              throw new Error(
+                `Coupon ${sale.couponCode} is not valid for product ${sale.purchaseId}`
+              );
+            }
+          }
+
+          // Calculate discount
+          discountAmount =
+            coupon.discountType === "PERCENTAGE"
+              ? (sale.salesPrice * coupon.discount) / 100
+              : coupon.discount;
+
+          appliedCouponId = coupon.id;
+          appliedCouponCode = coupon.code;
+        }
+
+        const finalAmount = sale.salesPrice - discountAmount;
+        const purchase = await tx.purchase.findUnique({
+          where: { id: sale.purchaseId },
         });
-        await t.purchase.update({
-          where: {
-            id: data.purchaseId,
-          },
+
+        if (!purchase)
+          throw new Error(`Purchase not found: ${sale.purchaseId}`);
+        if (purchase.quantity < sale.quantity) {
+          throw new Error(
+            `Not enough stock for product ${sale.purchaseId}. Available: ${purchase.quantity}`
+          );
+        }
+
+        const createdSale = await tx.sales.create({
           data: {
-            quantity: {
-              decrement: data.quantity,
-            },
+            customerId,
+            purchaseId: sale.purchaseId,
+            variantValueId: sale.variantValueId,
+            quantity: sale.quantity,
+            unitPrice: sale.unitPrice,
+            price: sale.price,
+            salesPrice: sale.salesPrice,
+            discountType: sale.discountType,
+            discount: sale.discount,
+            taxType: sale.taxType,
+            tax: sale.tax,
+            exchangeCal: sale.exchangeCal,
+            couponId: appliedCouponId,
+            discountAmount,
+            finalAmount,
           },
         });
-      });
-    } catch (error) {
-      throw new Error(`Failed to create sale: ${error}`);
-    }
+        await tx.purchase.update({
+          where: { id: sale.purchaseId },
+          data: {
+            quantity: { decrement: sale.quantity },
+            amount: { decrement: sale.quantity * (sale.unitPrice ?? 0) },
+          },
+        });
+        await tx.paymentAndDue.create({
+          data: {
+            customer: { connect: { id: customerId } },
+            amount: totalPayment,
+            due: due,
+          },
+        });
+        createdSales.push({
+          salesId: createdSale.id,
+          purchaseId: createdSale.purchaseId,
+          variantValueId: createdSale.variantValueId,
+          quantity: createdSale.quantity,
+          unitPrice: createdSale.unitPrice,
+          salesPrice: createdSale.salesPrice,
+          discountAmount: createdSale.discountAmount ?? 0,
+          finalAmount: createdSale.finalAmount ?? 0,
+          appliedCoupon: appliedCouponCode ?? null,
+          price: createdSale.price ?? 0,
+          totalPayment: totalPayment,
+        });
+      }
+    });
+
+    return createdSales;
   }
 
   // Get sale by ID with relations
@@ -203,29 +274,29 @@ class SalesService {
   }
 
   // Bulk create sales
-  async createBulkSales(salesData: SalesCreateInput[]) {
-    try {
-      return await prisma.sales.createMany({
-        // @ts-ignore
-        data: salesData.map((sale) => ({
-          customer: { connect: { id: sale.customerId } },
-          product: { connect: { id: sale.purchaseId } },
-          variantValueId: { connect: { id: sale.variantValueId } },
-          exchangeCal: sale.exchangeCal,
-          quantity: sale.quantity,
-          discountType: sale.discountType,
-          discount: sale.discount,
-          unitPrice: sale.unitPrice,
-          salesPrice: sale.salesPrice,
-          taxType: sale.taxType,
-          tax: sale.tax,
-        })),
-        skipDuplicates: true,
-      });
-    } catch (error) {
-      throw new Error(`Failed to create bulk sales: ${error}`);
-    }
-  }
+  // async createBulkSales(salesData: SalesCreateInput[]) {
+  //   try {
+  //     return await prisma.sales.createMany({
+  //       // @ts-ignore
+  //       data: salesData.map((sale) => ({
+  //         customer: { connect: { id: sale.customerId } },
+  //         product: { connect: { id: sale.purchaseId } },
+  //         variantValueId: { connect: { id: sale.variantValueId } },
+  //         exchangeCal: sale.exchangeCal,
+  //         quantity: sale.quantity,
+  //         discountType: sale.discountType,
+  //         discount: sale.discount,
+  //         unitPrice: sale.unitPrice,
+  //         salesPrice: sale.salesPrice,
+  //         taxType: sale.taxType,
+  //         tax: sale.tax,
+  //       })),
+  //       skipDuplicates: true,
+  //     });
+  //   } catch (error) {
+  //     throw new Error(`Failed to create bulk sales: ${error}`);
+  //   }
+  // }
 
   // Get sales summary statistics
   async getSalesSummary(startDate?: Date, endDate?: Date, customerId?: string) {
@@ -403,7 +474,7 @@ class SalesService {
   }
   async getAllDuesByCustomer(customerId: string) {
     try {
-      const result = await prisma.sales.aggregate({
+      const result = await prisma.paymentAndDue.aggregate({
         where: { customerId: customerId },
         _sum: {
           due: true,

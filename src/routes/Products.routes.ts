@@ -4,6 +4,7 @@ import {
   deleteProduct,
   getActiveProducts,
   getAllProducts,
+  getLowStockProducts,
   getProductByCategory,
   getProductById,
   getProductBySku,
@@ -15,6 +16,7 @@ const router = Router();
 router
   .post("", createProduct)
   .get("", getAllProducts)
+  .get("/low-stock", getLowStockProducts)
   .get("/sku/:sku", getProductBySku)
   .get("/category/:categoryId", getProductByCategory)
   .get("/active", getActiveProducts)

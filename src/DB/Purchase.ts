@@ -1,7 +1,8 @@
-import { Prisma } from "@prisma/client";
-import { prisma } from "../config/db.config";
-import { PurchaseType } from "../type";
+import { Prisma } from '@prisma/client';
+import { PurchaseType } from '../type';
+import { getPrismaInstance } from '../config/db.config';
 
+const prisma = getPrismaInstance();
 // Create a new purchase
 export async function createPurchaseDb(data: PurchaseType) {
   try {
@@ -21,6 +22,10 @@ export async function createPurchaseDb(data: PurchaseType) {
     };
     if (data.warrantyId) {
       createData.warranty = { connect: { id: data.warrantyId } };
+    }
+    if(data.expenseId){
+     createData.expense={connect:{id:data.expenseId}}
+      createData.expenseAmount = data.expenseAmount;
     }
 
     return await prisma.$transaction(async (tx) => {
@@ -104,6 +109,7 @@ export async function updatePurchaseDb(id: string, data: PurchaseType) {
     if (data.payment !== undefined) updateData.payment = data.payment;
     if (data.commission !== undefined) updateData.commission = data.commission;
     if (data.due !== undefined) updateData.due = data.due;
+    if(data.expenseAmount !== undefined) updateData.expenseAmount = data.expenseAmount;
 
     // relations
     if (data.storeId !== undefined) {
@@ -118,6 +124,10 @@ export async function updatePurchaseDb(id: string, data: PurchaseType) {
     if (data.attributeValueId !== undefined) {
       updateData.attribute = { connect: { id: data.attributeValueId } };
     }
+    if (data.expenseId !== undefined) {
+      updateData.expense = { connect: { id: data.expenseId } };
+    }
+
 
     return await prisma.purchase.update({
       where: { id },
@@ -391,3 +401,16 @@ export const createReturnPurchaseDb = async (data: {
     throw e;
   }
 };
+export async function getAllDuesBySupplier(supplierId: string) {
+  try {
+    const result = await prisma.purchase.aggregate({
+      where: { supplierId: supplierId },
+      _sum: {
+        due: true,
+      },
+    });
+    return result._sum.due ?? 0;
+  } catch (error) {
+    throw new Error(`Failed to fetch supplier purchase: ${error}`);
+  }
+}

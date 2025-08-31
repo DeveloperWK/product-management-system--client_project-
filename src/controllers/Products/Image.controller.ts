@@ -18,7 +18,6 @@ const getAllProductImages = async (req: Request, res: Response) => {
 const getProductImagesByProductId = async (req: Request, res: Response) => {
   try {
     const { productId } = req.params;
-    console.log(productId);
     const images = await productImageOperations.getByProductId(productId);
     res.status(200).json({ images });
   } catch (error) {
@@ -124,7 +123,6 @@ const replaceProductImages = async (
   try {
     const { productId } = req.params;
     const files = req.files;
-    console.log(files);
 
     if (!Array.isArray(files)) {
       return res.status(400).json({ error: "URLs must be an array" });

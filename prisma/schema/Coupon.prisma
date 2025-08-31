@@ -8,6 +8,7 @@ model Coupon {
   updatedAt             DateTime            @updatedAt
   isActive              Boolean             @default(true)
   minimumPurchaseAmount Float?
+  sale                  Sales?
   products              CouponsOnProducts[]
 }
 

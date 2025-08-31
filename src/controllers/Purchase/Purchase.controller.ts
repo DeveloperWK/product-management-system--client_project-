@@ -5,6 +5,7 @@ import {
   createReturnPurchaseDb,
   deletePurchaseDb,
   duePurchasePaymentsDb,
+  getAllDuesBySupplier,
   getAllPurchases,
   getAllPurchasesDb,
   getPurchaseByIdDb,
@@ -118,9 +119,10 @@ const getAllPurchaseWithFilters = async (req: Request, res: Response) => {
     if (startDate || endDate) {
       where.createdAt = {};
 
-      if (startDate) where.createdAt.gte = new Date(startDate as string);
+      if (startDate)
+        where.createdAt.gte = new Date(`${startDate}T00:00:00.000Z`);
 
-      if (endDate) where.createdAt.lte = new Date(endDate as string);
+      if (endDate) where.createdAt.lte = new Date(`${endDate}T00:00:00.000Z`);
     }
 
     const purchases = await getAllPurchases({
@@ -321,8 +323,8 @@ const searchPurchase = async (req: Request, res: Response) => {
     if (status) filters.status = status as any;
     if (minAmount) filters.minAmount = Number(minAmount);
     if (maxAmount) filters.maxAmount = Number(maxAmount);
-    if (startDate) filters.startDate = new Date(startDate as string);
-    if (endDate) filters.endDate = new Date(endDate as string);
+    if (startDate) filters.startDate = new Date(`${startDate}T00:00:00.000Z`);
+    if (endDate) filters.endDate = new Date(`${endDate}T00:00:00.000Z`);
 
     const purchases = await searchPurchasesDb(filters);
 
@@ -378,6 +380,22 @@ const createReturnPurchase = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: (e as Error).message,
+    });
+  }
+};
+
+export const getSupplierDues = async (req: Request, res: Response) => {
+  try {
+    const { supplierId } = req.params;
+    const dues = await getAllDuesBySupplier(supplierId);
+    return res.status(200).json({
+      success: true,
+      dues,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to getDues",
     });
   }
 };
