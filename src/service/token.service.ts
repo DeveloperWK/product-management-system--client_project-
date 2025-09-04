@@ -1,4 +1,4 @@
-import { getPrismaInstance } from "../config/db.config";
+import { getPrismaInstance } from '../config/db.config';
 
 const prisma = getPrismaInstance();
 
@@ -50,14 +50,18 @@ async function updateRefreshToken({
   if (!userId && !customerId) {
     throw new Error("Either userId or customerId must be provided");
   }
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 15);
+  const updateData = {
+    token: token,
+    expires_at: expiresAt,
+  };
 
   const whereClause = userId ? { userId: userId } : { customerId: customerId };
 
   await prisma.refreshToken.update({
     where: whereClause,
-    data: {
-      token: token,
-    },
+    data: updateData,
   });
 }
 

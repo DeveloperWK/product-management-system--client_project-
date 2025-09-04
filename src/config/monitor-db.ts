@@ -1,10 +1,9 @@
-import { getPrismaInstance } from "./db.config";
+import { getPrismaInstance } from './db.config';
 
 async function monitorDatabase() {
   const prisma = getPrismaInstance();
 
   try {
-    // Get database connection statistics
     const stats = await prisma.$queryRaw`
       SELECT 
         count(*) as total_connections,
@@ -16,7 +15,7 @@ async function monitorDatabase() {
       WHERE datname = current_database()
     `;
 
-    // @ts-ignore
+//@ts-ignore
     const usage = stats[0];
     const usagePercent = (
       (usage.total_connections / usage.max_connections) *
@@ -32,7 +31,7 @@ async function monitorDatabase() {
     );
     console.log(`Idle in transaction: ${usage.idle_in_transaction}`);
 
-    // List long-running queries
+
     const longQueries = await prisma.$queryRaw`
       SELECT 
         pid,
@@ -49,7 +48,6 @@ async function monitorDatabase() {
       ORDER BY duration DESC
       LIMIT 5
     `;
-
     // @ts-ignore
     if (longQueries.length > 0) {
       console.log("\n--- Long Running Queries (>5s) ---");
@@ -67,7 +65,7 @@ async function monitorDatabase() {
   }
 }
 
-// Run monitoring if this script is executed directly
+
 // @ts-ignore
 if (import.meta.url === `file://${process.argv[1]}`) {
   monitorDatabase()

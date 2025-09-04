@@ -44,15 +44,11 @@ const customerLogin = async (req: Request, res: Response) => {
       return res
         .status(400)
         .json({ message: "Email Or Phone & password required" });
-    let identifier = {};
-    if (email) {
-      identifier = { email: email };
-    } else {
-      identifier = { phone: phone };
-    }
+    type CustomerIdentifier = { email: string } | { phone: string };
+
+    let identifier: CustomerIdentifier = email ? { email } : { phone };
 
     const user = await prisma.customer.findUnique({
-      // @ts-ignore
       where: identifier,
     });
 
@@ -63,6 +59,7 @@ const customerLogin = async (req: Request, res: Response) => {
     if (!passwordMatch) return res.status(401).send("Invalid credentials");
     const tokenType = "customer";
     await issueTokensAndSetCookies(user.id, res, tokenType);
+    console.log(password, user.password);
 
     res.status(200).json({
       message: "Login successful",

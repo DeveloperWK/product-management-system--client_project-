@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import ExpenseOperations from "../../DB/Expense";
+import { Request, Response } from 'express';
+import ExpenseOperations from '../../DB/Expense';
 
-const getAllExpense = async (req: Request, res: Response) => {
+const getAllExpense = async (_req: Request, res: Response) => {
   try {
     const expenses = await ExpenseOperations.getAll();
     res.status(200).json({
@@ -32,7 +32,7 @@ const updateExpense = async (req: Request, res: Response) => {
     const { id } = req.params;
     const data = req.body;
 
-    const expense = await ExpenseOperations.update(id, data);
+    await ExpenseOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {

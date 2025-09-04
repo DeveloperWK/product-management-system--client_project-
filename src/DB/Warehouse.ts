@@ -16,7 +16,16 @@ const warehouseOperations = {
   getAll: async () => {
     try {
       return await prisma.warehouse.findMany({
-        include: { products: true },
+        include: { products: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            },
+          } },
       });
     } catch (error) {
       throw error;
@@ -27,7 +36,16 @@ const warehouseOperations = {
     try {
       return await prisma.warehouse.findUnique({
         where: { id },
-        include: { products: true },
+        include: { products: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            },
+          } },
       });
     } catch (error) {
       throw error;

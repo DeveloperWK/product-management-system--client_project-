@@ -1,6 +1,6 @@
-import { Router } from "express";
-import getAllCount from "../controllers/Dashboard/Count/Count.controller";
-import getAllFinanceTotals from "../controllers/Dashboard/Finance/FinancialTotals.controllers";
+import { Router } from 'express';
+import getAllCount from '../controllers/Dashboard/Count/Count.controller';
+import getAllFinanceTotals from '../controllers/Dashboard/Finance/FinancialTotals.controller';
 
 const router = Router();
 

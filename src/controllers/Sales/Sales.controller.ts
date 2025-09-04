@@ -1,25 +1,25 @@
-import { Request, Response } from "express";
-import { SalesFilter, salesService } from "../../DB/Sales";
-import { getPrismaInstance } from "../../config/db.config";
+import { Request, Response } from 'express';
+import { SalesFilter, salesService } from '../../DB/Sales';
+import { getPrismaInstance } from '../../config/db.config';
 
 const prisma = getPrismaInstance();
 
 export const getPrice = async (req: Request, res: Response) => {
-  const { weight, to, calQ, purchaseId } = req.body;
+  const { weight, calQ, purchaseId } = req.body;
   try {
     const purchase = await prisma.purchase.findUnique({
       where: {
         id: purchaseId,
       },
       select: {
-        attribute: true,
-        amount: true,
+        purchaseTotalAmount: true,
+        amount:true
       },
     });
     if (!purchase) {
       return res.status(404).json({ error: "Purchase not found" });
     }
-    const unitPrice = purchase?.amount / weight;
+    const unitPrice = purchase?.purchaseTotalAmount / weight;
     const price = unitPrice * calQ;
     res.status(200).json({ purchase, price, unitPrice });
   } catch (e) {
@@ -45,7 +45,7 @@ export const createSale = async (req: Request, res: Response) => {
       });
     }
 
-    const createdSales = await salesService.createBulkSales(
+     await salesService.createBulkSales(
       customerId,
       totalPayment,
       due,
@@ -55,7 +55,6 @@ export const createSale = async (req: Request, res: Response) => {
     return res.status(201).json({
       success: true,
       message: "Sales created successfully",
-      sales: createdSales,
     });
   } catch (error: any) {
     console.error(error);
@@ -78,6 +77,21 @@ export const getDues = async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to getDues",
+    });
+  }
+};
+export const getProductName = async (req: Request, res: Response) => {
+  try {
+    const { name } = req.params;
+    const sales = await salesService.getByProductName(name);
+    return res.status(200).json({
+      success: true,
+      sales,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to get sales",
     });
   }
 };
@@ -114,6 +128,7 @@ export const getSales = async (req: Request, res: Response) => {
       limit = "20",
       customerId,
       productId,
+      productName,
       dateFrom,
       dateTo,
       minAmount,
@@ -164,12 +179,10 @@ export const updateSale = async (req: Request, res: Response) => {
     const { id } = req.params;
     const updateData = { ...req.body, id };
 
-    const sale = await salesService.updateSale(updateData);
-
+    await salesService.updateSale(updateData);
     return res.json({
       success: true,
       message: "Sale updated successfully",
-      sale,
     });
   } catch (error: any) {
     if (error.message === "Sale not found") {
@@ -307,7 +320,7 @@ export const searchSales = async (req: Request, res: Response) => {
     });
   }
 };
-export const getAllSalesByMonth = async (req: Request, res: Response) => {
+export const getAllSalesByMonth = async (_req: Request, res: Response) => {
   try {
     const sells = await salesService.getMonthlySales();
     return res.status(200).json({
@@ -323,14 +336,14 @@ export const getAllSalesByMonth = async (req: Request, res: Response) => {
 };
 export const createDuePaymentsSales = async (req: Request, res: Response) => {
   try {
-    const { salesId, amount } = req.body;
-    if (!salesId) {
+    const { customerId, amount } = req.body;
+    if (!customerId) {
       return res.status(400).json({
         success: false,
-        message: "Sales ID is required",
+        message: "Customer ID is required",
       });
     }
-    await salesService.dueSalesPaymentsDb({ salesId, amount });
+    await salesService.dueSalesPaymentsDb({ customerId, amount });
     res.status(200).json({
       success: true,
       message: "Due Payments Created",

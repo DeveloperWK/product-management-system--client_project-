@@ -39,7 +39,16 @@ const Coupon = {
     try {
       return await prisma.coupon.findUnique({
         where: { id },
-        include: { products: { include: { product: true } } },
+        include: { products: { include: { product: {
+                select:{
+                  name:true,
+                  slug:true,
+                  sku:true,
+                  expiryDate:true,
+                  description:true,
+                  brand:true,
+                },
+              } } } },
       });
     } catch (error) {
       console.error("Error fetching coupon by ID:", error);
@@ -61,7 +70,7 @@ const Coupon = {
   ) => {
     try {
       const { productIds, assignedById, ...couponData } = data;
-      const coupon = await prisma.coupon.update({
+       await prisma.coupon.update({
         where: { id },
         data: couponData,
       });
@@ -100,7 +109,16 @@ const Coupon = {
     try {
       return await prisma.coupon.findUnique({
         where: { code },
-        include: { products: { include: { product: true } } },
+        include: { products: { include: { product: {
+                select:{
+                  name:true,
+                  slug:true,
+                  sku:true,
+                  expiryDate:true,
+                  description:true,
+                  brand:true,
+                },
+              } } } },
       });
     } catch (error) {
       console.error("Error fetching coupon by code:", error);
@@ -115,7 +133,16 @@ const Coupon = {
             some: { productId },
           },
         },
-        include: { products: { include: { product: true } } },
+        include: { products: { include: { product: {
+                select:{
+                  name:true,
+                  slug:true,
+                  sku:true,
+                  expiryDate:true,
+                  description:true,
+                  brand:true,
+                },
+              } } } },
       });
     } catch (error) {
       console.error("Error fetching coupon by product ID:", error);
@@ -158,7 +185,16 @@ const Coupon = {
         skip,
         take,
         orderBy: { createdAt: "desc" },
-        include: { products: { include: { product: true } } },
+        include: { products: { include: { product: {
+                select:{
+                  name:true,
+                  slug:true,
+                  sku:true,
+                  expiryDate:true,
+                  description:true,
+                  brand:true,
+                },
+              } } } },
       });
     } catch (error) {
       console.error("Error filtering coupons:", error);

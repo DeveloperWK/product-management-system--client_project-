@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
-import customer from "../../DB/Customer";
-import { hashPassword } from "../../service/password.service";
+import { Request, Response } from 'express';
+import customer from '../../DB/Customer';
+import { hashPassword } from '../../service/password.service';
 
 const createCustomer = async (req: Request, res: Response) => {
   try {
@@ -39,7 +39,7 @@ const createCustomer = async (req: Request, res: Response) => {
     res.status(500).json({ error: e });
   }
 };
-const getAllCustomer = async (req: Request, res: Response) => {
+const getAllCustomer = async (_req: Request, res: Response) => {
   try {
     const customers = await customer.getAll();
     res.status(200).json({ customers });

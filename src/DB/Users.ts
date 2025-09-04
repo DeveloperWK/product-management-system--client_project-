@@ -9,7 +9,7 @@ const createUser = async ({
   password,
 }: IUser): Promise<IUser | undefined> => {
   try {
-    const user = await prisma.user.create({
+    return await prisma.user.create({
       data: {
         name,
         email,
@@ -17,7 +17,6 @@ const createUser = async ({
         password,
       },
     });
-    return user;
   } catch (err) {
     console.error(err);
     throw err;
@@ -77,7 +76,7 @@ const getUserByIdDB = async (identifier: UserIdentifier) => {
 };
 const getAllUsersDB = async () => {
   try {
-    const users = await prisma.user.findMany({
+    return await prisma.user.findMany({
       select: {
         name: true,
         email: true,
@@ -88,7 +87,6 @@ const getAllUsersDB = async () => {
         createdAt: true,
       },
     });
-    return users;
   } catch (err) {
     throw err;
   }

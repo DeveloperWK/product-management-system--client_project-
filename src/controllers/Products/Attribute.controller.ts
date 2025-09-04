@@ -1,16 +1,13 @@
-import { Request, Response } from "express";
-import {
-  attributeOperations,
-  attributeValueOperations,
-} from "../../DB/Attribute";
+import { Request, Response } from 'express';
+import { attributeOperations, attributeValueOperations } from '../../DB/Attribute';
 import {
   CreateAttributeRequest,
   CreateAttributeValueRequest,
   UpdateAttributeRequest,
   UpdateAttributeValueRequest,
-} from "../../type";
+} from '../../type';
 
-const getAllAttributes = async (req: Request, res: Response) => {
+const getAllAttributes = async (_req: Request, res: Response) => {
   try {
     const attributes = await attributeOperations.getAll();
     res.status(200).json({ attributes });
@@ -75,8 +72,7 @@ const updateAttribute = async (
     const { id } = req.params;
     const data = req.body;
 
-    const attribute = await attributeOperations.update(id, data);
-    // res.status(200).json({ attribute });
+    await attributeOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {
@@ -101,7 +97,7 @@ const deleteAttribute = async (req: Request, res: Response) => {
   }
 };
 
-const getAllAttributeValues = async (req: Request, res: Response) => {
+const getAllAttributeValues = async (_req: Request, res: Response) => {
   try {
     const attributeValues = await attributeValueOperations.getAll();
     res.status(200).json({ attributeValues });

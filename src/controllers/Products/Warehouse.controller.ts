@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import warehouseOperations from "../../DB/Warehouse";
-import { CreateWarehouseRequest, UpdateWarehouseRequest } from "../../type";
+import { Request, Response } from 'express';
+import warehouseOperations from '../../DB/Warehouse';
+import { CreateWarehouseRequest, UpdateWarehouseRequest } from '../../type';
 
-const getAllWarehouses = async (req: Request, res: Response) => {
+const getAllWarehouses = async (_req: Request, res: Response) => {
   try {
     const warehouses = await warehouseOperations.getAll();
     res.status(200).json({ warehouses });
@@ -52,7 +52,7 @@ const updateWarehouse = async (
     const { id } = req.params;
     const data = req.body;
 
-    const warehouse = await warehouseOperations.update(id, data);
+    await warehouseOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {

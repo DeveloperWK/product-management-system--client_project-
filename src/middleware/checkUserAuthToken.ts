@@ -20,6 +20,11 @@ const checkUserAuthToken = async (
     req.token_type = "customer";
     return next();
   }
+  if(!userId || !tokenType) {
+    return  res.status(401).json({
+      message:'No Customer or TokenType provided'
+    });
+  }
   const isUserExists = await prisma.user.findUnique({
     where: { id: userId },
   });
@@ -35,7 +40,7 @@ const checkUserAuthToken = async (
       error: error,
     });
     // @ts-ignore
-    if (error instanceof Error && error.code.includes("ERR_INVALID_ARG_TYPE")) {
+    if (error instanceof Error || error.code.includes("ERR_INVALID_ARG_TYPE")) {
       const newRefreshToken = generateRefreshToken();
       await updateRefreshToken({
         userId: userId,

@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import getFinancialTotals from "../../../DB/dashboardShowTotal";
+import { Request, Response } from 'express';
+import getFinancialTotals from '../../../DB/dashboardShowTotal';
 
-const getAllFinanceTotals = async (req: Request, res: Response) => {
+const getAllFinanceTotals = async (_req: Request, res: Response) => {
   try {
     const totals = await getFinancialTotals();
     res.status(200).json({

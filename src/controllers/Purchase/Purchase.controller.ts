@@ -1,5 +1,5 @@
-import { Prisma } from "@prisma/client";
-import { Request, Response } from "express";
+import { Prisma } from '@prisma/client';
+import { Request, Response } from 'express';
 import {
   createPurchaseDb,
   createReturnPurchaseDb,
@@ -7,7 +7,9 @@ import {
   duePurchasePaymentsDb,
   getAllDuesBySupplier,
   getAllPurchases,
-  getAllPurchasesDb,
+  getAllPurchasesByCategory,
+  getAllPurchasesBySubCategory,
+  getAllPurchasesBySubSubCategory,
   getPurchaseByIdDb,
   getPurchasesByProduct,
   getPurchasesByStatusDb,
@@ -17,8 +19,8 @@ import {
   searchPurchasesDb,
   updatePurchaseDb,
   updatePurchaseStatusDb,
-} from "../../DB/Purchase";
-import transferStockDb from "../../DB/transferStock";
+} from '../../DB/Purchase';
+import transferStockDb from '../../DB/transferStock';
 
 const createPurchase = async (req: Request, res: Response) => {
   try {
@@ -144,21 +146,7 @@ const getAllPurchaseWithFilters = async (req: Request, res: Response) => {
     });
   }
 };
-const getAllPurchase = async (req: Request, res: Response) => {
-  try {
-    const purchase = await getAllPurchasesDb();
 
-    res.status(200).json({
-      success: true,
-      data: purchase,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: (error as Error).message,
-    });
-  }
-};
 const updatePurchase = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -180,8 +168,7 @@ const updatePurchase = async (req: Request, res: Response) => {
 const deletePurchase = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const purchase = await deletePurchaseDb(id);
-
+    await deletePurchaseDb(id);
     res.status(200).json({
       success: true,
       message: "Purchase deleted successfully",
@@ -287,7 +274,7 @@ const updatePurchaseStatus = async (req: Request, res: Response) => {
     });
   }
 };
-const getPurchaseStats = async (req: Request, res: Response) => {
+const getPurchaseStats = async (_req: Request, res: Response) => {
   try {
     const stats = await getPurchaseStatsDb();
 
@@ -399,13 +386,56 @@ export const getSupplierDues = async (req: Request, res: Response) => {
     });
   }
 };
-
+const getByCategory = async (req: Request, res: Response) => {
+  try {
+    const { categoryId } = req.params;
+    const purchases = await getAllPurchasesByCategory(categoryId);
+    return res.status(200).json({
+      success: true,
+      data: purchases,
+    })
+  }catch (e) {
+    res.status(500).json({
+      success: false,
+      error: (e as Error).message,
+    })
+  }
+}
+const getBySubCategory = async (req: Request, res: Response) => {
+  try {
+    const { categoryId } = req.params;
+    const purchases = await getAllPurchasesBySubCategory(categoryId);
+    return res.status(200).json({
+      success: true,
+      data: purchases,
+    })
+  }catch (e) {
+    res.status(500).json({
+      success: false,
+      error: (e as Error).message,
+    })
+  }
+}
+const getBySubSubCategory = async (req: Request, res: Response) => {
+  try {
+    const { categoryId } = req.params;
+    const purchases = await getAllPurchasesBySubSubCategory(categoryId);
+    return res.status(200).json({
+      success: true,
+      data: purchases,
+    })
+  }catch (e) {
+    res.status(500).json({
+      success: false,
+      error: (e as Error).message,
+    })
+  }
+}
 export {
   createDuePaymentsPurchase,
   createPurchase,
   createReturnPurchase,
   deletePurchase,
-  getAllPurchase,
   getAllPurchaseWithFilters,
   getPurchaseById,
   getPurchaseByProductId,
@@ -417,4 +447,7 @@ export {
   transferStock,
   updatePurchase,
   updatePurchaseStatus,
+  getBySubSubCategory,
+  getByCategory,
+  getBySubCategory
 };

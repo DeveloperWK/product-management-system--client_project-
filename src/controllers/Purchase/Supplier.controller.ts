@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import {
   createSupplier as createSupplierDb,
   deleteSupplierDb,
   getAllSuppliersDB,
   getSupplierByIdDB,
   updateSupplier as updateSupplierDb,
-} from "../../DB/Supplier";
+} from '../../DB/Supplier';
 
 const createSupplier = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -60,7 +60,7 @@ const deleteSupplier = async (req: Request, res: Response) => {
     res.status(500).json({ error: err.meta.cause });
   }
 };
-const getAllSuppliers = async (req: Request, res: Response) => {
+const getAllSuppliers = async (_req: Request, res: Response) => {
   try {
     const suppliers = await getAllSuppliersDB();
     res.status(200).json({

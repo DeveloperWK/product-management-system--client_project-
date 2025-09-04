@@ -29,7 +29,7 @@ const updateSupplier = async (
   email?: string
 ) => {
   try {
-    const supplier = await prisma.supplier.update({
+    return await prisma.supplier.update({
       where: {
         id: id,
       },
@@ -39,7 +39,6 @@ const updateSupplier = async (
         ...(email && { email }),
       },
     });
-    return supplier;
   } catch (err) {
     throw err;
   }
@@ -82,7 +81,7 @@ const getSupplierByIdDB = async (identifier: UserIdentifier) => {
 };
 const getAllSuppliersDB = async () => {
   try {
-    const users = await prisma.supplier.findMany({
+    return await prisma.supplier.findMany({
       include: {
         purchases: {
           select: {
@@ -91,7 +90,6 @@ const getAllSuppliersDB = async () => {
         },
       },
     });
-    return users;
   } catch (err) {
     throw err;
   }

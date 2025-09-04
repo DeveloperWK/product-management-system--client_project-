@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import getCounts from "../../../DB/Count";
+import { Request, Response } from 'express';
+import getCounts from '../../../DB/Count';
 
-const getAllCount = async (req: Request, res: Response) => {
+const getAllCount = async (_req: Request, res: Response) => {
   try {
     const counts = await getCounts();
     res.status(200).json({

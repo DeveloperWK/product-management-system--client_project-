@@ -1,17 +1,20 @@
 model Customer {
-  id            String          @id @default(cuid())
+  id            String            @id @default(cuid())
   firstName     String
   lastName      String?
-  email         String          @unique
+  email         String            @unique
   password      String
-  phone         String?         @unique
+  phone         String?           @unique
   address       String?
   city          String?
   zip           String?
   sales         Sales[]
   PaymentAndDue PaymentAndDue[]
-  country       String?         @default("BD")
+  duePayment    SalesDuePayment[]
+  country       String?           @default("BD")
   refreshToken  RefreshToken?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@unique([email, phone])
 }

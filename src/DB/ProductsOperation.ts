@@ -109,17 +109,7 @@ const productOperations = {
       throw error;
     }
   },
-  getProductByCategoryDb: async (categoryId: string) => {
-    try {
-      return await prisma.product.findMany({
-        where: {
-          categoryId: categoryId,
-        },
-      });
-    } catch (error) {
-      throw error;
-    }
-  },
+
   getBySku: async (sku: string) => {
     try {
       return await prisma.product.findUnique({

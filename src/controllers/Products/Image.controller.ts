@@ -1,12 +1,9 @@
-import { Request, Response } from "express";
-import { productImageOperations } from "../../DB/ProductsOperation";
-import imageUploadService from "../../service/image-upload.service";
-import {
-  CreateProductImageRequest,
-  UpdateProductImageRequest,
-} from "../../type";
+import { Request, Response } from 'express';
+import { productImageOperations } from '../../DB/ProductsOperation';
+import imageUploadService from '../../service/image-upload.service';
+import { CreateProductImageRequest, UpdateProductImageRequest } from '../../type';
 
-const getAllProductImages = async (req: Request, res: Response) => {
+const getAllProductImages = async (_req: Request, res: Response) => {
   try {
     const images = await productImageOperations.getByProductId(0); // Simplified - get all
     res.status(200).json({ images });
@@ -81,7 +78,7 @@ const updateProductImage = async (
         return res.status(400).json({ error: "URL is required" });
       }
 
-      const image = await productImageOperations.update(id, fileUrl);
+      await productImageOperations.update(id, fileUrl);
       res.status(200).json({ msg: "Update Successful" });
     } else {
       res.status(500).json({
@@ -147,7 +144,7 @@ const replaceProductImages = async (
     }
 
     // Replace all images for this product
-    const newImages = await productImageOperations.replaceForProduct(
+      await productImageOperations.replaceForProduct(
       productId,
       uploadResults
     );
@@ -227,7 +224,7 @@ const upsertProductImages = async (
     }
 
     // Upsert images for this product
-    const updatedImages = await productImageOperations.upsertForProduct(
+     await productImageOperations.upsertForProduct(
       productId,
       uploadResults
     );

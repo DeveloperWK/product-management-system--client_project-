@@ -1,6 +1,5 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { configDotenv } from "dotenv";
 import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
@@ -23,14 +22,13 @@ import productImagesRoute from "./routes/Image.routes";
 import productsRoute from "./routes/Products.routes";
 import purchasesRoute from "./routes/Purchase.routes";
 import salesRoutes from "./routes/Sales.routes";
+import settingsRoutes from "./routes/Settings.routes";
 import statementRoutes from "./routes/Statement.routes";
 import storesRoutes from "./routes/Store.routes";
 import suppliersRoutes from "./routes/Suppliers.routes";
 import userRoutes from "./routes/Users.routes";
 import warehouseRoutes from "./routes/Warehouse.routes";
 import warrantyRoutes from "./routes/Warranty.routes";
-
-configDotenv();
 
 const app = express();
 const LIMITER = rateLimit({
@@ -40,20 +38,22 @@ const LIMITER = rateLimit({
   legacyHeaders: false,
   ipv6Subnet: 56,
 });
+
+app.use(
+  cors({
+    origin: process.env._CLIENT_URI,
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app
+  .set("trust proxy", 1)
   .use(LIMITER)
-  .use(express.json())
-  .use(
-    cors({
-      origin: process.env._CLIENT_URI,
-      methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
-      credentials: true,
-    })
-  )
   .use(helmet())
   .use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"))
+  .use(express.json())
   .use(cookieParser())
-
+  .get("/", (req, res) => res.json({ message: "API is running 🚀" }))
   .use("/api/v1/users", userRoutes)
   .use("/api/v1/auth", authRoutes)
   .use(
@@ -153,6 +153,12 @@ app
     checkUserAuthToken,
     verifyUserAccessToken,
     dashboardRoutes
+  )
+  .use(
+    "/api/v1/settings",
+    checkUserAuthToken,
+    verifyUserAccessToken,
+    settingsRoutes
   )
   .use(notFound)
   .use(errorHandler);

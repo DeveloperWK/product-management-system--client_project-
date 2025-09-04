@@ -16,7 +16,16 @@ const storeOperations = {
   getAll: async () => {
     try {
       return await prisma.store.findMany({
-        include: { products: true },
+        include: { products: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            },
+          } },
       });
     } catch (error) {
       throw error;
@@ -27,7 +36,16 @@ const storeOperations = {
     try {
       return await prisma.store.findUnique({
         where: { id },
-        include: { products: true },
+        include: { products: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            },
+          } },
       });
     } catch (error) {
       throw error;

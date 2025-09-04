@@ -14,6 +14,7 @@ export async function createPurchaseDb(data: PurchaseType) {
       payment: data.payment,
       commission: data.commission,
       due: data.due,
+      purchaseTotalAmount:data.amount,
       supplier: { connect: { id: data.supplierId } },
       attribute: { connect: { id: data.attributeValueId } },
       store: { connect: { id: data.storeId } },
@@ -59,7 +60,20 @@ export async function getPurchaseByIdDb(id: string) {
       include: {
         store: true,
         warehouse: true,
-        product: true,
+        product: {
+          select:{
+            name:true,
+            slug:true,
+            sku:true,
+            expiryDate:true,
+            description:true,
+            category:true,
+            subCategory:true,
+            subSubCategory:true,
+            brand:true,
+            images:true,
+          }
+        },
         attribute: true,
       },
     });
@@ -87,7 +101,20 @@ export async function getAllPurchases(params: {
       include: {
         store: true,
         warehouse: true,
-        product: true,
+        product: {
+          select:{
+            name:true,
+            slug:true,
+            sku:true,
+            expiryDate:true,
+            description:true,
+            category:true,
+            subCategory:true,
+            subSubCategory:true,
+            brand:true,
+            images:true,
+          }
+        },
         attribute: true,
       },
     });
@@ -164,7 +191,20 @@ export async function getPurchasesByStore(storeId: string) {
       include: {
         store: true,
         warehouse: true,
-        product: true,
+        product: {
+          select:{
+            name:true,
+            slug:true,
+            sku:true,
+            expiryDate:true,
+            description:true,
+            category:true,
+            subCategory:true,
+            subSubCategory:true,
+            brand:true,
+            images:true,
+          }
+        },
         attribute: true,
       },
     });
@@ -183,7 +223,20 @@ export async function getPurchasesByWarehouse(warehouseId: string) {
       include: {
         store: true,
         warehouse: true,
-        product: true,
+        product: {
+          select:{
+            name:true,
+            slug:true,
+            sku:true,
+            expiryDate:true,
+            description:true,
+            category:true,
+            subCategory:true,
+            subSubCategory:true,
+            brand:true,
+            images:true,
+          }
+        },
         attribute: true,
       },
     });
@@ -202,7 +255,20 @@ export async function getPurchasesByProduct(productId: string) {
       include: {
         store: true,
         warehouse: true,
-        product: true,
+        product: {
+          select:{
+            name:true,
+            slug:true,
+            sku:true,
+            expiryDate:true,
+            description:true,
+            category:true,
+            subCategory:true,
+            subSubCategory:true,
+            brand:true,
+            images:true,
+          }
+        },
         attribute: true,
       },
     });
@@ -223,7 +289,20 @@ export async function getPurchasesByStatusDb(
       include: {
         store: true,
         warehouse: true,
-        product: true,
+        product: {
+          select:{
+            name:true,
+            slug:true,
+            sku:true,
+            expiryDate:true,
+            description:true,
+            category:true,
+            subCategory:true,
+            subSubCategory:true,
+            brand:true,
+            images:true,
+          }
+        },
         attribute: true,
       },
     });
@@ -246,7 +325,20 @@ export async function updatePurchaseStatusDb(
       include: {
         store: true,
         warehouse: true,
-        product: true,
+        product: {
+          select:{
+            name:true,
+            slug:true,
+            sku:true,
+            expiryDate:true,
+            description:true,
+            category:true,
+            subCategory:true,
+            subSubCategory:true,
+            brand:true,
+            images:true,
+          }
+        },
         attribute: true,
       },
     });
@@ -329,7 +421,20 @@ export async function searchPurchasesDb(filters: {
       include: {
         store: true,
         warehouse: true,
-        product: true,
+        product: {
+          select:{
+            name:true,
+            slug:true,
+            sku:true,
+            expiryDate:true,
+            description:true,
+            category:true,
+            subCategory:true,
+            subSubCategory:true,
+            brand:true,
+            images:true,
+          }
+        },
         attribute: true,
       },
       orderBy: {
@@ -340,20 +445,33 @@ export async function searchPurchasesDb(filters: {
     throw new Error(`Error searching purchases: ${(error as Error).message}`);
   }
 }
-export const getAllPurchasesDb = async () => {
-  try {
-    return await prisma.purchase.findMany({
-      include: {
-        store: true,
-        warehouse: true,
-        attribute: true,
-        product: true,
-      },
-    });
-  } catch (err) {
-    throw new Error(`Error searching purchases: ${(err as Error).message}`);
-  }
-};
+// export const getAllPurchasesDb = async () => {
+//   try {
+//     return await prisma.purchase.findMany({
+//       include: {
+//         store: true,
+//         warehouse: true,
+//         attribute: true,
+//         product: {
+//           select:{
+//             name:true,
+//             slug:true,
+//             sku:true,
+//             expiryDate:true,
+//             description:true,
+//             category:true,
+//             subCategory:true,
+//             subSubCategory:true,
+//             brand:true,
+//             images:true,
+//           }
+//         },
+//       },
+//     });
+//   } catch (err) {
+//     throw new Error(`Error searching purchases: ${(err as Error).message}`);
+//   }
+// };
 export const duePurchasePaymentsDb = async (data: {
   purchaseId: string;
   amount: number;
@@ -412,5 +530,101 @@ export async function getAllDuesBySupplier(supplierId: string) {
     return result._sum.due ?? 0;
   } catch (error) {
     throw new Error(`Failed to fetch supplier purchase: ${error}`);
+  }
+}
+
+
+export async function getAllPurchasesByCategory(categoryId: string) {
+  try {
+    return await prisma.purchase.findMany({
+      where: {
+        product: {
+          categoryId,
+        },
+      },
+      include: {
+        product: {
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,       // includes full category object
+            subCategory: true,    // only the subCategory object, not all its products
+            subSubCategory: true, // only the subSubCategory object
+            brand: true,
+            images: true,
+          },
+        },
+      },
+    });
+  } catch (e) {
+    throw e;
+  }
+}
+export async function getAllPurchasesBySubCategory(categoryId: string) {
+  try {
+    return await prisma.purchase.findMany({
+      where: {
+        product: {
+          subCategory: {
+            id:categoryId,
+          },
+        },
+      },
+      include: {
+        product: {
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,       // includes full category object
+            subCategory: true,    // only the subCategory object, not all its products
+            subSubCategory: true, // only the subSubCategory object
+            brand: true,
+            images: true,
+          },
+        },
+      },
+    });
+  } catch (e) {
+    throw e;
+  }
+}
+export async function getAllPurchasesBySubSubCategory(categoryId: string) {
+  try {
+    return await prisma.purchase.findMany({
+      where: {
+        product: {
+
+          subSubCategory:{
+            id:categoryId
+          }
+
+
+        },
+      },
+      include: {
+        product: {
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,       // includes full category object
+            subCategory: true,    // only the subCategory object, not all its products
+            subSubCategory: true, // only the subSubCategory object
+            brand: true,
+            images: true,
+          },
+        },
+      },
+    });
+  } catch (e) {
+    throw e;
   }
 }

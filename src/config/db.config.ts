@@ -1,5 +1,4 @@
-// prisma.client.ts
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from '@prisma/client';
 
 let prisma: PrismaClient | null = null;
 
@@ -17,13 +16,11 @@ const createPrismaClient = (): PrismaClient => {
     },
   });
 
-  // Define an extension that times queries and logs slow ones.
+
   const slowQueryExtension = Prisma.defineExtension({
     name: "slow-query-logger",
     query: {
-      // apply to all models
       $allModels: {
-        // apply to all operations on each model
         async $allOperations({
           model,
           operation,
@@ -33,7 +30,6 @@ const createPrismaClient = (): PrismaClient => {
           model: string;
           operation: string;
           args?: any;
-          // `query` is the function that runs the real Prisma query
           query: (args?: any) => Promise<any>;
         }) {
           const started = Date.now();
@@ -41,7 +37,6 @@ const createPrismaClient = (): PrismaClient => {
           const duration = Date.now() - started;
 
           if (duration > 1000) {
-            // adjust the threshold as you want
             console.warn(
               `⚠️ Slow query detected: ${model}.${operation} took ${duration}ms`
             );
@@ -53,9 +48,7 @@ const createPrismaClient = (): PrismaClient => {
     },
   });
 
-  // Create an extended client (base + extension)
 
-  // Keep the query event logger in dev for raw SQL visibility
   if (process.env.NODE_ENV === "development") {
     base.$on("query", (e) => {
       console.log("Query:", e.query);
@@ -74,7 +67,6 @@ export const getPrismaInstance = (): PrismaClient => {
   return prisma;
 };
 
-// health check / retry connect
 export const testConnection = async (
   maxRetries = 5,
   initialDelay = 1000
@@ -118,6 +110,5 @@ export const shutdownPrisma = async (): Promise<void> => {
   }
 };
 
-// graceful shutdown hooks
 process.on("SIGINT", shutdownPrisma);
 process.on("SIGTERM", shutdownPrisma);

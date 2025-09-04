@@ -1,4 +1,4 @@
-import { getPrismaInstance } from "../config/db.config";
+import { getPrismaInstance } from '../config/db.config';
 
 const prisma = getPrismaInstance();
 
@@ -16,7 +16,16 @@ const brandOperations = {
   getAll: async () => {
     try {
       return await prisma.brand.findMany({
-        include: { products: true },
+        include: {      products: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            }
+          }, },
       });
     } catch (error) {
       throw error;
@@ -27,7 +36,16 @@ const brandOperations = {
     try {
       return await prisma.brand.findUnique({
         where: { id },
-        include: { products: true },
+        include: {      products: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            }
+          }, },
       });
     } catch (error) {
       throw error;

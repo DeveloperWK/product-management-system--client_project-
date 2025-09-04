@@ -1,0 +1,7 @@
+model Settings {
+  id    String @id @default(cuid())
+  name  String
+  image String
+  logo  String
+  cover String
+}

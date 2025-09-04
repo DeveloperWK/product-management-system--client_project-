@@ -1,4 +1,4 @@
-import { getPrismaInstance } from "../config/db.config";
+import { getPrismaInstance } from '../config/db.config';
 
 const prisma = getPrismaInstance();
 
@@ -22,7 +22,16 @@ const categoryOperations = {
               subSubCategories: true,
             },
           },
-          product: true,
+          product: {
+              select:{
+                name:true,
+                slug:true,
+                sku:true,
+                expiryDate:true,
+                description:true,
+                brand:true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -40,7 +49,16 @@ const categoryOperations = {
               subSubCategories: true,
             },
           },
-          product: true,
+          product: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -54,7 +72,16 @@ const categoryOperations = {
         where: { name },
         include: {
           subCategories: true,
-          product: true,
+          product: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -104,7 +131,16 @@ const subCategoryOperations = {
         include: {
           category: true,
           subSubCategories: true,
-          product: true,
+          product: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -174,7 +210,16 @@ const subSubCategoryOperations = {
       return await prisma.subSubCategory.findMany({
         include: {
           subCategory: true,
-          product: true,
+          product: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -188,7 +233,16 @@ const subSubCategoryOperations = {
         where: { id },
         include: {
           subCategory: true,
-          product: true,
+          product: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            },
+          },
         },
       });
     } catch (error) {

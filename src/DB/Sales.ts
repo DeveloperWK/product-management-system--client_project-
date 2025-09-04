@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/client";
-import { getPrismaInstance } from "../config/db.config";
-import { SalesCreateInput, SalesFilter, SalesUpdateInput } from "../type";
+import { Prisma } from '@prisma/client';
+import { getPrismaInstance } from '../config/db.config';
+import { SalesCreateInput, SalesFilter, SalesUpdateInput } from '../type';
 
 const prisma = getPrismaInstance();
 
@@ -101,13 +101,7 @@ class SalesService {
             amount: { decrement: sale.quantity * (sale.unitPrice ?? 0) },
           },
         });
-        await tx.paymentAndDue.create({
-          data: {
-            customer: { connect: { id: customerId } },
-            amount: totalPayment,
-            due: due,
-          },
-        });
+
         createdSales.push({
           salesId: createdSale.id,
           purchaseId: createdSale.purchaseId,
@@ -122,6 +116,26 @@ class SalesService {
           totalPayment: totalPayment,
         });
       }
+      await tx.paymentAndDue.upsert({
+        where: {
+          customerId: customerId,
+        },
+        create: {
+          customer: { connect: { id: customerId } },
+          amount: totalPayment,
+          due: due,
+        },
+        update: {
+          amount: {
+            increment: totalPayment,
+          },
+          due: {
+            increment: due,
+          },
+        },
+      });
+
+
     });
 
     return createdSales;
@@ -511,17 +525,17 @@ class SalesService {
       throw new Error(`Failed to fetch monthly sales: ${error}`);
     }
   }
-  async dueSalesPaymentsDb(data: { salesId: string; amount: number }) {
+  async dueSalesPaymentsDb(data: { customerId: string; amount: number }) {
     try {
       return await prisma.$transaction(async (t) => {
         await prisma.salesDuePayment.create({
           data: {
-            sales: { connect: { id: data.salesId } },
+            customer: { connect: { id: data.customerId } },
             amount: data.amount,
           },
         });
-        await t.purchase.update({
-          where: { id: data.salesId },
+        await t.paymentAndDue.update({
+          where: { customerId:data.customerId },
           data: {
             due: {
               decrement: data.amount,
@@ -531,6 +545,21 @@ class SalesService {
       });
     } catch (e) {
       throw e;
+    }
+  }
+  getByProductName=async (name:string)=>{
+    try{
+      return await  prisma.sales.findMany({
+        where: {
+          purchase:{
+            product:{
+              name:name
+            }
+          }
+        }
+      })
+}catch (e) {
+        throw  e
     }
   }
 

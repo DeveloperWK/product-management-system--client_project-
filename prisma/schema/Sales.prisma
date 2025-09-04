@@ -29,10 +29,10 @@ model Sales {
   finalAmount    Float? // after applying coupon + tax etc.
 
   // Relations
-  duePayment SalesDuePayment[]
-  variant    AttributeValue    @relation("SalesVariant", fields: [variantValueId], references: [id])
-  customer   Customer          @relation(fields: [customerId], references: [id])
-  purchase   Purchase          @relation("SalesPurchase", fields: [purchaseId], references: [id])
+
+  variant  AttributeValue @relation("SalesVariant", fields: [variantValueId], references: [id])
+  customer Customer       @relation(fields: [customerId], references: [id])
+  purchase Purchase       @relation("SalesPurchase", fields: [purchaseId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -41,11 +41,11 @@ model Sales {
 }
 
 model SalesDuePayment {
-  id        String   @id @default(cuid())
-  salesId   String
-  sales     Sales    @relation(fields: [salesId], references: [id])
-  amount    Float
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  amount     Float
+  createdAt  DateTime @default(now())
 }
 
 model PaymentAndDue {
@@ -56,4 +56,6 @@ model PaymentAndDue {
   due        Float?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@unique([customerId])
 }

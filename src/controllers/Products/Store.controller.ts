@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import storeOperations from "../../DB/Store";
-import { CreateStoreRequest, UpdateStoreRequest } from "../../type";
+import { Request, Response } from 'express';
+import storeOperations from '../../DB/Store';
+import { CreateStoreRequest, UpdateStoreRequest } from '../../type';
 
-const getAllStores = async (req: Request, res: Response) => {
+const getAllStores = async (_req: Request, res: Response) => {
   try {
     const stores = await storeOperations.getAll();
     res.status(200).json({
@@ -56,7 +56,7 @@ const updateStore = async (
     const { id } = req.params;
     const data = req.body;
 
-    const store = await storeOperations.update(id, data);
+    await storeOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {

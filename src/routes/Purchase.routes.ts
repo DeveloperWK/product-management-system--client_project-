@@ -1,10 +1,13 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   createDuePaymentsPurchase,
   createPurchase,
   createReturnPurchase,
   deletePurchase,
   getAllPurchaseWithFilters,
+  getByCategory,
+  getBySubCategory,
+  getBySubSubCategory,
   getPurchaseById,
   getPurchaseByProductId,
   getPurchaseByStatus,
@@ -16,7 +19,7 @@ import {
   transferStock,
   updatePurchase,
   updatePurchaseStatus,
-} from "../controllers/Purchase/Purchase.controller";
+} from '../controllers/Purchase/Purchase.controller';
 
 const router = Router();
 
@@ -26,6 +29,9 @@ router
   .post("/due/create-payment", createDuePaymentsPurchase)
   .post("/return-purchase", createReturnPurchase)
   .get("", getAllPurchaseWithFilters)
+  .get("/category/:categoryId", getByCategory)
+  .get("/sub-category/:categoryId", getBySubCategory)
+  .get("/sub-sub-category/:categoryId", getBySubSubCategory)
   .get("/search", searchPurchase)
   .get("/dues/:supplierId", getSupplierDues)
   .get("/stats/summary", getPurchaseStats)

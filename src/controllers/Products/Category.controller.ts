@@ -1,9 +1,5 @@
-import { Request, Response } from "express";
-import {
-  categoryOperations,
-  subCategoryOperations,
-  subSubCategoryOperations,
-} from "../../DB/Categories";
+import { Request, Response } from 'express';
+import { categoryOperations, subCategoryOperations, subSubCategoryOperations } from '../../DB/Categories';
 import {
   CreateCategoryRequest,
   CreateSubCategoryRequest,
@@ -11,9 +7,9 @@ import {
   UpdateCategoryRequest,
   UpdateSubCategoryRequest,
   UpdateSubSubCategoryRequest,
-} from "../../type";
+} from '../../type';
 
-const getAllCategories = async (req: Request, res: Response) => {
+const getAllCategories = async (_req: Request, res: Response) => {
   try {
     const categories = await categoryOperations.getAll();
     res.status(200).json({ categories });
@@ -78,7 +74,7 @@ const updateCategory = async (
     const { id } = req.params;
     const data = req.body;
 
-    const category = await categoryOperations.update(id, data);
+    await categoryOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {
@@ -103,7 +99,7 @@ const deleteCategory = async (req: Request, res: Response) => {
   }
 };
 
-const getAllSubCategories = async (req: Request, res: Response) => {
+const getAllSubCategories = async (_req: Request, res: Response) => {
   try {
     const subCategories = await subCategoryOperations.getAll();
     res.status(200).json({ subCategories });
@@ -155,7 +151,7 @@ const updateSubCategory = async (
     const { id } = req.params;
     const data = req.body;
 
-    const subCategory = await subCategoryOperations.update(id, data);
+    await subCategoryOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {
@@ -180,12 +176,12 @@ const deleteSubCategory = async (req: Request, res: Response) => {
   }
 };
 
-const getAllSubSubCategories = async (req: Request, res: Response) => {
+const getAllSubSubCategories = async (_req: Request, res: Response) => {
   try {
     const subSubCategories = await subSubCategoryOperations.getAll();
     res.status(200).json({ subSubCategories });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch subsubcategories" });
+    res.status(500).json({ error: "Failed to fetch subSubcategories" });
   }
 };
 
@@ -195,12 +191,12 @@ const getSubSubCategoryById = async (req: Request, res: Response) => {
     const subSubCategory = await subSubCategoryOperations.getById(id);
 
     if (!subSubCategory) {
-      return res.status(404).json({ error: "Subsubcategory not found" });
+      return res.status(404).json({ error: "SubSubcategory not found" });
     }
 
     res.status(200).json({ subSubCategory });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch subsubcategory" });
+    res.status(500).json({ error: "Failed to fetch SubSubcategory" });
   }
 };
 
@@ -223,7 +219,7 @@ const createSubSubCategory = async (
     );
     res.status(201).json({ subSubCategory });
   } catch (error) {
-    res.status(500).json({ error: "Failed to create subsubcategory" });
+    res.status(500).json({ error: "Failed to create SubSubcategory" });
   }
 };
 
@@ -235,13 +231,13 @@ const updateSubSubCategory = async (
     const { id } = req.params;
     const data = req.body;
 
-    const subSubCategory = await subSubCategoryOperations.update(id, data);
+    await subSubCategoryOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {
-      return res.status(404).json({ error: "Subsubcategory not found" });
+      return res.status(404).json({ error: "SubSubcategory not found" });
     }
-    res.status(500).json({ error: "Failed to update subsubcategory" });
+    res.status(500).json({ error: "Failed to update SubSubcategory" });
   }
 };
 
@@ -254,9 +250,9 @@ const deleteSubSubCategory = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     if (error.code === "P2025") {
-      return res.status(404).json({ error: "Subsubcategory not found" });
+      return res.status(404).json({ error: "SubSubcategory not found" });
     }
-    res.status(500).json({ error: "Failed to delete subsubcategory" });
+    res.status(500).json({ error: "Failed to delete SubSubcategory" });
   }
 };
 export {

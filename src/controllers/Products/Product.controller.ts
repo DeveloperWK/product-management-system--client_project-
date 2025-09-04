@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import { getPrismaInstance } from "../../config/db.config";
-import { productOperations } from "../../DB/ProductsOperation";
-import { CreateProductRequest, UpdateProductRequest } from "../../type";
+import { Request, Response } from 'express';
+import { getPrismaInstance } from '../../config/db.config';
+import { productOperations } from '../../DB/ProductsOperation';
+import { CreateProductRequest, UpdateProductRequest } from '../../type';
 
 const prisma = getPrismaInstance();
 
@@ -16,20 +16,7 @@ const getAllProducts = async (req: Request, res: Response) => {
   }
 };
 
-const getProductByCategory = async (req: Request, res: Response) => {
-  try {
-    const { categoryId } = req.query;
-    if (!categoryId) {
-      res.status(404).json({ error: "No CategoryId" });
-    }
-    const products = await productOperations.getProductByCategoryDb(
-      categoryId as string
-    );
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch products" });
-  }
-};
+
 
 const getProductById = async (req: Request, res: Response) => {
   try {
@@ -45,7 +32,7 @@ const getProductById = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch product" });
   }
 };
-const getActiveProducts = async (req: Request, res: Response) => {
+const getActiveProducts = async (_req: Request, res: Response) => {
   try {
     const product = await productOperations.getAllActiveProducts();
 
@@ -122,7 +109,7 @@ const updateProduct = async (
   try {
     const { id } = req.params;
     const data = req.body;
-    const product = await productOperations.update(id, data);
+    await productOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {
@@ -152,7 +139,7 @@ const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
-const getLowStockProducts = async (req: Request, res: Response) => {
+const getLowStockProducts = async (_req: Request, res: Response) => {
   try {
     // Fetch purchases with related product info
     const purchases = await prisma.purchase.findMany({
@@ -198,7 +185,6 @@ export {
   getActiveProducts,
   getAllProducts,
   getLowStockProducts,
-  getProductByCategory,
   getProductById,
   getProductBySku,
   updateProduct,

@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import brandOperations from "../../DB/Brand";
-import { CreateBrandRequest, UpdateBrandRequest } from "../../type";
+import { Request, Response } from 'express';
+import brandOperations from '../../DB/Brand';
+import { CreateBrandRequest, UpdateBrandRequest } from '../../type';
 
-const getAllBrands = async (req: Request, res: Response) => {
+const getAllBrands = async (_req: Request, res: Response) => {
   try {
     const brands = await brandOperations.getAll();
     res.status(200).json({ brands });
@@ -52,8 +52,7 @@ const updateBrand = async (
     const { id } = req.params;
     const data = req.body;
 
-    const brand = await brandOperations.update(id, data);
-    // res.status(200).json({ brand });
+    await brandOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {

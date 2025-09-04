@@ -3,10 +3,8 @@ import cluster from "node:cluster";
 import * as os from "node:os";
 import app from "./app";
 import { getPrismaInstance, testConnection } from "./config/db.config";
-
 configDotenv();
-
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT;
 
 // Calculate optimal worker count based on database capacity
 const calculateOptimalWorkerCount = () => {

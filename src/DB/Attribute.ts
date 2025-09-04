@@ -1,4 +1,4 @@
-import { getPrismaInstance } from "../config/db.config";
+import { getPrismaInstance } from '../config/db.config';
 
 const prisma = getPrismaInstance();
 
@@ -86,7 +86,16 @@ const attributeValueOperations = {
       return await prisma.attributeValue.findMany({
         include: {
           attribute: true,
-          products: true,
+          products: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            }
+          },
         },
       });
     } catch (error) {
@@ -100,7 +109,16 @@ const attributeValueOperations = {
         where: { id },
         include: {
           attribute: true,
-          products: true,
+          products: {
+            select:{
+              name:true,
+              slug:true,
+              sku:true,
+              expiryDate:true,
+              description:true,
+              brand:true,
+            }
+          },
         },
       });
     } catch (error) {

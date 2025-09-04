@@ -145,6 +145,7 @@ interface UpdateProductImageRequest {
 }
 
 interface PurchaseType {
+  purchaseTotalAmount:string;
   expenseId: string;
   expenseAmount: number;
   storeId: string;

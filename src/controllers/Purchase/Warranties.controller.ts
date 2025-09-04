@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import warrantiesOperations from "../../DB/Warranties";
+import { Request, Response } from 'express';
+import warrantiesOperations from '../../DB/Warranties';
 
-const getAllWarranties = async (req: Request, res: Response) => {
+const getAllWarranties = async (_req: Request, res: Response) => {
   try {
     const warranty = await warrantiesOperations.getAll();
     res.status(200).json({ warranty });
@@ -45,8 +45,7 @@ const updateWarranty = async (req: Request, res: Response) => {
     const { id } = req.params;
     const data = req.body;
 
-    const warranty = await warrantiesOperations.update(id, data);
-    // res.status(200).json({ warranty });
+    await warrantiesOperations.update(id, data);
     res.status(200).json({ msg: "Update Successful" });
   } catch (error: any) {
     if (error.code === "P2025") {

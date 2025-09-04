@@ -1,15 +1,14 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   createProduct,
   deleteProduct,
   getActiveProducts,
   getAllProducts,
   getLowStockProducts,
-  getProductByCategory,
   getProductById,
   getProductBySku,
   updateProduct,
-} from "../controllers/Products/Product.controller";
+} from '../controllers/Products/Product.controller';
 
 const router = Router();
 
@@ -18,7 +17,6 @@ router
   .get("", getAllProducts)
   .get("/low-stock", getLowStockProducts)
   .get("/sku/:sku", getProductBySku)
-  .get("/category/:categoryId", getProductByCategory)
   .get("/active", getActiveProducts)
   .get("/:id", getProductById)
   .patch("/:id", updateProduct)
