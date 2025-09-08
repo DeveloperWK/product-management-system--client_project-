@@ -5,12 +5,14 @@
   "main": "server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "NODE_ENV=production node dist/server.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
     "db:migrate": "pnpm prisma migrate dev",
     "db:generate": "pnpm prisma generate",
     "db:studio": "pnpm prisma studio",
-    "db:push": "pnpm prisma db push"
+    "db:push": "pnpm prisma db push",
+    "docker:build": "docker buildx build -t developerwk44/product_management_work:latest .",
+    "docker:push": "docker push developerwk44/product_management_work:latest"
   },
   "keywords": [],
   "author": "",

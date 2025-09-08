@@ -1,3 +1,6 @@
+// ===========================================
+// ENUMS
+// ===========================================
 enum RoleType {
   ADMIN
   USER
@@ -5,26 +8,65 @@ enum RoleType {
   MODERATOR
 }
 
+// ===========================================
+// USER MODEL
+// ===========================================
 model User {
-  id           String              @id @default(cuid())
-  name         String
-  email        String              @unique
-  phone        String
-  refreshToken RefreshToken?
+  id String @id @default(cuid())
+
+  // User details
+  name  String
+  email String @unique
+  phone String @unique
+
+  // Auth & Security
   password     String
+  refreshToken RefreshToken?
+
+  // Relations
   couponAssign CouponsOnProducts[] @relation("AssignedBy")
-  isActive     Boolean             @default(false)
-  roles        RoleType[]          @default([USER])
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+
+  // Status
+  isActive Boolean @default(false)
+
+  // Roles - stored as PostgreSQL text[] for flexibility
+  roles RoleType[] @default([USER])
+
+  // Meta
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes
+  @@index([email])
+  @@index([phone])
+  @@index([isActive])
+  @@index([createdAt])
 }
 
+// ===========================================
+// REFRESH TOKEN MODEL
+// ===========================================
 model RefreshToken {
-  userId     String?   @unique
-  customerId String?   @unique
-  token      String    @unique
-  user       User?     @relation(fields: [userId], references: [id])
-  customer   Customer? @relation(fields: [customerId], references: [id])
-  expires_at DateTime
-  createdAt  DateTime  @default(now())
+  id String @id @default(cuid())
+
+  // Relation fields
+  userId     String? @unique
+  customerId String? @unique
+
+  // The token itself
+  token String @unique
+
+  // Relations
+  user     User?     @relation(fields: [userId], references: [id])
+  customer Customer? @relation(fields: [customerId], references: [id])
+
+  // Expiration tracking
+  expiresAt DateTime @map("expires_at")
+
+  createdAt DateTime @default(now())
+
+  // Indexes
+  @@index([token])
+  @@index([expiresAt])
+  @@index([createdAt])
 }

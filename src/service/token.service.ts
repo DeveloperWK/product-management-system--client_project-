@@ -1,35 +1,50 @@
-import { getPrismaInstance } from '../config/db.config';
+import { getPrismaInstance } from "../config/db.config";
+import { RefreshTokenParams } from "../type";
 
 const prisma = getPrismaInstance();
 
-async function storeRefreshToken(
-  userId?: string,
-  customerId?: string,
-  // @ts-ignore
-  token: string
-) {
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + 15);
-
+async function storeRefreshToken({
+  userId,
+  customerId,
+  token,
+}: RefreshTokenParams) {
+  // Validate inputs
   if (!userId && !customerId) {
     throw new Error("Either userId or customerId must be provided");
   }
+  if (userId && customerId) {
+    throw new Error("Provide only userId OR customerId, not both");
+  }
 
-  const whereClause = userId ? { userId: userId } : { customerId: customerId };
+  // Expiration date = now + 15 days
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 15);
 
-  const createData = {
-    token: token,
-    expires_at: expiresAt,
-    ...(userId && { userId: userId }),
-    ...(customerId && { customerId: customerId }),
+  // Build where clause safely
+  const whereClause = userId
+    ? { userId } // upsert by userId
+    : { customerId: customerId as string }; // upsert by customerId
+
+  // Build create data explicitly
+  const createData: {
+    token: string;
+    expiresAt: Date;
+    userId?: string;
+    customerId?: string;
+  } = {
+    token,
+    expiresAt,
   };
+
+  if (userId) createData.userId = userId;
+  if (customerId) createData.customerId = customerId;
 
   const updateData = {
-    token: token,
-    expires_at: expiresAt,
+    token,
+    expiresAt,
   };
 
-  await prisma.refreshToken.upsert({
+  return prisma.refreshToken.upsert({
     where: whereClause,
     create: createData,
     update: updateData,
@@ -37,29 +52,42 @@ async function storeRefreshToken(
 }
 
 // Update existing refresh token
-type updateRefreshTokenParameter = {
+type UpdateRefreshTokenParams = {
   userId?: string;
   customerId?: string;
   token: string;
 };
+
 async function updateRefreshToken({
-  userId = undefined,
-  customerId = undefined,
+  userId,
+  customerId,
   token,
-}: updateRefreshTokenParameter) {
+}: UpdateRefreshTokenParams) {
+  // Ensure at least one is provided
   if (!userId && !customerId) {
     throw new Error("Either userId or customerId must be provided");
   }
+  // Ensure only one is provided
+  if (userId && customerId) {
+    throw new Error("Provide only userId OR customerId, not both");
+  }
+
+  // Expiration = now + 15 days
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 15);
+
+  // Build type-safe update object
   const updateData = {
-    token: token,
-    expires_at: expiresAt,
+    token,
+    expiresAt, // matches Prisma field name, maps to `expires_at`
   };
 
-  const whereClause = userId ? { userId: userId } : { customerId: customerId };
+  // Type-safe where clause
+  const whereClause = userId
+    ? { userId } // TypeScript knows this is string
+    : { customerId: customerId as string }; // Type assertion ensures string
 
-  await prisma.refreshToken.update({
+  return prisma.refreshToken.update({
     where: whereClause,
     data: updateData,
   });

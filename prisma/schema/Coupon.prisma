@@ -1,27 +1,38 @@
 model Coupon {
-  id                    String              @id @default(cuid())
-  code                  String              @unique
+  id                    String       @id @default(cuid())
+  code                  String       @unique
   discount              Float
   discountType          DiscountType
   expiresAt             DateTime
-  createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @updatedAt
-  isActive              Boolean             @default(true)
+  isActive              Boolean      @default(true)
   minimumPurchaseAmount Float?
-  sale                  Sales?
-  products              CouponsOnProducts[]
+
+  // Relations
+  sale     Sales[]
+  products CouponsOnProducts[]
+
+  // Meta
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes
+  @@index([code, isActive])
+  @@index([expiresAt])
 }
 
 model CouponsOnProducts {
-  product      Product  @relation(fields: [productId], references: [id])
-  productId    String
-  coupon       Coupon   @relation(fields: [couponId], references: [id])
-  couponId     String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  coupon   Coupon @relation(fields: [couponId], references: [id])
+  couponId String
+
   assignedAt   DateTime @default(now())
   assignedById String?
   assignedBy   User?    @relation("AssignedBy", fields: [assignedById], references: [id])
 
-  @@id([productId, couponId])
+  @@id([productId, couponId]) // Composite primary key
+  @@index([assignedById]) // Optimize queries for "who assigned the coupon"
 }
 
 enum DiscountType {

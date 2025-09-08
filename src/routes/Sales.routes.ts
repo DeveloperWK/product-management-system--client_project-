@@ -1,6 +1,6 @@
-import { Router } from 'express';
-import * as salesController from '../controllers/Sales/Sales.controller';
-import { createReturnSales } from '../controllers/Sales/Sales.controller';
+import { Router } from "express";
+import * as salesController from "../controllers/Sales/Sales.controller";
+import { createReturnSales } from "../controllers/Sales/Sales.controller";
 
 const router = Router();
 
@@ -8,7 +8,7 @@ const router = Router();
 router.post("/", salesController.createSale);
 router.post("/due/create-payment", salesController.createDuePaymentsSales);
 router.post("/return-sales", createReturnSales);
-router.get("/", salesController.getSales);
+router.get("", salesController.getSales);
 router.get("/monthly-sales", salesController.getAllSalesByMonth);
 router.get("/:id", salesController.getSaleById);
 router.get("/dues/:customerId", salesController.getDues);

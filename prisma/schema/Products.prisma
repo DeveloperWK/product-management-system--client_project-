@@ -1,9 +1,12 @@
+// ===========================================
+// Store & Warehouse
+// ===========================================
 model Store {
   id        String     @id @default(cuid())
   name      String     @unique
   products  Product[]
   purchases Purchase[]
-  reatedAt  DateTime   @default(now())
+  createdAt DateTime   @default(now()) // Fixed typo: reatedAt -> createdAt
 }
 
 model Warehouse {
@@ -14,6 +17,9 @@ model Warehouse {
   createdAt DateTime   @default(now())
 }
 
+// ===========================================
+// Brand, Category, SubCategory, SubSubCategory
+// ===========================================
 model Brand {
   id        String    @id @default(cuid())
   name      String    @unique
@@ -25,7 +31,7 @@ model Category {
   id            String        @id @default(cuid())
   name          String        @unique
   subCategories SubCategory[]
-  product       Product[]
+  products      Product[] // pluralized from product
   createdAt     DateTime      @default(now())
 }
 
@@ -35,7 +41,7 @@ model SubCategory {
   categoryId       String
   category         Category         @relation(fields: [categoryId], references: [id])
   subSubCategories SubSubCategory[]
-  product          Product[]
+  products         Product[]
   createdAt        DateTime         @default(now())
 }
 
@@ -44,10 +50,13 @@ model SubSubCategory {
   name          String
   subCategoryId String
   subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
-  product       Product[]
+  products      Product[]
   createdAt     DateTime    @default(now())
 }
 
+// ===========================================
+// Attributes & Attribute Values
+// ===========================================
 model Attribute {
   id        String           @id @default(cuid())
   name      String           @unique
@@ -56,45 +65,70 @@ model Attribute {
 }
 
 model AttributeValue {
-  id          String     @id @default(cuid())
+  id          String    @id @default(cuid())
   value       String
   attributeId String
-  sales       Sales[]    @relation("SalesVariant")
-  attribute   Attribute  @relation(fields: [attributeId], references: [id])
-  products    Product[]  @relation("ProductAttributes")
-  purchases   Purchase[] @relation("PurchaseAttributes")
-  createdAt   DateTime   @default(now())
+  attribute   Attribute @relation(fields: [attributeId], references: [id])
+
+  // Relations
+  sales     Sales[]    @relation("SalesVariant")
+  products  Product[]  @relation("ProductAttributes")
+  purchases Purchase[] @relation("PurchaseAttributes")
+
+  createdAt DateTime @default(now())
+
+  @@index([attributeId])
+  @@index([value])
 }
 
+// ===========================================
+// Product & Related Models
+// ===========================================
 model Product {
-  id               String              @id @default(cuid())
+  id               String    @id @default(cuid())
   name             String
-  slug             String?             @unique
-  sku              String?             @unique
-  itemCode         String?             @unique
+  slug             String?   @unique
+  sku              String?   @unique
+  itemCode         String?   @unique
   quantityAlert    Int?
   manufacturedDate DateTime?
   expiryDate       DateTime?
   description      String?
-  storeId          String
-  store            Store               @relation(fields: [storeId], references: [id])
-  warehouseId      String
-  warehouse        Warehouse           @relation(fields: [warehouseId], references: [id])
-  categoryId       String?
-  category         Category?           @relation(fields: [categoryId], references: [id])
-  subCategoryId    String?
-  subCategory      SubCategory?        @relation(fields: [subCategoryId], references: [id])
+
+  // Relations
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id])
+
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  subCategoryId String?
+  subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
+
   subSubCategoryId String?
-  subSubCategory   SubSubCategory?     @relation(fields: [subSubCategoryId], references: [id])
-  brandId          String?
-  brand            Brand?              @relation(fields: [brandId], references: [id])
-  attributes       AttributeValue[]    @relation("ProductAttributes")
-  purchases        Purchase[]
-  images           ProductImage[]
-  coupons          CouponsOnProducts[]
-  isActive         Boolean?            @default(false)
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+  subSubCategory   SubSubCategory? @relation(fields: [subSubCategoryId], references: [id])
+
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id])
+
+  attributes AttributeValue[]    @relation("ProductAttributes")
+  purchases  Purchase[]
+  images     ProductImage[]
+  coupons    CouponsOnProducts[]
+
+  // Meta
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([warehouseId])
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([isActive])
 }
 
 model ProductImage {
@@ -103,4 +137,6 @@ model ProductImage {
   productId String
   product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
+
+  @@index([productId])
 }

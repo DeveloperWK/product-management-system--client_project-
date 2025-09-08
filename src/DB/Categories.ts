@@ -1,4 +1,4 @@
-import { getPrismaInstance } from '../config/db.config';
+import { getPrismaInstance } from "../config/db.config";
 
 const prisma = getPrismaInstance();
 
@@ -22,14 +22,14 @@ const categoryOperations = {
               subSubCategories: true,
             },
           },
-          product: {
-              select:{
-                name:true,
-                slug:true,
-                sku:true,
-                expiryDate:true,
-                description:true,
-                brand:true,
+          products: {
+            select: {
+              name: true,
+              slug: true,
+              sku: true,
+              expiryDate: true,
+              description: true,
+              brand: true,
             },
           },
         },
@@ -49,14 +49,14 @@ const categoryOperations = {
               subSubCategories: true,
             },
           },
-          product: {
-            select:{
-              name:true,
-              slug:true,
-              sku:true,
-              expiryDate:true,
-              description:true,
-              brand:true,
+          products: {
+            select: {
+              name: true,
+              slug: true,
+              sku: true,
+              expiryDate: true,
+              description: true,
+              brand: true,
             },
           },
         },
@@ -72,14 +72,14 @@ const categoryOperations = {
         where: { name },
         include: {
           subCategories: true,
-          product: {
-            select:{
-              name:true,
-              slug:true,
-              sku:true,
-              expiryDate:true,
-              description:true,
-              brand:true,
+          products: {
+            select: {
+              name: true,
+              slug: true,
+              sku: true,
+              expiryDate: true,
+              description: true,
+              brand: true,
             },
           },
         },
@@ -131,14 +131,14 @@ const subCategoryOperations = {
         include: {
           category: true,
           subSubCategories: true,
-          product: {
-            select:{
-              name:true,
-              slug:true,
-              sku:true,
-              expiryDate:true,
-              description:true,
-              brand:true,
+          products: {
+            select: {
+              name: true,
+              slug: true,
+              sku: true,
+              expiryDate: true,
+              description: true,
+              brand: true,
             },
           },
         },
@@ -155,7 +155,16 @@ const subCategoryOperations = {
         include: {
           category: true,
           subSubCategories: true,
-          product: true,
+          products: {
+            select: {
+              name: true,
+              slug: true,
+              sku: true,
+              expiryDate: true,
+              description: true,
+              brand: true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -210,14 +219,14 @@ const subSubCategoryOperations = {
       return await prisma.subSubCategory.findMany({
         include: {
           subCategory: true,
-          product: {
-            select:{
-              name:true,
-              slug:true,
-              sku:true,
-              expiryDate:true,
-              description:true,
-              brand:true,
+          products: {
+            select: {
+              name: true,
+              slug: true,
+              sku: true,
+              expiryDate: true,
+              description: true,
+              brand: true,
             },
           },
         },
@@ -233,14 +242,14 @@ const subSubCategoryOperations = {
         where: { id },
         include: {
           subCategory: true,
-          product: {
-            select:{
-              name:true,
-              slug:true,
-              sku:true,
-              expiryDate:true,
-              description:true,
-              brand:true,
+          products: {
+            select: {
+              name: true,
+              slug: true,
+              sku: true,
+              expiryDate: true,
+              description: true,
+              brand: true,
             },
           },
         },

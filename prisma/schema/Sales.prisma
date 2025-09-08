@@ -1,61 +1,92 @@
-enum discountAndTaxType {
+// ===========================================
+// ENUMS
+// ===========================================
+enum DiscountAndTaxType {
   PERCENTAGE
   CASH
 }
 
+// ===========================================
+// SALES
+// ===========================================
 model Sales {
-  id             String @id @default(cuid())
-  customerId     String
-  purchaseId     String
-  variantValueId String
-  exchangeCal    Float?
-  quantity       Float
-
-  // Existing discount fields
-  discountType discountAndTaxType?
-  discount     Float?
-
-  // Pricing
-  price      Float?
-  unitPrice  Float?
-  salesPrice Float
-  taxType    discountAndTaxType?
-  tax        Float?
-
-  // 🆕 Coupon fields
-  couponId       String? // reference to Coupon if applied
-  coupon         Coupon? @relation(fields: [couponId], references: [id])
-  discountAmount Float? // actual discount from coupon
-  finalAmount    Float? // after applying coupon + tax etc.
+  id String @id @default(cuid())
 
   // Relations
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
 
-  variant  AttributeValue @relation("SalesVariant", fields: [variantValueId], references: [id])
-  customer Customer       @relation(fields: [customerId], references: [id])
-  purchase Purchase       @relation("SalesPurchase", fields: [purchaseId], references: [id])
+  purchaseId String
+  purchase   Purchase @relation("SalesPurchase", fields: [purchaseId], references: [id])
+
+  variantValueId String
+  variant        AttributeValue @relation("SalesVariant", fields: [variantValueId], references: [id])
+
+  // Core fields
+  exchangeCal Float? // Amount given in exchange
+  quantity    Float // Quantity sold
+
+  // Discount
+  discountType DiscountAndTaxType?
+  discount     Float? // Manual discount entered
+
+  // Pricing
+  price      Float? // Base price before tax & discount
+  unitPrice  Float? // Price per unit
+  salesPrice Float // Final selling price per unit
+
+  // Tax
+  taxType DiscountAndTaxType?
+  tax     Float?
+
+  // Coupon-related fields
+  couponId       String?
+  coupon         Coupon? @relation(fields: [couponId], references: [id])
+  discountAmount Float? // Discount applied via coupon
+  finalAmount    Float? // Amount after tax + coupon + discount
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([couponId])
+  // Indexes
+  @@index([customerId])
+  @@index([purchaseId])
+  @@index([variantValueId])
+  @@index([couponId])
+  @@index([createdAt])
 }
 
+// ===========================================
+// SALES DUE PAYMENT
+// ===========================================
 model SalesDuePayment {
-  id         String   @id @default(cuid())
+  id String @id @default(cuid())
+
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
-  amount     Float
-  createdAt  DateTime @default(now())
+
+  amount    Float
+  createdAt DateTime @default(now())
+
+  @@index([customerId])
+  @@index([createdAt])
 }
 
+// ===========================================
+// PAYMENT & DUE
+// ===========================================
 model PaymentAndDue {
-  id         String   @id @default(cuid())
+  id String @id @default(cuid())
+
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
-  amount     Float
-  due        Float?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 
-  @@unique([customerId])
+  amount Float // Total amount paid
+  due    Float? // Remaining due amount
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([customerId]) // One record per customer
+  @@index([createdAt])
 }

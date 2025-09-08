@@ -5,6 +5,9 @@ CREATE TYPE "public"."DiscountType" AS ENUM ('PERCENTAGE', 'FIXED');
 CREATE TYPE "public"."StatusType" AS ENUM ('PENDING', 'DELIVERED', 'CANCELLED');
 
 -- CreateEnum
+CREATE TYPE "public"."discountAndTaxType" AS ENUM ('PERCENTAGE', 'CASH');
+
+-- CreateEnum
 CREATE TYPE "public"."RoleType" AS ENUM ('ADMIN', 'USER', 'ADMINISTRATOR', 'MODERATOR');
 
 -- CreateTable
@@ -165,16 +168,122 @@ CREATE TABLE "public"."Purchase" (
     "storeId" TEXT NOT NULL,
     "warehouseId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
+    "supplierId" TEXT NOT NULL,
+    "warrantyId" TEXT,
+    "due" DOUBLE PRECISION,
+    "attributeValueId" TEXT NOT NULL,
     "status" "public"."StatusType" NOT NULL DEFAULT 'PENDING',
-    "amount" INTEGER NOT NULL,
+    "expenseAmount" DOUBLE PRECISION,
+    "expenseId" TEXT,
+    "purchaseTotalAmount" DOUBLE PRECISION NOT NULL,
+    "targetedSalesPrice" DOUBLE PRECISION NOT NULL,
+    "unitPrice" DOUBLE PRECISION NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
     "amountKey" TEXT NOT NULL,
-    "quantity" INTEGER NOT NULL,
-    "payment" INTEGER NOT NULL,
-    "commission" INTEGER,
+    "quantity" DOUBLE PRECISION NOT NULL,
+    "payment" DOUBLE PRECISION NOT NULL,
+    "commission" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Purchase_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."Expense" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."Supplier" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT,
+    "phone" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Supplier_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."Warranty" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "days" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Warranty_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."PurchaseDuePayment" (
+    "id" TEXT NOT NULL,
+    "purchaseId" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "PurchaseDuePayment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."Sales" (
+    "id" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "purchaseId" TEXT NOT NULL,
+    "variantValueId" TEXT NOT NULL,
+    "exchangeCal" DOUBLE PRECISION,
+    "quantity" DOUBLE PRECISION NOT NULL,
+    "discountType" "public"."discountAndTaxType",
+    "discount" DOUBLE PRECISION,
+    "price" DOUBLE PRECISION,
+    "unitPrice" DOUBLE PRECISION,
+    "salesPrice" DOUBLE PRECISION NOT NULL,
+    "taxType" "public"."discountAndTaxType",
+    "tax" DOUBLE PRECISION,
+    "couponId" TEXT,
+    "discountAmount" DOUBLE PRECISION,
+    "finalAmount" DOUBLE PRECISION,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Sales_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."SalesDuePayment" (
+    "id" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "SalesDuePayment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."PaymentAndDue" (
+    "id" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "due" DOUBLE PRECISION,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "PaymentAndDue_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."Settings" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "image" TEXT NOT NULL,
+    "logo" TEXT NOT NULL,
+    "cover" TEXT NOT NULL,
+
+    CONSTRAINT "Settings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -209,19 +318,17 @@ CREATE TABLE "public"."_ProductAttributes" (
     CONSTRAINT "_ProductAttributes_AB_pkey" PRIMARY KEY ("A","B")
 );
 
--- CreateTable
-CREATE TABLE "public"."_PurchaseAttributes" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
-
-    CONSTRAINT "_PurchaseAttributes_AB_pkey" PRIMARY KEY ("A","B")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Coupon_code_key" ON "public"."Coupon"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Customer_email_key" ON "public"."Customer"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Customer_phone_key" ON "public"."Customer"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Customer_email_phone_key" ON "public"."Customer"("email", "phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Store_name_key" ON "public"."Store"("name");
@@ -248,6 +355,18 @@ CREATE UNIQUE INDEX "Product_sku_key" ON "public"."Product"("sku");
 CREATE UNIQUE INDEX "Product_itemCode_key" ON "public"."Product"("itemCode");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Expense_name_key" ON "public"."Expense"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Supplier_email_key" ON "public"."Supplier"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Sales_couponId_key" ON "public"."Sales"("couponId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PaymentAndDue_customerId_key" ON "public"."PaymentAndDue"("customerId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
 -- CreateIndex
@@ -261,9 +380,6 @@ CREATE UNIQUE INDEX "RefreshToken_token_key" ON "public"."RefreshToken"("token")
 
 -- CreateIndex
 CREATE INDEX "_ProductAttributes_B_index" ON "public"."_ProductAttributes"("B");
-
--- CreateIndex
-CREATE INDEX "_PurchaseAttributes_B_index" ON "public"."_PurchaseAttributes"("B");
 
 -- AddForeignKey
 ALTER TABLE "public"."CouponsOnProducts" ADD CONSTRAINT "CouponsOnProducts_productId_fkey" FOREIGN KEY ("productId") REFERENCES "public"."Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -314,6 +430,39 @@ ALTER TABLE "public"."Purchase" ADD CONSTRAINT "Purchase_warehouseId_fkey" FOREI
 ALTER TABLE "public"."Purchase" ADD CONSTRAINT "Purchase_productId_fkey" FOREIGN KEY ("productId") REFERENCES "public"."Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "public"."Purchase" ADD CONSTRAINT "Purchase_supplierId_fkey" FOREIGN KEY ("supplierId") REFERENCES "public"."Supplier"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Purchase" ADD CONSTRAINT "Purchase_warrantyId_fkey" FOREIGN KEY ("warrantyId") REFERENCES "public"."Warranty"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Purchase" ADD CONSTRAINT "Purchase_attributeValueId_fkey" FOREIGN KEY ("attributeValueId") REFERENCES "public"."AttributeValue"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Purchase" ADD CONSTRAINT "Purchase_expenseId_fkey" FOREIGN KEY ("expenseId") REFERENCES "public"."Expense"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."PurchaseDuePayment" ADD CONSTRAINT "PurchaseDuePayment_purchaseId_fkey" FOREIGN KEY ("purchaseId") REFERENCES "public"."Purchase"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Sales" ADD CONSTRAINT "Sales_couponId_fkey" FOREIGN KEY ("couponId") REFERENCES "public"."Coupon"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Sales" ADD CONSTRAINT "Sales_variantValueId_fkey" FOREIGN KEY ("variantValueId") REFERENCES "public"."AttributeValue"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Sales" ADD CONSTRAINT "Sales_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "public"."Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Sales" ADD CONSTRAINT "Sales_purchaseId_fkey" FOREIGN KEY ("purchaseId") REFERENCES "public"."Purchase"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."SalesDuePayment" ADD CONSTRAINT "SalesDuePayment_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "public"."Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."PaymentAndDue" ADD CONSTRAINT "PaymentAndDue_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "public"."Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "public"."RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -324,9 +473,3 @@ ALTER TABLE "public"."_ProductAttributes" ADD CONSTRAINT "_ProductAttributes_A_f
 
 -- AddForeignKey
 ALTER TABLE "public"."_ProductAttributes" ADD CONSTRAINT "_ProductAttributes_B_fkey" FOREIGN KEY ("B") REFERENCES "public"."Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "public"."_PurchaseAttributes" ADD CONSTRAINT "_PurchaseAttributes_A_fkey" FOREIGN KEY ("A") REFERENCES "public"."AttributeValue"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "public"."_PurchaseAttributes" ADD CONSTRAINT "_PurchaseAttributes_B_fkey" FOREIGN KEY ("B") REFERENCES "public"."Purchase"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { SalesFilter, salesService } from '../../DB/Sales';
-import { getPrismaInstance } from '../../config/db.config';
+import { Request, Response } from "express";
+import { SalesFilter, salesService } from "../../DB/Sales";
+import { getPrismaInstance } from "../../config/db.config";
 
 const prisma = getPrismaInstance();
 
@@ -13,7 +13,7 @@ export const getPrice = async (req: Request, res: Response) => {
       },
       select: {
         purchaseTotalAmount: true,
-        amount:true
+        amount: true,
       },
     });
     if (!purchase) {
@@ -45,7 +45,7 @@ export const createSale = async (req: Request, res: Response) => {
       });
     }
 
-     await salesService.createBulkSales(
+    const sales = await salesService.createBulkSales(
       customerId,
       totalPayment,
       due,
@@ -55,6 +55,7 @@ export const createSale = async (req: Request, res: Response) => {
     return res.status(201).json({
       success: true,
       message: "Sales created successfully",
+      sales,
     });
   } catch (error: any) {
     console.error(error);
@@ -127,8 +128,7 @@ export const getSales = async (req: Request, res: Response) => {
       page = "1",
       limit = "20",
       customerId,
-      productId,
-      productName,
+      purchaseId,
       dateFrom,
       dateTo,
       minAmount,
@@ -136,10 +136,9 @@ export const getSales = async (req: Request, res: Response) => {
       sortBy = "id",
       sortOrder = "desc",
     } = req.query;
-
     const filter: SalesFilter = {
       ...(customerId && { customerId: customerId as string }),
-      ...(productId && { productId: productId as string }),
+      ...(purchaseId && { purchaseId: purchaseId as string }),
       ...(dateFrom &&
         dateTo && {
           dateFrom: new Date(`${dateFrom}T00:00:00.000Z`),

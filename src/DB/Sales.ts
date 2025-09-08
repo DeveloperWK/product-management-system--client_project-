@@ -1,6 +1,6 @@
-import { Prisma } from '@prisma/client';
-import { getPrismaInstance } from '../config/db.config';
-import { SalesCreateInput, SalesFilter, SalesUpdateInput } from '../type';
+import { Prisma } from "@prisma/client";
+import { getPrismaInstance } from "../config/db.config";
+import { SalesCreateInput, SalesFilter, SalesUpdateInput } from "../type";
 
 const prisma = getPrismaInstance();
 
@@ -65,6 +65,15 @@ class SalesService {
         const finalAmount = sale.salesPrice - discountAmount;
         const purchase = await tx.purchase.findUnique({
           where: { id: sale.purchaseId },
+          select: {
+            quantity: true,
+            product: {
+              select: {
+                name: true,
+                sku: true,
+              },
+            },
+          },
         });
 
         if (!purchase)
@@ -101,8 +110,7 @@ class SalesService {
             amount: { decrement: sale.quantity * (sale.unitPrice ?? 0) },
           },
         });
-
-        createdSales.push({
+        const salesData = {
           salesId: createdSale.id,
           purchaseId: createdSale.purchaseId,
           variantValueId: createdSale.variantValueId,
@@ -114,7 +122,10 @@ class SalesService {
           appliedCoupon: appliedCouponCode ?? null,
           price: createdSale.price ?? 0,
           totalPayment: totalPayment,
-        });
+          productName: purchase?.product?.name ?? "",
+          productSku: purchase?.product?.sku ?? "",
+        };
+        createdSales.push(salesData);
       }
       await tx.paymentAndDue.upsert({
         where: {
@@ -134,8 +145,6 @@ class SalesService {
           },
         },
       });
-
-
     });
 
     return createdSales;
@@ -171,8 +180,10 @@ class SalesService {
     try {
       const skip = (page - 1) * limit;
 
+      // Build the where clause dynamically
       const where: Prisma.SalesWhereInput = {
         ...(filter.customerId && { customerId: filter.customerId }),
+        ...(filter.purchaseId && { purchaseId: filter.purchaseId }),
         ...(filter.dateFrom &&
           filter.dateTo && {
             createdAt: {
@@ -180,18 +191,15 @@ class SalesService {
               lte: filter.dateTo,
             },
           }),
-        ...(filter.minAmount && {
+        ...((filter.minAmount || filter.maxAmount) && {
           salesPrice: {
-            gte: filter.minAmount,
-          },
-        }),
-        ...(filter.maxAmount && {
-          salesPrice: {
-            lte: filter.maxAmount,
+            ...(filter.minAmount && { gte: filter.minAmount }),
+            ...(filter.maxAmount && { lte: filter.maxAmount }),
           },
         }),
       };
 
+      // Fetch sales data and total count concurrently
       const [sales, total] = await Promise.all([
         prisma.sales.findMany({
           where,
@@ -535,7 +543,7 @@ class SalesService {
           },
         });
         await t.paymentAndDue.update({
-          where: { customerId:data.customerId },
+          where: { customerId: data.customerId },
           data: {
             due: {
               decrement: data.amount,
@@ -547,21 +555,21 @@ class SalesService {
       throw e;
     }
   }
-  getByProductName=async (name:string)=>{
-    try{
-      return await  prisma.sales.findMany({
+  getByProductName = async (name: string) => {
+    try {
+      return await prisma.sales.findMany({
         where: {
-          purchase:{
-            product:{
-              name:name
-            }
-          }
-        }
-      })
-}catch (e) {
-        throw  e
+          purchase: {
+            product: {
+              name: name,
+            },
+          },
+        },
+      });
+    } catch (e) {
+      throw e;
     }
-  }
+  };
 
   createReturnSalesDb = async (data: {
     purchaseId: string;

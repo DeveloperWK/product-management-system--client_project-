@@ -1,47 +1,93 @@
+// ===========================================
+// Enums
+// ===========================================
 enum StatusType {
   PENDING
   DELIVERED
   CANCELLED
 }
 
+// ===========================================
+// Purchase
+// ===========================================
 model Purchase {
-  id                  String               @id @default(cuid())
-  storeId             String
-  store               Store                @relation(fields: [storeId], references: [id])
-  warehouseId         String
-  warehouse           Warehouse            @relation(fields: [warehouseId], references: [id])
-  productId           String
-  product             Product              @relation(fields: [productId], references: [id])
-  supplierId          String
-  supplier            Supplier             @relation(fields: [supplierId], references: [id])
-  warrantyId          String?
-  warranty            Warranty?            @relation(fields: [warrantyId], references: [id])
-  due                 Float?
-  salesPurchase       Sales[]              @relation("SalesPurchase")
-  attributeValueId    String
-  duePayment          PurchaseDuePayment[]
-  attribute           AttributeValue       @relation("PurchaseAttributes", fields: [attributeValueId], references: [id])
-  status              StatusType           @default(PENDING)
-  expenseAmount       Float?
-  expenseId           String?
-  expense             Expense?             @relation(fields: [expenseId], references: [id])
-  purchaseTotalAmount Float
-  amount              Float
-  amountKey           String
+  id String @id @default(cuid())
+
+  // Relations
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id])
+
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  supplierId String
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+
+  warrantyId String?
+  warranty   Warranty? @relation(fields: [warrantyId], references: [id])
+
+  attributeValueId String
+  attribute        AttributeValue @relation("PurchaseAttributes", fields: [attributeValueId], references: [id])
+
+  expenseId String?
+  expense   Expense? @relation(fields: [expenseId], references: [id])
+
+  // Payment relations
+  due        Float?
+  duePayment PurchaseDuePayment[]
+
+  // Other relations
+  salesPurchase Sales[] @relation("SalesPurchase")
+
+  // Financial fields
+  purchaseTotalAmount Float // Total value of purchase
+  targetedSalesPrice  Float // The expected sales price
+  unitPrice           Float // Price per unit
+  amount              Float // Total amount (quantity * unitPrice)
+  amountKey           String // External reference or tracking key
   quantity            Float
   payment             Float
   commission          Float?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+
+  // Status
+  status StatusType @default(PENDING)
+
+  // Optional expense related to this purchase
+  expenseAmount Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes
+  @@index([storeId])
+  @@index([warehouseId])
+  @@index([productId])
+  @@index([supplierId])
+  @@index([attributeValueId])
+  @@index([warrantyId])
+  @@index([expenseId])
+  @@index([status])
+  @@index([createdAt])
 }
 
+// ===========================================
+// Expense
+// ===========================================
 model Expense {
   id        String     @id @default(cuid())
   name      String     @unique
   purchases Purchase[]
   createdAt DateTime   @default(now())
+
+  @@index([name])
 }
 
+// ===========================================
+// Supplier
+// ===========================================
 model Supplier {
   id        String     @id @default(cuid())
   name      String
@@ -50,18 +96,30 @@ model Supplier {
   purchases Purchase[]
   createdAt DateTime   @default(now())
 }
+
+// ===========================================
+// Warranty
+// ===========================================
 model Warranty {
   id        String     @id @default(cuid())
   name      String
   days      Int
   purchase  Purchase[]
   createdAt DateTime   @default(now())
+
+  @@index([name])
 }
 
+// ===========================================
+// Purchase Due Payment
+// ===========================================
 model PurchaseDuePayment {
   id         String   @id @default(cuid())
   purchaseId String
   purchase   Purchase @relation(fields: [purchaseId], references: [id])
   amount     Float
   createdAt  DateTime @default(now())
+
+  @@index([purchaseId])
+  @@index([createdAt])
 }

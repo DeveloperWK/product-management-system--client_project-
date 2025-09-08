@@ -1,4 +1,4 @@
-import { getPrismaInstance } from '../config/db.config';
+import { getPrismaInstance } from "../config/db.config";
 
 const prisma = getPrismaInstance();
 
@@ -224,30 +224,33 @@ const productOperations = {
     }
   },
 
-  searchByName: async (searchTerm: string) => {
-    try {
-      return await prisma.product.findMany({
-        where: {
-          name: {
-            contains: searchTerm,
-            mode: "insensitive",
-          },
-        },
-        include: {
-          store: true,
-          warehouse: true,
-          category: true,
-          subCategory: true,
-          subSubCategory: true,
-          brand: true,
-          attributes: true,
-          images: true,
-        },
-      });
-    } catch (error) {
-      throw error;
-    }
-  },
+  // searchByName: async (searchTerm: string) => {
+  //   try {
+  //     const cleanedTerm = searchTerm.trim();
+  //
+  //     return await prisma.product.findMany({
+  //       where: {
+  //         OR: [
+  //           { name: { contains: cleanedTerm, mode: "insensitive" } },
+  //           { sku: { contains: cleanedTerm, mode: "insensitive" } },
+  //           { itemCode: { contains: cleanedTerm, mode: "insensitive" } },
+  //         ],
+  //       },
+  //       include: {
+  //         store: true,
+  //         warehouse: true,
+  //         category: true,
+  //         subCategory: true,
+  //         subSubCategory: true,
+  //         brand: true,
+  //         attributes: true,
+  //         images: true,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 };
 
 const productImageOperations = {
@@ -327,7 +330,7 @@ const productImageOperations = {
         where: { productId },
       });
 
-      const newImages = await Promise.all(
+      return await Promise.all(
         urls.map((url) =>
           prisma.productImage.create({
             data: {
@@ -337,8 +340,6 @@ const productImageOperations = {
           })
         )
       );
-
-      return newImages;
     } catch (error) {
       throw error;
     }
@@ -346,7 +347,7 @@ const productImageOperations = {
 
   addForProduct: async (productId: string, urls: string[]) => {
     try {
-      const newImages = await Promise.all(
+      return await Promise.all(
         urls.map((url) =>
           prisma.productImage.create({
             data: {
@@ -356,8 +357,6 @@ const productImageOperations = {
           })
         )
       );
-
-      return newImages;
     } catch (error) {
       throw error;
     }

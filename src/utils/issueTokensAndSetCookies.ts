@@ -1,11 +1,8 @@
-import { serialize } from "cookie";
-import { Response } from "express";
-import generateAccessToken from "../service/jwt.service";
-import {
-  generateRefreshToken,
-  hashRefreshToken,
-} from "../service/refreshToken.service";
-import { storeRefreshToken } from "../service/token.service";
+import { serialize } from 'cookie';
+import { Response } from 'express';
+import generateAccessToken from '../service/jwt.service';
+import { generateRefreshToken, hashRefreshToken } from '../service/refreshToken.service';
+import { storeRefreshToken } from '../service/token.service';
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -23,7 +20,7 @@ async function issueTokensAndSetCookies(
 ) {
   const accessToken = generateAccessToken({ userId });
   const refreshToken = generateRefreshToken();
-  await storeRefreshToken(userId, undefined, hashRefreshToken(refreshToken));
+  await storeRefreshToken({ userId: userId, customerId: undefined, token: hashRefreshToken(refreshToken) });
   await setCookies(res, accessToken, refreshToken, tokenType, userId);
 }
 const setCookies = async (

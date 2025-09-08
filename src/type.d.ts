@@ -145,7 +145,8 @@ interface UpdateProductImageRequest {
 }
 
 interface PurchaseType {
-  purchaseTotalAmount:string;
+  targetedSalesPrice: number;
+  purchaseTotalAmount: number;
   expenseId: string;
   expenseAmount: number;
   storeId: string;
@@ -161,7 +162,14 @@ interface PurchaseType {
   due: number;
   warrantyId: string;
   supplierId: string;
+  unitPrice: number;
 }
+type RefreshTokenParams = {
+  userId?: string;
+  customerId?: string;
+  token: string;
+};
+
 interface ICustomer {
   firstName: string;
   lastName?: string;
@@ -227,6 +235,7 @@ export {
   IUser,
   PurchaseType,
   RefreshToken,
+  RefreshTokenParams,
   SalesCreateInput,
   SalesFilter,
   SalesUpdateInput,

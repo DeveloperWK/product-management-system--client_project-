@@ -1,6 +1,6 @@
-import { Prisma } from '@prisma/client';
-import { PurchaseType } from '../type';
-import { getPrismaInstance } from '../config/db.config';
+import { Prisma } from "@prisma/client";
+import { getPrismaInstance } from "../config/db.config";
+import { PurchaseType } from "../type";
 
 const prisma = getPrismaInstance();
 // Create a new purchase
@@ -14,7 +14,9 @@ export async function createPurchaseDb(data: PurchaseType) {
       payment: data.payment,
       commission: data.commission,
       due: data.due,
-      purchaseTotalAmount:data.amount,
+      purchaseTotalAmount: data.amount,
+      unitPrice: data.targetedSalesPrice / data.quantity,
+      targetedSalesPrice: data.targetedSalesPrice,
       supplier: { connect: { id: data.supplierId } },
       attribute: { connect: { id: data.attributeValueId } },
       store: { connect: { id: data.storeId } },
@@ -24,8 +26,8 @@ export async function createPurchaseDb(data: PurchaseType) {
     if (data.warrantyId) {
       createData.warranty = { connect: { id: data.warrantyId } };
     }
-    if(data.expenseId){
-     createData.expense={connect:{id:data.expenseId}}
+    if (data.expenseId) {
+      createData.expense = { connect: { id: data.expenseId } };
       createData.expenseAmount = data.expenseAmount;
     }
 
@@ -58,21 +60,19 @@ export async function getPurchaseByIdDb(id: string) {
     return await prisma.purchase.findUnique({
       where: { id },
       include: {
-        store: true,
-        warehouse: true,
         product: {
-          select:{
-            name:true,
-            slug:true,
-            sku:true,
-            expiryDate:true,
-            description:true,
-            category:true,
-            subCategory:true,
-            subSubCategory:true,
-            brand:true,
-            images:true,
-          }
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,
+            subCategory: true,
+            subSubCategory: true,
+            brand: true,
+            images: true,
+          },
         },
         attribute: true,
       },
@@ -99,21 +99,19 @@ export async function getAllPurchases(params: {
       where,
       orderBy,
       include: {
-        store: true,
-        warehouse: true,
         product: {
-          select:{
-            name:true,
-            slug:true,
-            sku:true,
-            expiryDate:true,
-            description:true,
-            category:true,
-            subCategory:true,
-            subSubCategory:true,
-            brand:true,
-            images:true,
-          }
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,
+            subCategory: true,
+            subSubCategory: true,
+            brand: true,
+            images: true,
+          },
         },
         attribute: true,
       },
@@ -136,7 +134,8 @@ export async function updatePurchaseDb(id: string, data: PurchaseType) {
     if (data.payment !== undefined) updateData.payment = data.payment;
     if (data.commission !== undefined) updateData.commission = data.commission;
     if (data.due !== undefined) updateData.due = data.due;
-    if(data.expenseAmount !== undefined) updateData.expenseAmount = data.expenseAmount;
+    if (data.expenseAmount !== undefined)
+      updateData.expenseAmount = data.expenseAmount;
 
     // relations
     if (data.storeId !== undefined) {
@@ -155,16 +154,9 @@ export async function updatePurchaseDb(id: string, data: PurchaseType) {
       updateData.expense = { connect: { id: data.expenseId } };
     }
 
-
     return await prisma.purchase.update({
       where: { id },
       data: updateData,
-      include: {
-        store: true,
-        warehouse: true,
-        product: true,
-        attribute: true,
-      },
     });
   } catch (error) {
     throw new Error(`Error updating purchase: ${(error as Error).message}`);
@@ -189,21 +181,19 @@ export async function getPurchasesByStore(storeId: string) {
     return await prisma.purchase.findMany({
       where: { storeId },
       include: {
-        store: true,
-        warehouse: true,
         product: {
-          select:{
-            name:true,
-            slug:true,
-            sku:true,
-            expiryDate:true,
-            description:true,
-            category:true,
-            subCategory:true,
-            subSubCategory:true,
-            brand:true,
-            images:true,
-          }
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,
+            subCategory: true,
+            subSubCategory: true,
+            brand: true,
+            images: true,
+          },
         },
         attribute: true,
       },
@@ -221,21 +211,19 @@ export async function getPurchasesByWarehouse(warehouseId: string) {
     return await prisma.purchase.findMany({
       where: { warehouseId },
       include: {
-        store: true,
-        warehouse: true,
         product: {
-          select:{
-            name:true,
-            slug:true,
-            sku:true,
-            expiryDate:true,
-            description:true,
-            category:true,
-            subCategory:true,
-            subSubCategory:true,
-            brand:true,
-            images:true,
-          }
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,
+            subCategory: true,
+            subSubCategory: true,
+            brand: true,
+            images: true,
+          },
         },
         attribute: true,
       },
@@ -253,21 +241,19 @@ export async function getPurchasesByProduct(productId: string) {
     return await prisma.purchase.findMany({
       where: { productId },
       include: {
-        store: true,
-        warehouse: true,
         product: {
-          select:{
-            name:true,
-            slug:true,
-            sku:true,
-            expiryDate:true,
-            description:true,
-            category:true,
-            subCategory:true,
-            subSubCategory:true,
-            brand:true,
-            images:true,
-          }
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,
+            subCategory: true,
+            subSubCategory: true,
+            brand: true,
+            images: true,
+          },
         },
         attribute: true,
       },
@@ -287,21 +273,19 @@ export async function getPurchasesByStatusDb(
     return await prisma.purchase.findMany({
       where: { status },
       include: {
-        store: true,
-        warehouse: true,
         product: {
-          select:{
-            name:true,
-            slug:true,
-            sku:true,
-            expiryDate:true,
-            description:true,
-            category:true,
-            subCategory:true,
-            subSubCategory:true,
-            brand:true,
-            images:true,
-          }
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,
+            subCategory: true,
+            subSubCategory: true,
+            brand: true,
+            images: true,
+          },
         },
         attribute: true,
       },
@@ -323,21 +307,19 @@ export async function updatePurchaseStatusDb(
       where: { id },
       data: { status },
       include: {
-        store: true,
-        warehouse: true,
         product: {
-          select:{
-            name:true,
-            slug:true,
-            sku:true,
-            expiryDate:true,
-            description:true,
-            category:true,
-            subCategory:true,
-            subSubCategory:true,
-            brand:true,
-            images:true,
-          }
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,
+            subCategory: true,
+            subSubCategory: true,
+            brand: true,
+            images: true,
+          },
         },
         attribute: true,
       },
@@ -392,7 +374,6 @@ export async function searchPurchasesDb(filters: {
   status?: Prisma.EnumStatusTypeFilter;
   minAmount?: number;
   maxAmount?: number;
-
   startDate?: Date;
   endDate?: Date;
 }) {
@@ -419,21 +400,19 @@ export async function searchPurchasesDb(filters: {
     return await prisma.purchase.findMany({
       where,
       include: {
-        store: true,
-        warehouse: true,
         product: {
-          select:{
-            name:true,
-            slug:true,
-            sku:true,
-            expiryDate:true,
-            description:true,
-            category:true,
-            subCategory:true,
-            subSubCategory:true,
-            brand:true,
-            images:true,
-          }
+          select: {
+            name: true,
+            slug: true,
+            sku: true,
+            expiryDate: true,
+            description: true,
+            category: true,
+            subCategory: true,
+            subSubCategory: true,
+            brand: true,
+            images: true,
+          },
         },
         attribute: true,
       },
@@ -533,7 +512,6 @@ export async function getAllDuesBySupplier(supplierId: string) {
   }
 }
 
-
 export async function getAllPurchasesByCategory(categoryId: string) {
   try {
     return await prisma.purchase.findMany({
@@ -550,8 +528,8 @@ export async function getAllPurchasesByCategory(categoryId: string) {
             sku: true,
             expiryDate: true,
             description: true,
-            category: true,       // includes full category object
-            subCategory: true,    // only the subCategory object, not all its products
+            category: true, // includes full category object
+            subCategory: true, // only the subCategory object, not all its products
             subSubCategory: true, // only the subSubCategory object
             brand: true,
             images: true,
@@ -569,7 +547,7 @@ export async function getAllPurchasesBySubCategory(categoryId: string) {
       where: {
         product: {
           subCategory: {
-            id:categoryId,
+            id: categoryId,
           },
         },
       },
@@ -581,8 +559,8 @@ export async function getAllPurchasesBySubCategory(categoryId: string) {
             sku: true,
             expiryDate: true,
             description: true,
-            category: true,       // includes full category object
-            subCategory: true,    // only the subCategory object, not all its products
+            category: true, // includes full category object
+            subCategory: true, // only the subCategory object, not all its products
             subSubCategory: true, // only the subSubCategory object
             brand: true,
             images: true,
@@ -599,12 +577,9 @@ export async function getAllPurchasesBySubSubCategory(categoryId: string) {
     return await prisma.purchase.findMany({
       where: {
         product: {
-
-          subSubCategory:{
-            id:categoryId
-          }
-
-
+          subSubCategory: {
+            id: categoryId,
+          },
         },
       },
       include: {
@@ -615,8 +590,8 @@ export async function getAllPurchasesBySubSubCategory(categoryId: string) {
             sku: true,
             expiryDate: true,
             description: true,
-            category: true,       // includes full category object
-            subCategory: true,    // only the subCategory object, not all its products
+            category: true, // includes full category object
+            subCategory: true, // only the subCategory object, not all its products
             subSubCategory: true, // only the subSubCategory object
             brand: true,
             images: true,

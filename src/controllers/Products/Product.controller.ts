@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
-import { getPrismaInstance } from '../../config/db.config';
-import { productOperations } from '../../DB/ProductsOperation';
-import { CreateProductRequest, UpdateProductRequest } from '../../type';
+import { Prisma } from "@prisma/client";
+import { Request, Response } from "express";
+import { getPrismaInstance } from "../../config/db.config";
+import { productOperations } from "../../DB/ProductsOperation";
+import { CreateProductRequest, UpdateProductRequest } from "../../type";
 
 const prisma = getPrismaInstance();
 
@@ -15,8 +16,6 @@ const getAllProducts = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch products" });
   }
 };
-
-
 
 const getProductById = async (req: Request, res: Response) => {
   try {
@@ -69,9 +68,48 @@ const searchProducts = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Search query is required" });
     }
 
-    const products = await productOperations.searchByName(q);
+    const searchTerm = q.replace(/\s+/g, " ").trim();
+    const searchWords = searchTerm.split(" ");
+
+    // Build AND array with OR inside for each word
+    const whereConditions: Prisma.ProductWhereInput[] = searchWords.map(
+      (word) => ({
+        OR: [
+          { name: { contains: word, mode: "insensitive" as Prisma.QueryMode } },
+          { sku: { contains: word, mode: "insensitive" as Prisma.QueryMode } },
+          {
+            itemCode: {
+              contains: word,
+              mode: "insensitive" as Prisma.QueryMode,
+            },
+          },
+        ],
+      })
+    );
+
+    const products = await prisma.product.findMany({
+      where: {
+        AND: whereConditions,
+      },
+      include: {
+        store: true,
+        warehouse: true,
+        category: true,
+        subCategory: true,
+        subSubCategory: true,
+        brand: true,
+        attributes: true,
+        images: true,
+      },
+    });
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
     res.status(200).json({ products });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Failed to search products" });
   }
 };
