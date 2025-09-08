@@ -1,6 +1,6 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express from "express";
+import express, { type Application } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -30,7 +30,7 @@ import userRoutes from "./routes/Users.routes";
 import warehouseRoutes from "./routes/Warehouse.routes";
 import warrantyRoutes from "./routes/Warranty.routes";
 
-const app = express();
+const app: Application = express();
 const LIMITER = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,
