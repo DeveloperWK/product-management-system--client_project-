@@ -9,6 +9,13 @@ This document provides documentation for the E-commerce backend API.
 - [Purchase API](#purchase-api)
 - [Users API](#users-api)
 - [Coupon API](#coupon-api)
+- [Sales API](#sales-api)
+- [Suppliers API](#suppliers-api)
+- [Expenses API](#expenses-api)
+- [Warranties API](#warranties-api)
+- [Settings API](#settings-api)
+- [Dashboard API](#dashboard-api)
+- [Statement API](#statement-api)
 
 ---
 
@@ -582,3 +589,189 @@ This document provides documentation for the E-commerce backend API.
 
 - **DELETE /api/v1/coupons/:id**
   - **Description:** Deletes a coupon by its ID.
+
+---
+
+## Sales API (/api/v1/sales)
+
+### Sales Controller (`/api/v1/sales`)
+
+- **POST /api/v1/sales**
+  - **Description:** Creates a new sale.
+  - **Dummy Data:**
+    ```json
+    {
+      "productId": "clx23sdeo000408l9g1f811c2",
+      "customerId": "clx23sdeo000408l9g1f811c2",
+      "quantity": 1,
+      "total": 1200
+    }
+    ```
+
+- **GET /api/v1/sales**
+  - **Description:** Retrieves all sales.
+
+- **GET /api/v1/sales/:id**
+  - **Description:** Retrieves a sale by its ID.
+
+- **PATCH /api/v1/sales/:id**
+  - **Description:** Updates a sale.
+  - **Dummy Data:**
+    ```json
+    {
+      "quantity": 2,
+      "total": 2400
+    }
+    ```
+
+- **DELETE /api/v1/sales/:id**
+  - **Description:** Deletes a sale by its ID.
+
+---
+
+## Suppliers API (/api/v1/suppliers)
+
+### Supplier Controller (`/api/v1/suppliers`)
+
+- **POST /api/v1/suppliers**
+  - **Description:** Creates a new supplier.
+  - **Dummy Data:**
+    ```json
+    {
+      "name": "Supplier Inc.",
+      "contactPerson": "John Supplier",
+      "email": "contact@supplier.com",
+      "phone": "111-222-3333"
+    }
+    ```
+
+- **GET /api/v1/suppliers**
+  - **Description:** Retrieves all suppliers.
+
+- **GET /api/v1/suppliers/:id**
+  - **Description:** Retrieves a supplier by its ID.
+
+- **PATCH /api/v1/suppliers/:id**
+  - **Description:** Updates a supplier.
+  - **Dummy Data:**
+    ```json
+    {
+      "contactPerson": "Jane Supplier"
+    }
+    ```
+
+- **DELETE /api/v1/suppliers/:id**
+  - **Description:** Deletes a supplier by its ID.
+
+---
+
+## Expenses API (/api/v1/expenses)
+
+### Expense Controller (`/api/v1/expenses`)
+
+- **POST /api/v1/expenses**
+  - **Description:** Creates a new expense.
+  - **Dummy Data:**
+    ```json
+    {
+      "title": "Office Supplies",
+      "amount": 150.75,
+      "description": "Pens, paper, etc."
+    }
+    ```
+
+- **GET /api/v1/expenses**
+  - **Description:** Retrieves all expenses.
+
+- **GET /api/v1/expenses/:id**
+  - **Description:** Retrieves an expense by its ID.
+
+- **PATCH /api/v1/expenses/:id**
+  - **Description:** Updates an expense.
+  - **Dummy Data:**
+    ```json
+    {
+      "amount": 160.00
+    }
+    ```
+
+- **DELETE /api/v1/expenses/:id**
+  - **Description:** Deletes an expense by its ID.
+
+---
+
+## Warranties API (/api/v1/warranties)
+
+### Warranty Controller (`/api/v1/warranties`)
+
+- **POST /api/v1/warranties**
+  - **Description:** Creates a new warranty.
+  - **Dummy Data:**
+    ```json
+    {
+      "productId": "clx23sdeo000408l9g1f811c2",
+      "duration": 12,
+      "description": "1-year manufacturer warranty"
+    }
+    ```
+
+- **GET /api/v1/warranties**
+  - **Description:** Retrieves all warranties.
+
+- **GET /api/v1/warranties/:id**
+  - **Description:** Retrieves a warranty by its ID.
+
+- **PATCH /api/v1/warranties/:id**
+  - **Description:** Updates a warranty.
+  - **Dummy Data:**
+    ```json
+    {
+      "duration": 24
+    }
+    ```
+
+- **DELETE /api/v1/warranties/:id**
+  - **Description:** Deletes a warranty by its ID.
+
+---
+
+## Settings API (/api/v1/settings)
+
+### Settings Controller (`/api/v1/settings`)
+
+- **GET /api/v1/settings**
+  - **Description:** Retrieves all settings.
+
+- **PATCH /api/v1/settings**
+  - **Description:** Updates settings.
+  - **Dummy Data:**
+    ```json
+    {
+      "siteName": "My Awesome Shop",
+      "currency": "USD"
+    }
+    ```
+
+---
+
+## Dashboard API (/api/v1/dashboard)
+
+### Dashboard Controller (`/api/v1/dashboard`)
+
+- **GET /api/v1/dashboard/counts**
+  - **Description:** Retrieves counts of various entities (products, customers, etc.).
+
+- **GET /api/v1/dashboard/financial-totals**
+  - **Description:** Retrieves financial totals (revenue, expenses, etc.).
+
+---
+
+## Statement API (/api/v1/statement)
+
+### Statement Controller (`/api/v1/statement`)
+
+- **GET /api/v1/statement**
+  - **Description:** Retrieves a financial statement.
+  - **Query Parameters:**
+    - `startDate`: (date string, optional)
+    - `endDate`: (date string, optional)

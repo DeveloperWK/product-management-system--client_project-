@@ -126,3 +126,49 @@ This document outlines all the available API endpoints for this project.
 - `PATCH /purchase/:id` - Update a purchase.
 - `PATCH /purchase/:id/status` - Update a purchase status.
 - `DELETE /purchase/:id` - Delete a purchase.
+
+## Sales
+
+- `POST /sales` - Create a new sale.
+- `GET /sales` - Get all sales with filters.
+- `GET /sales/:id` - Get a sale by its ID.
+- `PATCH /sales/:id` - Update a sale.
+- `DELETE /sales/:id` - Delete a sale.
+
+## Suppliers
+
+- `POST /suppliers` - Create a new supplier.
+- `GET /suppliers` - Get all suppliers.
+- `GET /suppliers/:id` - Get a supplier by ID.
+- `PATCH /suppliers/:id` - Update a supplier.
+- `DELETE /suppliers/:id` - Delete a supplier.
+
+## Expenses
+
+- `POST /expenses` - Create a new expense.
+- `GET /expenses` - Get all expenses.
+- `GET /expenses/:id` - Get an expense by ID.
+- `PATCH /expenses/:id` - Update an expense.
+- `DELETE /expenses/:id` - Delete an expense.
+
+## Warranties
+
+- `POST /warranties` - Create a new warranty.
+- `GET /warranties` - Get all warranties.
+- `GET /warranties/:id` - Get a warranty by ID.
+- `PATCH /warranties/:id` - Update a warranty.
+- `DELETE /warranties/:id` - Delete a warranty.
+
+## Settings
+
+- `GET /settings` - Get all settings.
+- `PATCH /settings` - Update settings.
+
+## Dashboard
+
+- `GET /dashboard/counts` - Get counts of various entities.
+- `GET /dashboard/financial-totals` - Get financial totals.
+
+## Statement
+
+- `GET /statement` - Get a financial statement.
